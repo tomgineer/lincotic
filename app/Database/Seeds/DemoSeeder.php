@@ -132,7 +132,7 @@ class DemoSeeder extends Seeder
                 'title'       => 'Figma',
                 'url'         => 'https://www.figma.com/',
                 'description' => 'Collaborative interface design platform.',
-                'importance'  => 'normal',
+                'importance'  => null,
                 'is_favorite' => 0,
                 'click_count' => 5,
             ],
