@@ -1,0 +1,19 @@
+{
+    "name": "lincotic",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "description": "A clean, lightweight, open-source bookmark manager for organizing and accessing your favorite links.",
+    "scripts": {
+        "dev": "node build-scripts/dev.js",
+        "build": "node build-scripts/build.js"
+    },
+    "devDependencies": {
+        "@tailwindcss/cli": "^4.3.3",
+        "@tailwindcss/typography": "^0.5.20",
+        "daisyui": "^5.7.47",
+        "dotenv": "^18.0.7",
+        "esbuild": "^0.28.2",
+        "tailwindcss": "^4.3.3"
+    }
+}

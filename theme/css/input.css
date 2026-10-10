@@ -1,0 +1,70 @@
+@import "./fonts.css";
+@import "tailwindcss" source(none);
+@import "./components.css" layer(components);
+@import "./utilities.css" layer(utilities);
+
+@plugin "@tailwindcss/typography";
+@plugin "daisyui";
+
+@source "../../app/Views/";
+@source not "../../app/Views/errors/";
+@source "../js/**/*.js";
+
+@theme {
+    /* --font-heading: "Inter Tight", Arial, sans-serif;
+    --font-body: "Source Serif 4", Georgia, serif;
+    --font-mono: "Fira Code", monospace;
+    --font-ui: "Inter Tight", Arial, sans-serif;
+    --color-base-50: oklch(29% 0.018 251.74); */
+}
+
+/*
+ * Tailwind CSS Layers
+ *
+ * @layer base
+ *   Global/default styles for HTML elements.
+ *   Examples: body, h1-h6, a, code, ::selection.
+ *   Use this for the basic appearance of the application.
+ *
+ * @layer components
+ *   Reusable UI components defined with custom classes.
+ *   Examples: .card, .panel, .editor-toolbar.
+ *   These styles can still be overridden by utility classes.
+ *
+ * @layer utilities
+ *   Small, single-purpose helper classes.
+ *   Examples: .text-balance, .scrollbar-hidden.
+ *   Utilities have higher priority than base and component layers.
+ *
+ * Unlayered styles
+ *   CSS rules written outside any @layer.
+ *   Use these when a rule should take precedence over normal layered styles.
+ *   Unlayered normal CSS has higher priority than all normal layered CSS.
+ *   Use sparingly, mainly for third-party overrides or exceptional cases.
+ *
+ * Normal priority:
+ *
+ * base → components → utilities → unlayered
+ *
+ * Rule of thumb:
+ *
+ * HTML/default styling      → base
+ * Reusable UI component     → components
+ * Small helper/override     → utilities
+ * Exceptional hard override → unlayered
+ */
+
+@layer base {
+    html {
+        /* font-family: var(--font-body); */
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        /* font-family: var(--font-heading); */
+    }
+}
