@@ -7,7 +7,7 @@
     <meta name="base-url" content="<?= esc(base_url()) ?>">
     <meta name="theme-color" content="#111827">
 
-    <title>Lincotic</title>
+    <title>Lincotic - Turn link chaos into order</title>
 
     <link rel="stylesheet" href="<?= base_url('css/app-dist.css') ?>?v=<?= APP_VERSION ?>">
     <?= $this->renderSection('styles') ?>
