@@ -6,5 +6,9 @@
     <p class="mt-4 text-lg">
         A clean, lightweight, open-source bookmark manager for organizing and accessing your favorite links.
     </p>
+
+    <?php foreach ($collections as $collection): ?>
+        <?= view('site/partials/list', ['collection' => $collection]) ?>
+    <?php endforeach ?>
 </main>
 <?= $this->endSection() ?>
