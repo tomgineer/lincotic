@@ -19,9 +19,7 @@
 </head>
 
 <body class="flex min-h-screen flex-col" id="<?= esc(body_id()) ?>">
-    <header>
-
-    </header>
+    <?= $this->renderSection('header') ?>
 
     <div class="flex-1">
         <?= $this->renderSection('content') ?>

@@ -1,0 +1,66 @@
+/* inter-tight-regular - greek_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Inter Tight';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/inter-tight-v9-greek_latin-regular.woff2') format('woff2');
+}
+/* inter-tight-500 - greek_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Inter Tight';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../assets/fonts/inter-tight-v9-greek_latin-500.woff2') format('woff2');
+}
+/* inter-tight-600 - greek_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Inter Tight';
+  font-style: normal;
+  font-weight: 600;
+  src: url('../assets/fonts/inter-tight-v9-greek_latin-600.woff2') format('woff2');
+}
+/* inter-tight-700 - greek_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Inter Tight';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../assets/fonts/inter-tight-v9-greek_latin-700.woff2') format('woff2');
+}
+
+/* source-sans-3-regular - greek_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/source-sans-3-v20-greek_latin-regular.woff2') format('woff2');
+}
+/* source-sans-3-italic - greek_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Source Sans 3';
+  font-style: italic;
+  font-weight: 400;
+  src: url('../assets/fonts/source-sans-3-v20-greek_latin-italic.woff2') format('woff2');
+}
+/* source-sans-3-700 - greek_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../assets/fonts/source-sans-3-v20-greek_latin-700.woff2') format('woff2');
+}
+
+/* fira-code-regular - greek_latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Fira Code';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/fira-code-v27-greek_latin-regular.woff2') format('woff2');
+}

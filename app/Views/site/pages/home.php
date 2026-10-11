@@ -1,14 +1,24 @@
 <?= $this->extend('site/layouts/default') ?>
 
-<?= $this->section('content') ?>
-<main class="mx-auto w-full max-w-5xl px-6 py-16">
-    <h1 class="text-4xl font-bold">Lincotic</h1>
-    <p class="mt-4 text-lg">
-        A clean, lightweight, open-source bookmark manager for organizing and accessing your favorite links.
-    </p>
+<?= $this->section('header') ?>
+<?= view('site/partials/header', [
+    'collectionOptions' => $collectionOptions,
+    'filters'           => $filters,
+]) ?>
+<?= $this->endSection() ?>
 
-    <?php foreach ($collections as $collection): ?>
-        <?= view('site/partials/list', ['collection' => $collection]) ?>
-    <?php endforeach ?>
+<?= $this->section('content') ?>
+<main class="mx-auto max-w-5xl px-6 py-16">
+    <?php if ($collections === []): ?>
+        <div class="rounded-box border border-base-content/10 bg-base-200 px-6 py-12 text-center">
+            <h2 class="text-lg font-semibold">No links found</h2>
+            <p class="mt-2 text-sm text-base-content/60">Try a different collection, flag, or sort order.</p>
+        </div>
+    <?php else: ?>
+        <?php foreach ($collections as $collection): ?>
+            <?= view('site/partials/list', ['collection' => $collection]) ?>
+        <?php endforeach ?>
+    <?php endif ?>
 </main>
+
 <?= $this->endSection() ?>

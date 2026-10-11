@@ -1,0 +1,39 @@
+.collection-select optgroup > legend {
+    @apply font-ui font-bold text-base-content/55 border-b border-base-content/15 pt-1 pb-2 mb-2;
+}
+
+@supports (appearance: base-select) {
+    .collection-select::picker(select) {
+        max-height: min(40rem, 80svh) !important;
+    }
+}
+
+.link-card {
+    @apply p-4 flex flex-col gap-1 rounded-xl items-center justify-center
+           border-2 border-transparent;
+
+    --border-start: color-mix(in srgb, var(--color-base-100) 90%, white 10%);
+    --border-end: color-mix(in srgb, var(--color-base-100) 93%, white 7%);
+
+    background:
+        linear-gradient(
+            color-mix(in srgb, var(--color-base-100) 95%, white 6%) 0 0
+        ) padding-box,
+        linear-gradient(
+            135deg,
+            var(--border-start),
+            var(--border-end) 70%
+        ) border-box;
+
+    &.importance-low {
+        --border-start: var(--color-blue-500);
+    }
+
+    &.importance-normal {
+        --border-start: var(--color-orange-500);
+    }
+
+    &.importance-high {
+        --border-start: var(--color-red-500);
+    }
+}

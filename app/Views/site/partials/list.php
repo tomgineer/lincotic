@@ -1,19 +1,20 @@
 <section class="mt-8">
-    <h2 class="text-lg font-bold"><?= esc($collection['name']) ?></h2>
+    <h2 class="text-lg font-bold border-b border-base-content/15 pb-2 mb-4">
+        <?= esc($collection['name']) ?>
+    </h2>
 
-    <div class="mt-4 grid grid-cols-[repeat(auto-fill,250px)] gap-4">
+    <div class="mt-4 grid grid-cols-3 gap-4">
         <?php foreach ($collection['links'] as $link): ?>
-            <?php $importanceBorder = match ($link['importance'] ?? null) {
-                'high'   => 'border-l-4 border-l-rose-400',
-                'normal' => 'border-l-4 border-l-orange-300',
-                'low'    => 'border-l-4 border-l-blue-400',
+            <?php $importanceClass = match ($link['importance'] ?? null) {
+                'high'   => 'importance-high',
+                'normal' => 'importance-normal',
+                'low'    => 'importance-low',
                 default  => '',
             }; ?>
 
             <a
-                class="p-4 bg-base-200 hover:bg-base-50 hover:text-white
-                       flex flex-col gap-1 rounded-xl items-center justify-center
-                       <?= esc($importanceBorder, 'attr') ?>"
+                class="link-card
+                       <?= esc($importanceClass, 'attr') ?>"
                 href="<?= esc($link['url'], 'attr') ?>"
                 target="_blank"
                 rel="noopener noreferrer">

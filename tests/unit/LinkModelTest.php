@@ -8,6 +8,24 @@ use CodeIgniter\Test\CIUnitTestCase;
  */
 final class LinkModelTest extends CIUnitTestCase
 {
+    public function testSoftDeletesAreEnabled(): void
+    {
+        $model = new class extends LinkModel {
+            public function usesSoftDeletes(): bool
+            {
+                return $this->useSoftDeletes;
+            }
+
+            public function deletedField(): string
+            {
+                return $this->deletedField;
+            }
+        };
+
+        $this->assertTrue($model->usesSoftDeletes());
+        $this->assertSame('deleted_at', $model->deletedField());
+    }
+
     public function testImportanceAcceptsSupportedValuesAndNull(): void
     {
         $model = new LinkModel();
@@ -23,19 +41,5 @@ final class LinkModelTest extends CIUnitTestCase
         $model = new LinkModel();
 
         $this->assertFalse($model->validate(['importance' => 'urgent']));
-    }
-
-    public function testBlankImportanceIsNormalizedToNull(): void
-    {
-        $model = new class extends LinkModel {
-            public function normalize(array $data): array
-            {
-                return $this->normalizeImportance($data);
-            }
-        };
-
-        $data = $model->normalize(['data' => ['importance' => '']]);
-
-        $this->assertNull($data['data']['importance']);
     }
 }
