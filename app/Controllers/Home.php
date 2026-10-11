@@ -4,10 +4,15 @@ namespace App\Controllers;
 
 use App\Services\CollectionService;
 
-class Home extends BaseController
-{
-    public function index(): string
-    {
+class Home extends BaseController {
+
+    public function index(): string {
+        $cache = config('Lincotic')->cache;
+
+        if ($cache['enabled'] && $cache['duration'] > 0) {
+            $this->cachePage($cache['duration']);
+        }
+
         $collectionInput = $this->request->getGet('collection');
         $flagInput       = $this->request->getGet('flag');
         $importanceInput = $this->request->getGet('importance');
@@ -30,7 +35,7 @@ class Home extends BaseController
             $flag = 'all';
         }
 
-        if (! in_array($importance, ['all', 'high', 'medium', 'low', 'normal'], true)) {
+        if (! in_array($importance, ['all', 'high', 'medium', 'low', 'default'], true)) {
             $importance = 'all';
         }
 

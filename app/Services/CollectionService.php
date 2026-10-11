@@ -7,6 +7,19 @@ use App\Models\LinkModel;
 
 final class CollectionService {
 
+    private const array SORTS = [
+        'title'      => ['title', 'ASC'],
+        'title_desc' => ['title', 'DESC'],
+        'recent'     => ['created_at', 'DESC'],
+        'updated'    => ['updated_at', 'DESC'],
+        'popular'    => ['click_count', 'DESC'],
+        'visited'    => ['last_clicked_at', 'DESC'],
+        'oldest'     => ['created_at', 'ASC'],
+    ];
+
+    /**
+     * Returns the collections available in the collection filter.
+     */
     public function getFilterOptions(): array {
         return (new CollectionModel())
             ->select('id, name')
@@ -15,12 +28,27 @@ final class CollectionService {
             ->findAll();
     }
 
+    /**
+     * Retrieves matching collections and attaches their filtered links.
+     */
     public function getWithLinks(array $filters = []): array {
-        helper('array');
+        $collections = $this->findCollections($filters);
 
+        if ($collections === []) {
+            return [];
+        }
+
+        $links = $this->findLinks($collections, $filters);
+
+        return $this->attachLinks($collections, $links);
+    }
+
+    /**
+     * Finds collections that match the selected collection scope.
+     */
+    private function findCollections(array $filters): array {
         $collectionModel = new CollectionModel();
 
-        // Collection filters
         if ($filters['featuredOnly'] ?? false) {
             $collectionModel->where('is_featured', 1);
         }
@@ -29,62 +57,76 @@ final class CollectionService {
             $collectionModel->where('id', $filters['collectionId']);
         }
 
-        $collections = $collectionModel
+        return $collectionModel
             ->orderBy('sort_order', 'ASC')
             ->findAll();
+    }
 
-        if ($collections === []) {
-            return [];
-        }
-
+    /**
+     * Finds links within the selected collections and applies all link filters.
+     */
+    private function findLinks(array $collections, array $filters): array {
         $linkModel = new LinkModel();
 
-        // Fetch only links belonging to these collections
         $linkModel->whereIn(
             'collection_id',
             array_column($collections, 'id')
         );
 
-        // Link filters
-        $flag = $filters['flag'] ?? 'all';
+        $this->applyFlagFilter($linkModel, $filters['flag'] ?? 'all');
+        $this->applyImportanceFilter($linkModel, $filters['importance'] ?? 'all');
+        $this->applySort($linkModel, $filters['sort'] ?? 'title');
 
-        if ($flag === 'favorite') {
-            $linkModel->where('is_favorite', 1);
-        } elseif ($flag === 'pending_review') {
-            $linkModel->where('is_pending_review', 1);
-        } elseif ($flag === 'unflagged') {
-            $linkModel
+        return $linkModel->findAll();
+    }
+
+    /**
+     * Applies the selected favorite or review-state filter to the link query.
+     */
+    private function applyFlagFilter(LinkModel $linkModel, string $flag): void {
+        match ($flag) {
+            'favorite'       => $linkModel->where('is_favorite', 1),
+            'pending_review' => $linkModel->where('is_pending_review', 1),
+            'unflagged'      => $linkModel
                 ->where('is_favorite', 0)
-                ->where('is_pending_review', 0);
-        }
+                ->where('is_pending_review', 0),
+            default          => null,
+        };
+    }
 
-        $importance = $filters['importance'] ?? 'all';
-
+    /**
+     * Applies the selected importance level, including the default NULL value.
+     */
+    private function applyImportanceFilter(LinkModel $linkModel, string $importance): void {
         if (in_array($importance, ['high', 'medium', 'low'], true)) {
             $linkModel->where('importance', $importance);
-        } elseif ($importance === 'normal') {
+        } elseif ($importance === 'default') {
             $linkModel->where('importance', null);
         }
+    }
 
-        [$sortField, $sortDirection] = match ($filters['sort'] ?? 'title') {
-            'title_desc' => ['title', 'DESC'],
-            'recent'     => ['created_at', 'DESC'],
-            'updated'    => ['updated_at', 'DESC'],
-            'popular'    => ['click_count', 'DESC'],
-            'visited'    => ['last_clicked_at', 'DESC'],
-            'oldest'     => ['created_at', 'ASC'],
-            default      => ['title', 'ASC'],
-        };
+    /**
+     * Applies the requested ordering with a title-based tie-breaker.
+     */
+    private function applySort(LinkModel $linkModel, string $sort): void {
+        [$sortField, $sortDirection] = self::SORTS[$sort] ?? self::SORTS['title'];
 
         $linkModel->orderBy($sortField, $sortDirection);
 
         if ($sortField !== 'title') {
             $linkModel->orderBy('title', 'ASC');
         }
+    }
 
-        $links = $linkModel->findAll();
+    /**
+     * Groups links by collection and removes collections with no matching links.
+     */
+    private function attachLinks(array $collections, array $links): array {
+        $linksByCollection = [];
 
-        $linksByCollection = array_group_by($links, ['collection_id']);
+        foreach ($links as $link) {
+            $linksByCollection[$link['collection_id']][] = $link;
+        }
 
         $collectionsWithLinks = array_map(
             static fn(array $collection): array => [

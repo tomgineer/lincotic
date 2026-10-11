@@ -17,7 +17,9 @@
     --font-body: "Source Sans 3", system-ui, sans-serif;
     --font-mono: "Fira Code", ui-monospace, monospace;
     --font-ui: "Inter Tight", system-ui, sans-serif;
+
     --color-base-50: oklch(29% 0.018 251.74);
+    --color-acid: #d7ff00;
 }
 
 /*

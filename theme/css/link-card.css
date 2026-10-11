@@ -58,6 +58,7 @@
         box-shadow:
             0 0 20px color-mix(in srgb, var(--border-start) 30%, transparent),
             0 8px 24px rgb(0 0 0 / 15%);
+
     }
 }
 

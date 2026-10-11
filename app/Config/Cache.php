@@ -170,7 +170,7 @@ class Cache extends BaseConfig
      *
      * @var bool|list<string>
      */
-    public $cacheQueryString = false;
+    public $cacheQueryString = ['collection', 'flag', 'importance', 'sort'];
 
     /**
      * --------------------------------------------------------------------------
@@ -194,5 +194,5 @@ class Cache extends BaseConfig
      *
      * @var list<int>
      */
-    public array $cacheStatusCodes = [];
+    public array $cacheStatusCodes = [200];
 }
