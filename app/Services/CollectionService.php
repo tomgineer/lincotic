@@ -32,6 +32,7 @@ final class CollectionService {
      * Retrieves matching collections and attaches their filtered links.
      */
     public function getWithLinks(array $filters = []): array {
+        $filters = $this->isolateSearch($filters);
         $collections = $this->findCollections($filters);
 
         if ($collections === []) {
@@ -41,6 +42,25 @@ final class CollectionService {
         $links = $this->findLinks($collections, $filters);
 
         return $this->attachLinks($collections, $links);
+    }
+
+    /**
+     * Resets every filter when a global link search is active.
+     */
+    private function isolateSearch(array $filters): array {
+        if (($filters['search'] ?? '') === '') {
+            return $filters;
+        }
+
+        return [
+            ...$filters,
+            'collection'   => 'all',
+            'collectionId' => null,
+            'featuredOnly' => false,
+            'flag'         => 'all',
+            'importance'   => 'all',
+            'sort'         => 'title',
+        ];
     }
 
     /**
@@ -67,17 +87,34 @@ final class CollectionService {
      */
     private function findLinks(array $collections, array $filters): array {
         $linkModel = new LinkModel();
+        $search    = $filters['search'] ?? '';
 
         $linkModel->whereIn(
             'collection_id',
             array_column($collections, 'id')
         );
 
+        if ($search !== '') {
+            $this->applySearch($linkModel, $search);
+        }
+
         $this->applyFlagFilter($linkModel, $filters['flag'] ?? 'all');
         $this->applyImportanceFilter($linkModel, $filters['importance'] ?? 'all');
         $this->applySort($linkModel, $filters['sort'] ?? 'title');
 
         return $linkModel->findAll();
+    }
+
+    /**
+     * Searches link titles, URLs, and descriptions for the supplied term.
+     */
+    private function applySearch(LinkModel $linkModel, string $search): void {
+        $linkModel
+            ->groupStart()
+            ->like('title', $search)
+            ->orLike('url', $search)
+            ->orLike('description', $search)
+            ->groupEnd();
     }
 
     /**

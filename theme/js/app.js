@@ -1,7 +1,3 @@
-const linkFilters = document.querySelector('[data-link-filters]');
+import { initLinkFilters } from './components/link-filters.js';
 
-if (linkFilters instanceof HTMLFormElement) {
-    linkFilters.querySelectorAll('select').forEach((select) => {
-        select.addEventListener('change', () => linkFilters.requestSubmit());
-    });
-}
+initLinkFilters();

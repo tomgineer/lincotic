@@ -17,11 +17,13 @@ class Home extends BaseController {
         $flagInput       = $this->request->getGet('flag');
         $importanceInput = $this->request->getGet('importance');
         $sortInput       = $this->request->getGet('sort');
+        $searchInput     = $this->request->getGet('q');
 
         $collection = is_string($collectionInput) ? trim($collectionInput) : '';
         $flag       = is_string($flagInput) ? trim($flagInput) : '';
         $importance = is_string($importanceInput) ? trim($importanceInput) : '';
         $sort       = is_string($sortInput) ? trim($sortInput) : '';
+        $search     = is_string($searchInput) ? trim($searchInput) : '';
 
         $collectionId = ctype_digit($collection) && (int) $collection > 0
             ? (int) $collection
@@ -43,6 +45,15 @@ class Home extends BaseController {
             $sort = 'title';
         }
 
+        if ($search !== '') {
+            $collection   = 'all';
+            $collectionId = null;
+            $featuredOnly = false;
+            $flag         = 'all';
+            $importance   = 'all';
+            $sort         = 'title';
+        }
+
         $service = new CollectionService();
         $filters = [
             'collection'   => $collection,
@@ -51,6 +62,7 @@ class Home extends BaseController {
             'flag'         => $flag,
             'importance'   => $importance,
             'sort'         => $sort,
+            'search'       => $search,
         ];
 
         return view('site/pages/home', [

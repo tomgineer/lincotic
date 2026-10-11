@@ -12,7 +12,7 @@
     <?php if ($collections === []): ?>
         <div class="rounded-box border border-base-content/10 bg-base-200 px-6 py-12 text-center">
             <h2 class="text-lg font-semibold">No links found</h2>
-            <p class="mt-2 text-sm text-base-content/60">Try a different collection, flag, or sort order.</p>
+            <p class="mt-2 text-sm text-base-content/60">Try a different search or filter.</p>
         </div>
     <?php else: ?>
         <?php foreach ($collections as $collection): ?>

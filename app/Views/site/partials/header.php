@@ -1,6 +1,6 @@
 <header class="sticky top-0 z-20 border-b border-base-content/15 bg-base-100">
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_min(100%,64rem)_1fr]">
-        <div class="flex items-center px-6 pt-6 xl:items-start xl:justify-end xl:py-6">
+        <div class="flex items-center px-6 pt-6 xl:justify-end xl:py-6">
             <a href="<?= esc(site_url('/')) ?>" class="block w-full max-w-42" aria-label="Lincotic home">
                 <img
                     src="<?= esc(base_url('assets/images/logo.svg')) ?>?v=<?= APP_VERSION ?>"
@@ -73,9 +73,11 @@
             <fieldset class="fieldset min-w-0 sm:col-span-2 lg:col-span-4">
                 <input
                     type="search"
+                    name="q"
                     class="input input-lg w-full bg-base-50"
                     placeholder="Search links…"
                     aria-label="Search links"
+                    value="<?= esc($filters['search'], 'attr') ?>"
                     autocomplete="off">
             </fieldset>
         </form>
