@@ -7,3 +7,48 @@
         max-height: min(40rem, 80svh) !important;
     }
 }
+
+.search-control {
+    @apply flex w-full rounded-sm;
+
+    &:focus-within {
+        @apply outline-2 outline-offset-2 outline-base-content;
+
+        .search-control__field,
+        .search-control__clear {
+            @apply border-base-content;
+        }
+    }
+
+    .search-control__field {
+        @apply flex h-12 min-w-0 flex-1 items-center rounded-l-sm border border-base-content/20 bg-base-50 px-3;
+    }
+
+    .search-control__input {
+        @apply h-full min-w-0 flex-1 appearance-none border-0 bg-transparent text-lg outline-none;
+
+        &::-webkit-search-cancel-button {
+            appearance: none;
+        }
+    }
+
+    .search-control__clear {
+        @apply -ml-px flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-r-sm border border-base-content/20 bg-base-50 text-base-content/50 transition-colors;
+
+        &:hover {
+            @apply bg-base-content/10 text-base-content;
+        }
+
+        &:focus-visible {
+            @apply z-10 outline-none;
+        }
+
+        &:disabled {
+            @apply cursor-default text-base-content/20;
+
+            &:hover {
+                @apply bg-base-50;
+            }
+        }
+    }
+}

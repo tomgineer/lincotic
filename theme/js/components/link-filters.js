@@ -13,6 +13,7 @@ export function initLinkFilters() {
     }
 
     const search = form.elements.namedItem('q');
+    const clearSearch = form.querySelector('[data-clear-search]');
 
     const resetFilters = () => {
         Object.entries(FILTER_DEFAULTS).forEach(([name, value]) => {
@@ -38,6 +39,17 @@ export function initLinkFilters() {
         return;
     }
 
+    if (clearSearch instanceof HTMLButtonElement) {
+        search.addEventListener('input', () => {
+            clearSearch.disabled = search.value === '';
+        });
+
+        clearSearch.addEventListener('click', () => {
+            search.value = '';
+            form.requestSubmit();
+        });
+    }
+
     if (search.autofocus) {
         requestAnimationFrame(() => {
             search.focus({ preventScroll: true });
@@ -48,12 +60,6 @@ export function initLinkFilters() {
     form.addEventListener('submit', () => {
         if (search.value.trim() !== '') {
             resetFilters();
-        }
-    });
-
-    search.addEventListener('input', () => {
-        if (search.value === '') {
-            form.requestSubmit();
         }
     });
 }
