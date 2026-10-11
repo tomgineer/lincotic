@@ -1,4 +1,4 @@
-<header class="sticky top-0 z-20 border-b border-base-content/15 bg-base-100">
+<header id="site-header" class="sticky top-0 z-20 border-b border-base-content/15 bg-base-100">
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_min(100%,64rem)_1fr]">
         <div class="flex items-center px-6 pt-6 xl:justify-end xl:py-6">
             <a href="<?= esc(site_url('/')) ?>" class="block w-full max-w-42" aria-label="Lincotic home">
