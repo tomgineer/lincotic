@@ -6,6 +6,7 @@
     <meta name="color-scheme" content="dark">
     <meta name="base-url" content="<?= esc(base_url()) ?>">
     <meta name="theme-color" content="#111827">
+    <meta name="description" content="A clean, lightweight bookmark manager for organizing, searching, and accessing your favorite links.">
 
     <title>Lincotic - Turn link chaos into order</title>
 
