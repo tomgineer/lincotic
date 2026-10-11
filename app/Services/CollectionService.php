@@ -60,9 +60,9 @@ final class CollectionService {
 
         $importance = $filters['importance'] ?? 'all';
 
-        if (in_array($importance, ['high', 'normal', 'low'], true)) {
+        if (in_array($importance, ['high', 'medium', 'low'], true)) {
             $linkModel->where('importance', $importance);
-        } elseif ($importance === 'none') {
+        } elseif ($importance === 'normal') {
             $linkModel->where('importance', null);
         }
 

@@ -30,7 +30,7 @@ class Home extends BaseController
             $flag = 'all';
         }
 
-        if (! in_array($importance, ['all', 'high', 'normal', 'low', 'none'], true)) {
+        if (! in_array($importance, ['all', 'high', 'medium', 'low', 'normal'], true)) {
             $importance = 'all';
         }
 

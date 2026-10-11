@@ -32,7 +32,7 @@ final class LinkModelTest extends CIUnitTestCase
 
         $this->assertTrue($model->validate(['importance' => null]));
         $this->assertTrue($model->validate(['importance' => 'low']));
-        $this->assertTrue($model->validate(['importance' => 'normal']));
+        $this->assertTrue($model->validate(['importance' => 'medium']));
         $this->assertTrue($model->validate(['importance' => 'high']));
     }
 
@@ -41,5 +41,6 @@ final class LinkModelTest extends CIUnitTestCase
         $model = new LinkModel();
 
         $this->assertFalse($model->validate(['importance' => 'urgent']));
+        $this->assertFalse($model->validate(['importance' => 'normal']));
     }
 }

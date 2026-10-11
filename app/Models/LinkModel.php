@@ -25,6 +25,6 @@ class LinkModel extends Model
         'last_clicked_at',
     ];
     protected $validationRules = [
-        'importance' => 'permit_empty|in_list[low,normal,high]',
+        'importance' => 'permit_empty|in_list[low,medium,high]',
     ];
 }

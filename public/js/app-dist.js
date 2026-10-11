@@ -1,1 +1,9 @@
-(()=>{var e=document.querySelector("[data-link-filters]");e instanceof HTMLFormElement&&e.querySelectorAll("select").forEach(t=>{t.addEventListener("change",()=>e.requestSubmit())});})();
+(() => {
+  // theme/js/app.js
+  var linkFilters = document.querySelector("[data-link-filters]");
+  if (linkFilters instanceof HTMLFormElement) {
+    linkFilters.querySelectorAll("select").forEach((select) => {
+      select.addEventListener("change", () => linkFilters.requestSubmit());
+    });
+  }
+})();

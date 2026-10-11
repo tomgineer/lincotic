@@ -7,7 +7,7 @@
         <?php foreach ($collection['links'] as $link): ?>
             <?php $importanceClass = match ($link['importance'] ?? null) {
                 'high'   => 'importance-high',
-                'normal' => 'importance-normal',
+                'medium' => 'importance-medium',
                 'low'    => 'importance-low',
                 default  => '',
             }; ?>

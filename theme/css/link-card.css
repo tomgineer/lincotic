@@ -32,7 +32,7 @@
         --border-start: var(--color-blue-500);
     }
 
-    &.importance-normal {
+    &.importance-medium {
         --border-start: var(--color-orange-500);
     }
 

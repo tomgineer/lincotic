@@ -53,9 +53,9 @@
                 <select name="importance" class="select w-full" aria-label="Filter links by importance">
                     <option value="all" <?= $filters['importance'] === 'all' ? 'selected' : '' ?>>All Levels</option>
                     <option value="high" <?= $filters['importance'] === 'high' ? 'selected' : '' ?>>High</option>
-                    <option value="normal" <?= $filters['importance'] === 'normal' ? 'selected' : '' ?>>Normal</option>
+                    <option value="medium" <?= $filters['importance'] === 'medium' ? 'selected' : '' ?>>Medium</option>
                     <option value="low" <?= $filters['importance'] === 'low' ? 'selected' : '' ?>>Low</option>
-                    <option value="none" <?= $filters['importance'] === 'none' ? 'selected' : '' ?>>No Importance</option>
+                    <option value="normal" <?= $filters['importance'] === 'normal' ? 'selected' : '' ?>>Normal</option>
                 </select>
             </fieldset>
 
