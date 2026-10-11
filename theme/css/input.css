@@ -3,7 +3,6 @@
 @import "./components.css" layer(components);
 @import "./link-card.css" layer(components);
 @import "./utilities.css" layer(utilities);
-@import "./view-transitions.css";
 
 @plugin "@tailwindcss/typography";
 @plugin "daisyui";

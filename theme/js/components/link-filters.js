@@ -38,6 +38,13 @@ export function initLinkFilters() {
         return;
     }
 
+    if (search.autofocus) {
+        requestAnimationFrame(() => {
+            search.focus({ preventScroll: true });
+            search.setSelectionRange(search.value.length, search.value.length);
+        });
+    }
+
     form.addEventListener('submit', () => {
         if (search.value.trim() !== '') {
             resetFilters();

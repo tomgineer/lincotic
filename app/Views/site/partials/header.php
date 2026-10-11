@@ -78,7 +78,8 @@
                     placeholder="Search links…"
                     aria-label="Search links"
                     value="<?= esc($filters['search'], 'attr') ?>"
-                    autocomplete="off">
+                    autocomplete="off"
+                    <?= $filters['search'] !== '' ? 'autofocus' : '' ?>>
             </fieldset>
         </form>
 
