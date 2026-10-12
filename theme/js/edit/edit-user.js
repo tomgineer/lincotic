@@ -33,12 +33,15 @@ export function initEditUser() {
     const status = dialog.querySelector('[data-edit-user-status]');
     const saveButton = dialog.querySelector('[data-edit-user-save]');
     const createEndpoint = dialog.dataset.createEndpoint;
+    const updateEndpointTemplate = dialog.dataset.updateEndpointTemplate;
     const csrfHeader = dialog.dataset.csrfHeader;
     let csrfToken = dialog.dataset.csrfToken;
+    let currentUserId = '';
 
     if (!(form instanceof HTMLFormElement)
         || !(saveButton instanceof HTMLButtonElement)
         || !createEndpoint
+        || !updateEndpointTemplate
         || !csrfHeader
         || !csrfToken) {
         return;
@@ -54,13 +57,68 @@ export function initEditUser() {
         status.classList.toggle('text-base-content/60', !isError);
     };
 
-    const setBusy = (busy, label = 'Add user') => {
+    const setBusy = (busy, label = currentUserId === '' ? 'Add user' : 'Save changes') => {
         form.setAttribute('aria-busy', String(busy));
         form.querySelectorAll(editableControlSelector).forEach((control) => {
             control.disabled = busy;
         });
         saveButton.disabled = busy;
         saveButton.textContent = label;
+    };
+
+    const prepareCreate = () => {
+        currentUserId = '';
+        form.reset();
+        clearValidation(form);
+        setStatus('');
+
+        const id = formControl(form, 'id');
+        const password = formControl(form, 'password');
+        const title = dialog.querySelector('[data-edit-user-title]');
+        const description = dialog.querySelector('[data-edit-user-description]');
+        const passwordHint = dialog.querySelector('[data-edit-user-password-hint]');
+
+        if (id instanceof HTMLInputElement) id.value = '';
+        if (password instanceof HTMLInputElement) password.required = true;
+        if (title instanceof HTMLElement) title.textContent = 'Add user';
+        if (description instanceof HTMLElement) description.textContent = 'Create a new account and choose its access level.';
+        if (passwordHint instanceof HTMLElement) {
+            passwordHint.textContent = `Use at least ${password?.minLength || 8} characters.`;
+        }
+
+        setBusy(false);
+    };
+
+    const prepareEdit = (trigger) => {
+        currentUserId = trigger.dataset.userId || '';
+        form.reset();
+        clearValidation(form);
+        setStatus('');
+
+        const id = formControl(form, 'id');
+        const username = formControl(form, 'username');
+        const email = formControl(form, 'email');
+        const password = formControl(form, 'password');
+        const role = formControl(form, 'role');
+        const active = formControl(form, 'active');
+        const title = dialog.querySelector('[data-edit-user-title]');
+        const description = dialog.querySelector('[data-edit-user-description]');
+        const passwordHint = dialog.querySelector('[data-edit-user-password-hint]');
+
+        if (id instanceof HTMLInputElement) id.value = currentUserId;
+        if (username instanceof HTMLInputElement) username.value = trigger.dataset.userUsername || '';
+        if (email instanceof HTMLInputElement) email.value = trigger.dataset.userEmail || '';
+        if (password instanceof HTMLInputElement) {
+            password.value = '';
+            password.required = false;
+        }
+        if (role instanceof RadioNodeList) role.value = trigger.dataset.userRole || 'user';
+        if (active instanceof HTMLInputElement) active.checked = trigger.dataset.userActive === '1';
+        if (title instanceof HTMLElement) title.textContent = 'Edit user';
+        if (description instanceof HTMLElement) description.textContent = 'Update this account and its access level.';
+        if (passwordHint instanceof HTMLElement) passwordHint.textContent = 'Leave blank to keep the current password.';
+
+        setBusy(false);
     };
 
     const updateCsrf = (result) => {
@@ -85,10 +143,20 @@ export function initEditUser() {
 
     document.querySelectorAll('[data-add-user]').forEach((trigger) => {
         trigger.addEventListener('click', () => {
-            form.reset();
-            clearValidation(form);
-            setStatus('');
-            setBusy(false);
+            prepareCreate();
+
+            if (!dialog.open) {
+                dialog.showModal();
+            }
+
+            formControl(form, 'username')?.focus();
+        });
+    });
+
+    document.querySelectorAll('[data-edit-user]').forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+            prepareEdit(trigger);
+            document.getElementById('users-popover')?.hidePopover?.();
 
             if (!dialog.open) {
                 dialog.showModal();
@@ -117,11 +185,16 @@ export function initEditUser() {
             active: data.get('active') === '1',
         };
 
-        setStatus('Adding user…');
-        setBusy(true, 'Adding…');
+        const endpoint = currentUserId === ''
+            ? createEndpoint
+            : updateEndpointTemplate.replace('__USER_ID__', encodeURIComponent(currentUserId));
+        const action = currentUserId === '' ? 'Adding' : 'Saving';
+
+        setStatus(`${action} user…`);
+        setBusy(true, `${action}…`);
 
         try {
-            const response = await fetch(createEndpoint, {
+            const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -154,9 +227,8 @@ export function initEditUser() {
     });
 
     dialog.addEventListener('close', () => {
-        form.reset();
-        clearValidation(form);
-        setStatus('');
-        setBusy(false);
+        prepareCreate();
     });
+
+    prepareCreate();
 }

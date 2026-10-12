@@ -2,6 +2,23 @@
     @apply font-ui font-bold text-base-content/55 border-b border-base-content/15 pt-1 pb-2 mb-2;
 }
 
+.users-popover-trigger {
+    anchor-name: --users-popover-trigger;
+}
+
+.users-popover {
+    position: fixed;
+    position-anchor: --users-popover-trigger;
+    inset: auto;
+    top: calc(anchor(bottom) + 0.5rem);
+    left: anchor(right);
+    max-height: calc(100dvh - 2rem);
+    margin: 0;
+    overflow: hidden;
+    color: inherit;
+    transform: translateX(-100%);
+}
+
 @supports (appearance: base-select) {
     .collection-select::picker(select) {
         max-height: min(40rem, 80svh) !important;

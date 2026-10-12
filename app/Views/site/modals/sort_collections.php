@@ -5,7 +5,7 @@
     class="modal"
     aria-labelledby="sort-collections-modal-title"
     aria-describedby="sort-collections-modal-description">
-    <div class="modal-box w-[calc(100%-2rem)] max-w-xl overflow-hidden p-0">
+    <div class="modal-box -translate-y-[5vh] w-[calc(100%-2rem)] max-w-xl overflow-hidden p-0">
         <header class="flex items-start justify-between gap-6 border-b border-base-content/10 px-6 py-5 sm:px-8">
             <div class="flex min-w-0 items-start gap-4">
                 <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary" aria-hidden="true">

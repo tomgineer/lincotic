@@ -34,17 +34,24 @@ export function initEditCollection() {
     }
 
     const form = dialog.querySelector('[data-edit-collection-form]');
+    const modalTitle = dialog.querySelector('[data-edit-collection-title]');
+    const modalDescription = dialog.querySelector('[data-edit-collection-description]');
     const status = dialog.querySelector('[data-edit-collection-status]');
     const saveButton = dialog.querySelector('[data-edit-collection-save]');
     const deleteButton = dialog.querySelector('[data-edit-collection-delete]');
+    const createEndpoint = dialog.dataset.createEndpoint;
     const endpointTemplate = dialog.dataset.endpointTemplate;
     const csrfHeader = dialog.dataset.csrfHeader;
     let csrfToken = dialog.dataset.csrfToken;
     let loadController = null;
     let loadSequence = 0;
+    let mode = 'edit';
 
     if (!(form instanceof HTMLFormElement)
+        || !(modalTitle instanceof HTMLElement)
+        || !(modalDescription instanceof HTMLElement)
         || !(saveButton instanceof HTMLButtonElement)
+        || !createEndpoint
         || !endpointTemplate
         || !csrfHeader
         || !csrfToken) {
@@ -64,13 +71,31 @@ export function initEditCollection() {
         status.classList.toggle('text-base-content/60', !isError);
     };
 
-    const setBusy = (busy, label = 'Save changes') => {
+    const defaultSaveLabel = () => mode === 'create' ? 'Add collection' : 'Save changes';
+
+    const setBusy = (busy, label = defaultSaveLabel()) => {
         form.setAttribute('aria-busy', String(busy));
         form.querySelectorAll(editableControlSelector).forEach((control) => {
             control.disabled = busy;
         });
         saveButton.disabled = busy;
         saveButton.textContent = label;
+    };
+
+    const setMode = (nextMode) => {
+        mode = nextMode;
+        const creating = mode === 'create';
+
+        modalTitle.textContent = creating ? 'Add collection' : 'Edit collection';
+        modalDescription.textContent = creating
+            ? 'Create a new collection for organizing links.'
+            : 'Update how this collection is named and presented.';
+
+        if (deleteButton instanceof HTMLButtonElement) {
+            deleteButton.hidden = creating;
+        }
+
+        saveButton.textContent = defaultSaveLabel();
     };
 
     const updateCsrf = (result) => {
@@ -120,6 +145,7 @@ export function initEditCollection() {
 
         form.reset();
         clearValidation(form);
+        setMode('edit');
         setStatus('Loading collection…');
         setBusy(true, 'Loading…');
 
@@ -155,14 +181,45 @@ export function initEditCollection() {
         }
     };
 
+    const openCreator = (trigger) => {
+        if (!(trigger instanceof HTMLButtonElement)) {
+            return;
+        }
+
+        loadSequence++;
+        loadController?.abort();
+        loadController = null;
+
+        form.reset();
+        clearValidation(form);
+        setMode('create');
+        setControlValue(form, 'id', '');
+        setStatus('');
+        setBusy(false);
+
+        if (!dialog.open) {
+            dialog.showModal();
+        }
+
+        formControl(form, 'name')?.focus();
+    };
+
     document.querySelectorAll('[data-edit-collection]').forEach((trigger) => {
         trigger.addEventListener('click', () => void openEditor(trigger));
+    });
+
+    document.querySelectorAll('[data-add-collection]').forEach((trigger) => {
+        trigger.addEventListener('click', () => openCreator(trigger));
     });
 
     form.addEventListener('input', () => clearValidation(form));
 
     if (deleteButton instanceof HTMLButtonElement) {
         deleteButton.addEventListener('click', async () => {
+            if (mode !== 'edit') {
+                return;
+            }
+
             const idControl = formControl(form, 'id');
             const nameControl = formControl(form, 'name');
 
@@ -218,8 +275,9 @@ export function initEditCollection() {
 
         const data = new FormData(form);
         const id = data.get('id');
+        const creating = mode === 'create';
 
-        if (typeof id !== 'string' || id === '') {
+        if (!creating && (typeof id !== 'string' || id === '')) {
             setStatus('No collection is selected.', true);
             return;
         }
@@ -232,20 +290,23 @@ export function initEditCollection() {
             is_featured: data.get('is_featured') === '1',
         };
 
-        setStatus('Saving changes…');
-        setBusy(true, 'Saving…');
+        setStatus(creating ? 'Adding collection…' : 'Saving changes…');
+        setBusy(true, creating ? 'Adding…' : 'Saving…');
 
         try {
-            const response = await fetch(endpointFor(id), {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    [csrfHeader]: csrfToken,
+            const response = await fetch(
+                creating ? createEndpoint : endpointFor(id),
+                {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        [csrfHeader]: csrfToken,
+                    },
+                    body: JSON.stringify(payload),
                 },
-                body: JSON.stringify(payload),
-            });
+            );
             const result = await readResponse(response);
 
             if (!response.ok) {
@@ -256,14 +317,18 @@ export function initEditCollection() {
                     form.reportValidity();
                 }
 
-                throw new Error(result.error || 'Unable to save this collection.');
+                throw new Error(result.error || (creating
+                    ? 'Unable to add this collection.'
+                    : 'Unable to save this collection.'));
             }
 
             dialog.hidden = true;
             dialog.close();
             window.location.reload();
         } catch (error) {
-            setStatus(error.message || 'Unable to save this collection.', true);
+            setStatus(error.message || (creating
+                ? 'Unable to add this collection.'
+                : 'Unable to save this collection.'), true);
             setBusy(false);
         }
     });
@@ -275,6 +340,7 @@ export function initEditCollection() {
         form.reset();
         clearValidation(form);
         setStatus('');
+        setMode('edit');
         setBusy(false);
     });
 }

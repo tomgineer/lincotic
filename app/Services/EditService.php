@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\CollectionModel;
 use App\Models\LinkModel;
 use CodeIgniter\Shield\Authentication\Passwords;
+use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Shield\Exceptions\ValidationException;
 use CodeIgniter\Shield\Models\UserModel;
 use Throwable;
@@ -102,7 +103,9 @@ final class EditService
             'username' => $data['username'],
             'email'    => $data['email'],
             'password' => $data['password'],
-            'active'   => $data['active'],
+            'active'   => true,
+            'status'   => $data['active'] ? null : 'banned',
+            'status_message' => $data['active'] ? null : 'Deactivated by an administrator.',
         ]);
         $passwordCheck = service('passwords')->check($data['password'], $user);
 
@@ -154,6 +157,121 @@ final class EditService
     }
 
     /**
+     * Returns the users displayed in the admin popover.
+     *
+     * @return list<array{id: int, username: string, email: string, role: string, active: bool}>
+     */
+    public function users(): array
+    {
+        $users = $this->userModel()
+            ->withIdentities()
+            ->withGroups()
+            ->orderBy('username', 'ASC')
+            ->findAll();
+
+        return array_map(fn (User $user): array => $this->presentUser($user), $users);
+    }
+
+    /**
+     * Validates and updates one Shield user.
+     *
+     * @return array{status: string, errors: array<string, string>}
+     */
+    public function updateUser(int $id, array $input, int $actorId): array
+    {
+        $users = $this->userModel();
+        $user = $users
+            ->withIdentities()
+            ->withGroups()
+            ->find($id);
+
+        if (! $user instanceof User) {
+            return $this->userResult(self::NOT_FOUND);
+        }
+
+        $data       = $this->normalizeUserInput($input);
+        $validation = service('validation');
+        $validation->reset();
+        $validation->setRules($this->userUpdateRules($id));
+
+        if (! $validation->run($data, null, config('Auth')->DBGroup)) {
+            return $this->userResult(self::INVALID, $validation->getErrors());
+        }
+
+        if ($id === $actorId && ! $data['active']) {
+            return $this->userResult(self::INVALID, [
+                'active' => 'You cannot deactivate your own account.',
+            ]);
+        }
+
+        if ($id === $actorId && $data['role'] !== 'admin') {
+            return $this->userResult(self::INVALID, [
+                'role' => 'You cannot remove your own administrator role.',
+            ]);
+        }
+
+        if ($data['password'] !== '') {
+            $passwordCheck = service('passwords')->check($data['password'], $user);
+
+            if (! $passwordCheck->isOK()) {
+                return $this->userResult(self::INVALID, [
+                    'password' => $passwordCheck->reason(),
+                ]);
+            }
+        }
+
+        $user->username = $data['username'];
+        $user->email = $data['email'];
+        $user->active = true;
+        $user->status = $data['active'] ? null : 'banned';
+        $user->status_message = $data['active'] ? null : 'Deactivated by an administrator.';
+
+        if ($data['password'] !== '') {
+            $user->password = $data['password'];
+        }
+
+        $database = db_connect(config('Auth')->DBGroup);
+        $database->transBegin();
+
+        try {
+            try {
+                if (! $users->save($user)) {
+                    $database->transRollback();
+
+                    return $this->userResult(self::INVALID, $users->errors());
+                }
+            } catch (ValidationException) {
+                $database->transRollback();
+
+                return $this->userResult(self::INVALID, $users->errors());
+            }
+
+            $groups = $user->getGroups() ?? [];
+
+            if ($groups !== [$data['role']]) {
+                if ($groups !== []) {
+                    $user->removeGroup(...$groups);
+                }
+
+                $user->addGroup($data['role']);
+            }
+
+            if (! $database->transStatus()) {
+                $database->transRollback();
+
+                return $this->userResult(self::INVALID);
+            }
+
+            $database->transCommit();
+        } catch (Throwable $exception) {
+            $database->transRollback();
+            throw $exception;
+        }
+
+        return $this->userResult(self::UPDATED);
+    }
+
+    /**
      * Returns the fields exposed by the link editor.
      */
     public function getLink(int $id): ?array
@@ -171,6 +289,35 @@ final class EditService
         $collection = $this->collections->find($id);
 
         return is_array($collection) ? $this->presentCollection($collection) : null;
+    }
+
+    /**
+     * Validates and creates one collection for the current user.
+     *
+     * @return array{status: string, errors: array<string, string>}
+     */
+    public function createCollection(array $input, int $userId): array
+    {
+        $data       = $this->normalizeCollectionInput($input);
+        $validation = service('validation');
+        $validation->reset();
+        $validation->setRules(self::COLLECTION_RULES);
+
+        if (! $validation->run($data)) {
+            return $this->collectionResult(self::INVALID, $validation->getErrors());
+        }
+
+        if ($userId < 1) {
+            return $this->collectionResult(self::INVALID);
+        }
+
+        $data['user_id'] = $userId;
+
+        if ($this->collections->insert($data) === false) {
+            return $this->collectionResult(self::INVALID, $this->collections->errors());
+        }
+
+        return $this->collectionResult(self::CREATED);
     }
 
     /**
@@ -432,6 +579,36 @@ final class EditService
         ];
     }
 
+    private function userUpdateRules(int $id): array
+    {
+        $config        = config('Auth');
+        $usernameRules = $config->usernameValidationRules;
+        $emailRules    = $config->emailValidationRules;
+
+        $usernameRules['rules'][] = sprintf('is_unique[%s.username,id,%d]', $config->tables['users'], $id);
+        $emailRules['rules'][] = sprintf('is_unique[%s.secret,user_id,%d]', $config->tables['identities'], $id);
+
+        return [
+            'username' => $usernameRules,
+            'email'    => $emailRules,
+            'password' => [
+                'label'  => 'Auth.password',
+                'rules'  => ['permit_empty', Passwords::getMaxLengthRule()],
+                'errors' => [
+                    'max_byte' => 'Auth.errorPasswordTooLongBytes',
+                ],
+            ],
+            'role' => [
+                'label' => 'Role',
+                'rules' => 'required|in_list[user,admin]',
+            ],
+            'active' => [
+                'label' => 'Active account',
+                'rules' => 'required|in_list[0,1]',
+            ],
+        ];
+    }
+
     private function userModel(): UserModel
     {
         if ($this->users === null) {
@@ -441,6 +618,22 @@ final class EditService
         }
 
         return $this->users;
+    }
+
+    /**
+     * @return array{id: int, username: string, email: string, role: string, active: bool}
+     */
+    private function presentUser(User $user): array
+    {
+        $groups = $user->getGroups() ?? [];
+
+        return [
+            'id'       => (int) $user->id,
+            'username' => (string) ($user->username ?? ''),
+            'email'    => (string) ($user->email ?? ''),
+            'role'     => (string) ($groups[0] ?? config('AuthGroups')->defaultGroup),
+            'active'   => ! $user->isBanned(),
+        ];
     }
 
     private function presentLink(array $link): array

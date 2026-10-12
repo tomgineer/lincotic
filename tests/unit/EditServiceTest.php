@@ -92,6 +92,51 @@ final class EditServiceTest extends CIUnitTestCase
         ], $service->getCollection(8));
     }
 
+    public function testCreateCollectionRejectsInvalidInput(): void
+    {
+        $collections = $this->createMock(CollectionModel::class);
+        $collections->expects($this->never())->method('insert');
+
+        $service = new EditService($this->createMock(LinkModel::class), $collections);
+        $result  = $service->createCollection([
+            'name' => '',
+            'slug' => 'Not a slug',
+        ], 4);
+
+        $this->assertSame(EditService::INVALID, $result['status']);
+        $this->assertArrayHasKey('name', $result['errors']);
+        $this->assertArrayHasKey('slug', $result['errors']);
+    }
+
+    public function testCreateCollectionNormalizesAndPersistsInputForCurrentUser(): void
+    {
+        $collections = $this->createMock(CollectionModel::class);
+        $collections
+            ->expects($this->once())
+            ->method('insert')
+            ->with([
+                'name'        => 'New collection',
+                'slug'        => 'new-collection',
+                'description' => 'Useful links',
+                'icon'        => null,
+                'is_featured' => 1,
+                'user_id'     => 4,
+            ])
+            ->willReturn(15);
+
+        $service = new EditService($this->createMock(LinkModel::class), $collections);
+        $result  = $service->createCollection([
+            'name'        => '  New collection  ',
+            'slug'        => '  NEW-COLLECTION  ',
+            'description' => '  Useful links  ',
+            'icon'        => '',
+            'is_featured' => true,
+        ], 4);
+
+        $this->assertSame(EditService::CREATED, $result['status']);
+        $this->assertSame([], $result['errors']);
+    }
+
     public function testUpdateCollectionRejectsInvalidInput(): void
     {
         $collections = $this->createMock(CollectionModel::class);

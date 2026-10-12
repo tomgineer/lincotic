@@ -5,9 +5,12 @@
     aria-describedby="edit-user-modal-description"
     data-edit-user-modal
     data-create-endpoint="<?= esc(site_url('edit/users'), 'attr') ?>"
+    data-update-endpoint-template="<?= esc(site_url('edit/users/__USER_ID__'), 'attr') ?>"
     data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"
     data-csrf-token="<?= esc(csrf_hash(), 'attr') ?>">
-    <form class="modal-box w-[calc(100%-2rem)] max-w-2xl overflow-hidden p-0" data-edit-user-form>
+    <form class="modal-box -translate-y-[5vh] w-[calc(100%-2rem)] max-w-2xl overflow-hidden p-0" data-edit-user-form>
+        <input type="hidden" name="id" data-edit-user-id>
+
         <header class="flex items-start justify-between gap-6 border-b border-base-content/10 px-6 py-5 sm:px-8">
             <div class="flex min-w-0 items-start gap-4">
                 <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary" aria-hidden="true">
@@ -15,8 +18,8 @@
                 </span>
 
                 <div class="min-w-0">
-                    <h2 id="edit-user-modal-title" class="font-heading text-xl font-semibold">Add user</h2>
-                    <p id="edit-user-modal-description" class="mt-1 text-sm text-base-content/60">
+                    <h2 id="edit-user-modal-title" class="font-heading text-xl font-semibold" data-edit-user-title>Add user</h2>
+                    <p id="edit-user-modal-description" class="mt-1 text-sm text-base-content/60" data-edit-user-description>
                         Create a new account and choose its access level.
                     </p>
                 </div>
@@ -81,7 +84,7 @@
                             required
                             data-edit-user-control>
                     </label>
-                    <p class="label text-xs text-base-content/50">Use at least <?= esc((string) config('Auth')->minimumPasswordLength) ?> characters.</p>
+                    <p class="label text-xs text-base-content/50" data-edit-user-password-hint>Use at least <?= esc((string) config('Auth')->minimumPasswordLength) ?> characters.</p>
                 </fieldset>
             </div>
 

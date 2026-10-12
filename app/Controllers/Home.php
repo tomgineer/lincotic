@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Services\CollectionService;
+use App\Services\EditService;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class Home extends BaseController {
@@ -18,6 +19,7 @@ class Home extends BaseController {
             'collectionOptions' => $service->getFilterOptions(),
             'filters'           => $filters,
             'search'            => '',
+            'adminUsers'        => $this->adminUsers(),
         ]);
     }
 
@@ -39,6 +41,7 @@ class Home extends BaseController {
             'collectionOptions' => $service->getFilterOptions(),
             'filters'           => $this->defaultFilters(),
             'search'            => $search,
+            'adminUsers'        => $this->adminUsers(),
         ]);
     }
 
@@ -100,5 +103,13 @@ class Home extends BaseController {
             'importance'        => 'all',
             'sort'              => 'title',
         ];
+    }
+
+    private function adminUsers(): array {
+        if (! auth()->loggedIn() || ! auth()->user()->inGroup('admin')) {
+            return [];
+        }
+
+        return (new EditService())->users();
     }
 }

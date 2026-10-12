@@ -611,15 +611,19 @@
       return;
     }
     const form = dialog.querySelector("[data-edit-collection-form]");
+    const modalTitle = dialog.querySelector("[data-edit-collection-title]");
+    const modalDescription = dialog.querySelector("[data-edit-collection-description]");
     const status = dialog.querySelector("[data-edit-collection-status]");
     const saveButton = dialog.querySelector("[data-edit-collection-save]");
     const deleteButton = dialog.querySelector("[data-edit-collection-delete]");
+    const createEndpoint = dialog.dataset.createEndpoint;
     const endpointTemplate = dialog.dataset.endpointTemplate;
     const csrfHeader = dialog.dataset.csrfHeader;
     let csrfToken = dialog.dataset.csrfToken;
     let loadController = null;
     let loadSequence = 0;
-    if (!(form instanceof HTMLFormElement) || !(saveButton instanceof HTMLButtonElement) || !endpointTemplate || !csrfHeader || !csrfToken) {
+    let mode = "edit";
+    if (!(form instanceof HTMLFormElement) || !(modalTitle instanceof HTMLElement) || !(modalDescription instanceof HTMLElement) || !(saveButton instanceof HTMLButtonElement) || !createEndpoint || !endpointTemplate || !csrfHeader || !csrfToken) {
       return;
     }
     const endpointFor = (id) => endpointTemplate.replace(
@@ -632,13 +636,24 @@
       status.classList.toggle("text-error", isError);
       status.classList.toggle("text-base-content/60", !isError);
     };
-    const setBusy = (busy, label = "Save changes") => {
+    const defaultSaveLabel = () => mode === "create" ? "Add collection" : "Save changes";
+    const setBusy = (busy, label = defaultSaveLabel()) => {
       form.setAttribute("aria-busy", String(busy));
       form.querySelectorAll(editableControlSelector).forEach((control) => {
         control.disabled = busy;
       });
       saveButton.disabled = busy;
       saveButton.textContent = label;
+    };
+    const setMode = (nextMode) => {
+      mode = nextMode;
+      const creating = mode === "create";
+      modalTitle.textContent = creating ? "Add collection" : "Edit collection";
+      modalDescription.textContent = creating ? "Create a new collection for organizing links." : "Update how this collection is named and presented.";
+      if (deleteButton instanceof HTMLButtonElement) {
+        deleteButton.hidden = creating;
+      }
+      saveButton.textContent = defaultSaveLabel();
     };
     const updateCsrf = (result) => {
       if (typeof result.csrf === "string" && result.csrf !== "") {
@@ -676,6 +691,7 @@
       const id = trigger.dataset.collectionId;
       form.reset();
       clearValidation(form);
+      setMode("edit");
       setStatus("Loading collection\u2026");
       setBusy(true, "Loading\u2026");
       if (!dialog.open) {
@@ -704,12 +720,36 @@
         setBusy(false);
       }
     };
+    const openCreator = (trigger) => {
+      if (!(trigger instanceof HTMLButtonElement)) {
+        return;
+      }
+      loadSequence++;
+      loadController?.abort();
+      loadController = null;
+      form.reset();
+      clearValidation(form);
+      setMode("create");
+      setControlValue(form, "id", "");
+      setStatus("");
+      setBusy(false);
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+      formControl(form, "name")?.focus();
+    };
     document.querySelectorAll("[data-edit-collection]").forEach((trigger) => {
       trigger.addEventListener("click", () => void openEditor(trigger));
+    });
+    document.querySelectorAll("[data-add-collection]").forEach((trigger) => {
+      trigger.addEventListener("click", () => openCreator(trigger));
     });
     form.addEventListener("input", () => clearValidation(form));
     if (deleteButton instanceof HTMLButtonElement) {
       deleteButton.addEventListener("click", async () => {
+        if (mode !== "edit") {
+          return;
+        }
         const idControl = formControl(form, "id");
         const nameControl = formControl(form, "name");
         if (!(idControl instanceof HTMLInputElement) || idControl.value === "") {
@@ -752,7 +792,8 @@
       clearValidation(form);
       const data = new FormData(form);
       const id = data.get("id");
-      if (typeof id !== "string" || id === "") {
+      const creating = mode === "create";
+      if (!creating && (typeof id !== "string" || id === "")) {
         setStatus("No collection is selected.", true);
         return;
       }
@@ -763,19 +804,22 @@
         icon: data.get("icon"),
         is_featured: data.get("is_featured") === "1"
       };
-      setStatus("Saving changes\u2026");
-      setBusy(true, "Saving\u2026");
+      setStatus(creating ? "Adding collection\u2026" : "Saving changes\u2026");
+      setBusy(true, creating ? "Adding\u2026" : "Saving\u2026");
       try {
-        const response = await fetch(endpointFor(id), {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "X-Requested-With": "XMLHttpRequest",
-            [csrfHeader]: csrfToken
-          },
-          body: JSON.stringify(payload)
-        });
+        const response = await fetch(
+          creating ? createEndpoint : endpointFor(id),
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+              [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify(payload)
+          }
+        );
         const result = await readResponse(response);
         if (!response.ok) {
           setBusy(false);
@@ -783,13 +827,13 @@
             applyValidation(form, result.errors);
             form.reportValidity();
           }
-          throw new Error(result.error || "Unable to save this collection.");
+          throw new Error(result.error || (creating ? "Unable to add this collection." : "Unable to save this collection."));
         }
         dialog.hidden = true;
         dialog.close();
         window.location.reload();
       } catch (error) {
-        setStatus(error.message || "Unable to save this collection.", true);
+        setStatus(error.message || (creating ? "Unable to add this collection." : "Unable to save this collection."), true);
         setBusy(false);
       }
     });
@@ -800,6 +844,7 @@
       form.reset();
       clearValidation(form);
       setStatus("");
+      setMode("edit");
       setBusy(false);
     });
   }
@@ -1229,9 +1274,11 @@
     const status = dialog.querySelector("[data-edit-user-status]");
     const saveButton = dialog.querySelector("[data-edit-user-save]");
     const createEndpoint = dialog.dataset.createEndpoint;
+    const updateEndpointTemplate = dialog.dataset.updateEndpointTemplate;
     const csrfHeader = dialog.dataset.csrfHeader;
     let csrfToken = dialog.dataset.csrfToken;
-    if (!(form instanceof HTMLFormElement) || !(saveButton instanceof HTMLButtonElement) || !createEndpoint || !csrfHeader || !csrfToken) {
+    let currentUserId = "";
+    if (!(form instanceof HTMLFormElement) || !(saveButton instanceof HTMLButtonElement) || !createEndpoint || !updateEndpointTemplate || !csrfHeader || !csrfToken) {
       return;
     }
     const setStatus = (message, isError = false) => {
@@ -1242,13 +1289,60 @@
       status.classList.toggle("text-error", isError);
       status.classList.toggle("text-base-content/60", !isError);
     };
-    const setBusy = (busy, label = "Add user") => {
+    const setBusy = (busy, label = currentUserId === "" ? "Add user" : "Save changes") => {
       form.setAttribute("aria-busy", String(busy));
       form.querySelectorAll(editableControlSelector3).forEach((control) => {
         control.disabled = busy;
       });
       saveButton.disabled = busy;
       saveButton.textContent = label;
+    };
+    const prepareCreate = () => {
+      currentUserId = "";
+      form.reset();
+      clearValidation3(form);
+      setStatus("");
+      const id = formControl3(form, "id");
+      const password = formControl3(form, "password");
+      const title = dialog.querySelector("[data-edit-user-title]");
+      const description = dialog.querySelector("[data-edit-user-description]");
+      const passwordHint = dialog.querySelector("[data-edit-user-password-hint]");
+      if (id instanceof HTMLInputElement) id.value = "";
+      if (password instanceof HTMLInputElement) password.required = true;
+      if (title instanceof HTMLElement) title.textContent = "Add user";
+      if (description instanceof HTMLElement) description.textContent = "Create a new account and choose its access level.";
+      if (passwordHint instanceof HTMLElement) {
+        passwordHint.textContent = `Use at least ${password?.minLength || 8} characters.`;
+      }
+      setBusy(false);
+    };
+    const prepareEdit = (trigger) => {
+      currentUserId = trigger.dataset.userId || "";
+      form.reset();
+      clearValidation3(form);
+      setStatus("");
+      const id = formControl3(form, "id");
+      const username = formControl3(form, "username");
+      const email = formControl3(form, "email");
+      const password = formControl3(form, "password");
+      const role = formControl3(form, "role");
+      const active = formControl3(form, "active");
+      const title = dialog.querySelector("[data-edit-user-title]");
+      const description = dialog.querySelector("[data-edit-user-description]");
+      const passwordHint = dialog.querySelector("[data-edit-user-password-hint]");
+      if (id instanceof HTMLInputElement) id.value = currentUserId;
+      if (username instanceof HTMLInputElement) username.value = trigger.dataset.userUsername || "";
+      if (email instanceof HTMLInputElement) email.value = trigger.dataset.userEmail || "";
+      if (password instanceof HTMLInputElement) {
+        password.value = "";
+        password.required = false;
+      }
+      if (role instanceof RadioNodeList) role.value = trigger.dataset.userRole || "user";
+      if (active instanceof HTMLInputElement) active.checked = trigger.dataset.userActive === "1";
+      if (title instanceof HTMLElement) title.textContent = "Edit user";
+      if (description instanceof HTMLElement) description.textContent = "Update this account and its access level.";
+      if (passwordHint instanceof HTMLElement) passwordHint.textContent = "Leave blank to keep the current password.";
+      setBusy(false);
     };
     const updateCsrf = (result) => {
       if (typeof result.csrf === "string" && result.csrf !== "") {
@@ -1267,10 +1361,17 @@
     };
     document.querySelectorAll("[data-add-user]").forEach((trigger) => {
       trigger.addEventListener("click", () => {
-        form.reset();
-        clearValidation3(form);
-        setStatus("");
-        setBusy(false);
+        prepareCreate();
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+        formControl3(form, "username")?.focus();
+      });
+    });
+    document.querySelectorAll("[data-edit-user]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        prepareEdit(trigger);
+        document.getElementById("users-popover")?.hidePopover?.();
         if (!dialog.open) {
           dialog.showModal();
         }
@@ -1292,10 +1393,12 @@
         role: data.get("role"),
         active: data.get("active") === "1"
       };
-      setStatus("Adding user\u2026");
-      setBusy(true, "Adding\u2026");
+      const endpoint = currentUserId === "" ? createEndpoint : updateEndpointTemplate.replace("__USER_ID__", encodeURIComponent(currentUserId));
+      const action = currentUserId === "" ? "Adding" : "Saving";
+      setStatus(`${action} user\u2026`);
+      setBusy(true, `${action}\u2026`);
       try {
-        const response = await fetch(createEndpoint, {
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -1323,11 +1426,9 @@
       }
     });
     dialog.addEventListener("close", () => {
-      form.reset();
-      clearValidation3(form);
-      setStatus("");
-      setBusy(false);
+      prepareCreate();
     });
+    prepareCreate();
   }
 
   // theme/js/app.js

@@ -54,6 +54,54 @@ final class Edit extends BaseController
     }
 
     /**
+     * Validates and updates one Shield user.
+     */
+    public function updateUser(int $id): ResponseInterface
+    {
+        $this->response->noCache();
+
+        if (! $this->request->isAJAX()) {
+            return $this->jsonError('AJAX requests only.', 403);
+        }
+
+        $payload = $this->request->getJSON(true);
+
+        if (! is_array($payload)) {
+            return $this->jsonError('Invalid request payload.', 422);
+        }
+
+        try {
+            $result = (new EditService())->updateUser($id, $payload, (int) (auth()->user()->id ?? 0));
+        } catch (Throwable $exception) {
+            log_message('error', 'Unable to update user {id}: {message}', [
+                'id'      => $id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return $this->jsonError('Unable to save the user right now.', 500);
+        }
+
+        if ($result['status'] === EditService::NOT_FOUND) {
+            return $this->jsonError('User not found.', 404);
+        }
+
+        if ($result['status'] === EditService::INVALID) {
+            return $this->response
+                ->setStatusCode(422)
+                ->setJSON([
+                    'error'  => 'Please check the highlighted fields.',
+                    'errors' => $result['errors'],
+                    'csrf'   => csrf_hash(),
+                ]);
+        }
+
+        return $this->response->setJSON([
+            'message' => 'User updated.',
+            'csrf'    => csrf_hash(),
+        ]);
+    }
+
+    /**
      * Validates and creates one link.
      */
     public function createLink(): ResponseInterface
@@ -218,6 +266,57 @@ final class Edit extends BaseController
             'message' => 'Link deleted.',
             'csrf'    => csrf_hash(),
         ]);
+    }
+
+    /**
+     * Validates and creates one collection for the current user.
+     */
+    public function createCollection(): ResponseInterface
+    {
+        $this->response->noCache();
+
+        if (! $this->request->isAJAX()) {
+            return $this->jsonError('AJAX requests only.', 403);
+        }
+
+        $payload = $this->request->getJSON(true);
+
+        if (! is_array($payload)) {
+            return $this->jsonError('Invalid request payload.', 422);
+        }
+
+        $userId = (int) (auth()->user()->id ?? 0);
+
+        if ($userId < 1) {
+            return $this->jsonError('Authenticated user not found.', 401);
+        }
+
+        try {
+            $result = (new EditService())->createCollection($payload, $userId);
+        } catch (Throwable $exception) {
+            log_message('error', 'Unable to create collection: {message}', [
+                'message' => $exception->getMessage(),
+            ]);
+
+            return $this->jsonError('Unable to add the collection right now.', 500);
+        }
+
+        if ($result['status'] === EditService::INVALID) {
+            return $this->response
+                ->setStatusCode(422)
+                ->setJSON([
+                    'error'  => 'Please check the highlighted fields.',
+                    'errors' => $result['errors'],
+                    'csrf'   => csrf_hash(),
+                ]);
+        }
+
+        return $this->response
+            ->setStatusCode(201)
+            ->setJSON([
+                'message' => 'Collection added.',
+                'csrf'    => csrf_hash(),
+            ]);
     }
 
     /**
