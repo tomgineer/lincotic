@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#1d232a">
     <meta name="description" content="A clean, lightweight bookmark manager for organizing, searching, and accessing your favorite links.">
 
-    <title>Lincotic - Turn link chaos into order</title>
+    <title><?= trim($this->renderSection('title')) ?: 'Lincotic - Turn link chaos into order' ?></title>
 
     <link rel="icon" type="image/svg+xml" href="<?= base_url('assets/favicon/favicon.svg') ?>?v=<?= APP_VERSION ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/favicon/favicon-32.png') ?>?v=<?= APP_VERSION ?>">

@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Services\CollectionService;
+use CodeIgniter\HTTP\RedirectResponse;
 
 class Home extends BaseController {
 
@@ -13,17 +14,51 @@ class Home extends BaseController {
             $this->cachePage($cache['duration']);
         }
 
+        $service = new CollectionService();
+        $filters = $this->filters();
+
+        return view('site/pages/home', [
+            'collections'       => $service->filter($filters),
+            'collectionOptions' => $service->getFilterOptions(),
+            'filters'           => $filters,
+            'search'            => '',
+        ]);
+    }
+
+    /**
+     * Runs an uncached global link search, independently from home filters.
+     */
+    public function search(): string|RedirectResponse {
+        $searchInput = $this->request->getGet('q');
+        $search      = is_string($searchInput) ? trim($searchInput) : '';
+
+        if ($search === '') {
+            return redirect()->to(site_url('/'));
+        }
+
+        $service = new CollectionService();
+
+        return view('site/pages/home', [
+            'collections'       => $service->search($search),
+            'collectionOptions' => $service->getFilterOptions(),
+            'filters'           => $this->defaultFilters(),
+            'search'            => $search,
+        ]);
+    }
+
+    /**
+     * Normalizes the home filter query independently from search input.
+     */
+    private function filters(): array {
         $collectionInput = $this->request->getGet('collection');
         $flagInput       = $this->request->getGet('flag');
         $importanceInput = $this->request->getGet('importance');
         $sortInput       = $this->request->getGet('sort');
-        $searchInput     = $this->request->getGet('q');
 
         $collection = is_string($collectionInput) ? trim($collectionInput) : '';
         $flag       = is_string($flagInput) ? trim($flagInput) : '';
         $importance = is_string($importanceInput) ? trim($importanceInput) : '';
         $sort       = is_string($sortInput) ? trim($sortInput) : '';
-        $search     = is_string($searchInput) ? trim($searchInput) : '';
 
         $collectionId = ctype_digit($collection) && (int) $collection > 0
             ? (int) $collection
@@ -45,30 +80,24 @@ class Home extends BaseController {
             $sort = 'title';
         }
 
-        if ($search !== '') {
-            $collection   = 'all';
-            $collectionId = null;
-            $featuredOnly = false;
-            $flag         = 'all';
-            $importance   = 'all';
-            $sort         = 'title';
-        }
-
-        $service = new CollectionService();
-        $filters = [
+        return [
             'collection'   => $collection,
             'collectionId' => $collectionId,
             'featuredOnly' => $featuredOnly,
             'flag'         => $flag,
             'importance'   => $importance,
             'sort'         => $sort,
-            'search'       => $search,
         ];
+    }
 
-        return view('site/pages/home', [
-            'collections'       => $service->getWithLinks($filters),
-            'collectionOptions' => $service->getFilterOptions(),
-            'filters'           => $filters,
-        ]);
+    private function defaultFilters(): array {
+        return [
+            'collection'   => 'all',
+            'collectionId' => null,
+            'featuredOnly' => false,
+            'flag'         => 'all',
+            'importance'   => 'all',
+            'sort'         => 'title',
+        ];
     }
 }

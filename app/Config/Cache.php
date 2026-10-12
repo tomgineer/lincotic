@@ -170,7 +170,7 @@ class Cache extends BaseConfig
      *
      * @var bool|list<string>
      */
-    public $cacheQueryString = ['collection', 'flag', 'importance', 'sort', 'q'];
+    public $cacheQueryString = ['collection', 'flag', 'importance', 'sort'];
 
     /**
      * --------------------------------------------------------------------------

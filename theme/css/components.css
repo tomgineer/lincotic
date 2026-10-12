@@ -52,3 +52,169 @@
         }
     }
 }
+
+.utility-hero {
+    @apply relative flex flex-col gap-8 overflow-hidden rounded-2xl border border-base-content/15 bg-base-200 p-8 sm:p-10 lg:flex-row lg:items-end lg:justify-between;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: auto -7rem -9rem auto;
+        width: 20rem;
+        height: 20rem;
+        border-radius: 9999px;
+        background: color-mix(in srgb, var(--color-acid) 14%, transparent);
+        filter: blur(1px);
+        pointer-events: none;
+    }
+
+    > * {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+.utility-panel {
+    @apply rounded-2xl border border-base-content/15 bg-base-200;
+}
+
+.password-panel {
+    @apply overflow-hidden rounded-2xl border border-base-content/15 bg-base-200;
+
+    &.password-panel--strong {
+        border-color: color-mix(in srgb, var(--color-primary) 45%, transparent);
+        box-shadow: 0 18px 50px color-mix(in srgb, var(--color-primary) 8%, transparent);
+    }
+
+    .password-panel__header {
+        @apply border-b border-base-content/10 p-6;
+    }
+}
+
+.password-list {
+    @apply divide-y divide-base-content/10;
+}
+
+.password-entry {
+    @apply grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-3 px-4 py-3 transition-colors sm:grid-cols-[4rem_minmax(0,1fr)] sm:px-6;
+
+    &:hover,
+    &:focus-within {
+        background: color-mix(in srgb, var(--color-base-content) 4%, transparent);
+    }
+
+    .password-entry__length {
+        @apply flex flex-col font-mono leading-none text-base-content/55;
+
+        strong {
+            @apply text-lg text-base-content;
+        }
+
+        span {
+            @apply mt-1 text-[0.65rem] uppercase tracking-wider;
+        }
+    }
+
+    .password-entry__control {
+        @apply flex min-w-0 overflow-hidden rounded-lg border border-base-content/15 bg-base-100;
+
+        &:focus-within {
+            @apply border-base-content outline-2 outline-offset-2 outline-base-content;
+        }
+    }
+
+    .password-entry__value {
+        @apply h-11 min-w-0 flex-1 bg-transparent px-3 font-mono text-sm outline-none;
+    }
+}
+
+.password-copy,
+.utility-copy {
+    @apply flex size-11 shrink-0 cursor-pointer items-center justify-center border-l border-base-content/15 text-base-content/50 transition-colors;
+
+    &:hover {
+        @apply bg-base-content/10 text-base-content;
+    }
+
+    &:focus-visible {
+        @apply z-10 outline-2 outline-offset-[-2px] outline-base-content;
+    }
+
+    &[data-copied="true"] {
+        color: var(--color-acid);
+    }
+
+    &:disabled {
+        @apply cursor-not-allowed text-base-content/20;
+
+        &:hover {
+            @apply bg-transparent text-base-content/20;
+        }
+    }
+}
+
+.utility-output {
+    @apply flex min-w-0 overflow-hidden rounded-lg border border-base-content/15 bg-base-100;
+
+    &:focus-within {
+        @apply border-base-content outline-2 outline-offset-2 outline-base-content;
+    }
+
+    input {
+        @apply h-11 min-w-0 flex-1 bg-transparent px-3 font-mono text-sm outline-none;
+    }
+}
+
+.metric-card {
+    @apply overflow-hidden rounded-2xl border border-base-content/15 bg-base-200;
+
+    .metric-card__header {
+        @apply border-b border-base-content/10 p-6;
+    }
+}
+
+.metric-list,
+.hash-list {
+    @apply divide-y divide-base-content/10;
+}
+
+.metric-row {
+    @apply grid grid-cols-1 gap-2 px-4 py-4 transition-colors sm:grid-cols-[minmax(10rem,0.8fr)_minmax(0,1.2fr)] sm:items-center sm:gap-4 sm:px-6;
+
+    &:hover,
+    &:focus-within {
+        background: color-mix(in srgb, var(--color-base-content) 4%, transparent);
+    }
+
+    > label {
+        @apply text-sm font-semibold text-base-content/70;
+    }
+}
+
+.hash-row {
+    @apply grid grid-cols-1 gap-2 px-4 py-4 transition-colors sm:grid-cols-[5rem_minmax(0,1fr)] sm:items-center sm:gap-4 sm:px-6;
+
+    &:hover,
+    &:focus-within {
+        background: color-mix(in srgb, var(--color-base-content) 4%, transparent);
+    }
+}
+
+.worktime-clock {
+    @apply flex min-h-72 flex-col items-center justify-center px-6 py-10 text-center sm:px-8;
+
+    background:
+        radial-gradient(circle at center, color-mix(in srgb, var(--color-acid) 8%, transparent), transparent 58%);
+}
+
+.worktime-stat {
+    @apply flex flex-col gap-1 rounded-xl border border-base-content/10 bg-base-100 p-4;
+
+    span {
+        @apply text-xs uppercase tracking-wider text-base-content/45;
+    }
+
+    strong {
+        @apply font-mono text-lg;
+    }
+}

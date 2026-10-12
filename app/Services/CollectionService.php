@@ -29,44 +29,47 @@ final class CollectionService {
     }
 
     /**
-     * Retrieves matching collections and attaches their filtered links.
+     * Retrieves collections and links matching the selected home filters.
      */
-    public function getWithLinks(array $filters = []): array {
-        $filters = $this->isolateSearch($filters);
+    public function filter(array $filters): array {
         $collections = $this->findCollections($filters);
 
         if ($collections === []) {
             return [];
         }
 
-        $links = $this->findLinks($collections, $filters);
+        $links = $this->findFilteredLinks($collections, $filters);
 
         return $this->attachLinks($collections, $links);
     }
 
     /**
-     * Resets every filter when a global link search is active.
+     * Searches all links without applying any of the home filters.
      */
-    private function isolateSearch(array $filters): array {
-        if (($filters['search'] ?? '') === '') {
-            return $filters;
+    public function search(string $term): array {
+        $collections = $this->findCollections();
+
+        if ($collections === []) {
+            return [];
         }
 
-        return [
-            ...$filters,
-            'collection'   => 'all',
-            'collectionId' => null,
-            'featuredOnly' => false,
-            'flag'         => 'all',
-            'importance'   => 'all',
-            'sort'         => 'title',
-        ];
+        $linkModel = $this->linksIn($collections);
+
+        $linkModel
+            ->groupStart()
+            ->like('title', $term)
+            ->orLike('url', $term)
+            ->orLike('description', $term)
+            ->groupEnd()
+            ->orderBy('title', 'ASC');
+
+        return $this->attachLinks($collections, $linkModel->findAll());
     }
 
     /**
      * Finds collections that match the selected collection scope.
      */
-    private function findCollections(array $filters): array {
+    private function findCollections(array $filters = []): array {
         $collectionModel = new CollectionModel();
 
         if ($filters['featuredOnly'] ?? false) {
@@ -85,18 +88,8 @@ final class CollectionService {
     /**
      * Finds links within the selected collections and applies all link filters.
      */
-    private function findLinks(array $collections, array $filters): array {
-        $linkModel = new LinkModel();
-        $search    = $filters['search'] ?? '';
-
-        $linkModel->whereIn(
-            'collection_id',
-            array_column($collections, 'id')
-        );
-
-        if ($search !== '') {
-            $this->applySearch($linkModel, $search);
-        }
+    private function findFilteredLinks(array $collections, array $filters): array {
+        $linkModel = $this->linksIn($collections);
 
         $this->applyFlagFilter($linkModel, $filters['flag'] ?? 'all');
         $this->applyImportanceFilter($linkModel, $filters['importance'] ?? 'all');
@@ -105,16 +98,11 @@ final class CollectionService {
         return $linkModel->findAll();
     }
 
-    /**
-     * Searches link titles, URLs, and descriptions for the supplied term.
-     */
-    private function applySearch(LinkModel $linkModel, string $search): void {
-        $linkModel
-            ->groupStart()
-            ->like('title', $search)
-            ->orLike('url', $search)
-            ->orLike('description', $search)
-            ->groupEnd();
+    private function linksIn(array $collections): LinkModel {
+        return (new LinkModel())->whereIn(
+            'collection_id',
+            array_column($collections, 'id')
+        );
     }
 
     /**
