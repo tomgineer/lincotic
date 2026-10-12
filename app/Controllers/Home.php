@@ -63,10 +63,13 @@ class Home extends BaseController {
         $collectionId = ctype_digit($collection) && (int) $collection > 0
             ? (int) $collection
             : null;
-        $featuredOnly = $collection === '' || $collection === 'featured';
-        $collection   = $featuredOnly
-            ? 'featured'
-            : ($collectionId !== null ? (string) $collectionId : 'all');
+        $unassignedOnly = $collection === 'unassigned';
+        $featuredOnly   = ! $unassignedOnly && ($collection === '' || $collection === 'featured');
+        $collection     = $unassignedOnly
+            ? 'unassigned'
+            : ($featuredOnly
+                ? 'featured'
+                : ($collectionId !== null ? (string) $collectionId : 'all'));
 
         if (! in_array($flag, ['all', 'favorite', 'pending_review', 'unflagged'], true)) {
             $flag = 'all';
@@ -81,23 +84,25 @@ class Home extends BaseController {
         }
 
         return [
-            'collection'   => $collection,
-            'collectionId' => $collectionId,
-            'featuredOnly' => $featuredOnly,
-            'flag'         => $flag,
-            'importance'   => $importance,
-            'sort'         => $sort,
+            'collection'        => $collection,
+            'collectionId'      => $collectionId,
+            'featuredOnly'      => $featuredOnly,
+            'unassignedOnly'    => $unassignedOnly,
+            'flag'              => $flag,
+            'importance'        => $importance,
+            'sort'              => $sort,
         ];
     }
 
     private function defaultFilters(): array {
         return [
-            'collection'   => 'all',
-            'collectionId' => null,
-            'featuredOnly' => false,
-            'flag'         => 'all',
-            'importance'   => 'all',
-            'sort'         => 'title',
+            'collection'        => 'all',
+            'collectionId'      => null,
+            'featuredOnly'      => false,
+            'unassignedOnly'    => false,
+            'flag'              => 'all',
+            'importance'        => 'all',
+            'sort'              => 'title',
         ];
     }
 }

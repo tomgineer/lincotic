@@ -2,8 +2,14 @@
     id="edit-collection-modal"
     class="modal"
     aria-labelledby="edit-collection-modal-title"
-    aria-describedby="edit-collection-modal-description">
-    <div class="modal-box w-[calc(100%-2rem)] max-w-2xl overflow-hidden p-0">
+    aria-describedby="edit-collection-modal-description"
+    data-edit-collection-modal
+    data-endpoint-template="<?= esc(site_url('edit/collections/__COLLECTION_ID__'), 'attr') ?>"
+    data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"
+    data-csrf-token="<?= esc(csrf_hash(), 'attr') ?>">
+    <form class="modal-box w-[calc(100%-2rem)] max-w-2xl overflow-hidden p-0" data-edit-collection-form>
+        <input type="hidden" name="id">
+
         <header class="flex items-start justify-between gap-6 border-b border-base-content/10 px-6 py-5 sm:px-8">
             <div class="flex min-w-0 items-start gap-4">
                 <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary" aria-hidden="true">
@@ -37,7 +43,10 @@
                         name="name"
                         class="input w-full bg-base-100"
                         placeholder="Collection name"
-                        autocomplete="off">
+                        autocomplete="off"
+                        maxlength="120"
+                        required
+                        data-edit-collection-control>
                 </fieldset>
 
                 <fieldset class="fieldset">
@@ -49,7 +58,11 @@
                             name="slug"
                             placeholder="collection-name"
                             autocomplete="off"
-                            spellcheck="false">
+                            spellcheck="false"
+                            maxlength="150"
+                            pattern="[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*"
+                            required
+                            data-edit-collection-control>
                     </label>
                 </fieldset>
 
@@ -58,7 +71,9 @@
                     <textarea
                         name="description"
                         class="textarea h-32 w-full resize-none overflow-y-auto bg-base-100"
-                        placeholder="Add an optional description for this collection."></textarea>
+                        placeholder="Add an optional description for this collection."
+                        maxlength="65535"
+                        data-edit-collection-control></textarea>
                 </fieldset>
 
                 <fieldset class="fieldset">
@@ -68,7 +83,9 @@
                         class="textarea h-32 w-full resize-none overflow-y-auto bg-base-100 font-mono text-xs leading-relaxed"
                         placeholder="&lt;svg viewBox=&quot;0 0 24 24&quot; ...&gt;...&lt;/svg&gt;"
                         autocomplete="off"
-                        spellcheck="false"></textarea>
+                        spellcheck="false"
+                        maxlength="65535"
+                        data-edit-collection-control></textarea>
                 </fieldset>
             </div>
 
@@ -82,25 +99,32 @@
                         <span class="mt-0.5 block text-xs text-base-content/55">Show this collection in the default home view.</span>
                     </span>
                 </span>
-                <input type="checkbox" name="is_featured" value="1" class="toggle toggle-secondary shrink-0">
+                <input type="checkbox" name="is_featured" value="1" class="toggle toggle-secondary shrink-0" data-edit-collection-control>
             </label>
         </div>
 
         <footer class="flex flex-wrap items-center gap-3 border-t border-base-content/10 bg-base-200/40 px-6 py-4 sm:px-8">
-            <button type="button" class="btn btn-square btn-ghost text-base-content/55 hover:btn-error hover:text-white" aria-label="Delete collection">
+            <button
+                type="button"
+                class="btn btn-square btn-ghost text-base-content/55 hover:btn-error hover:text-white"
+                aria-label="Delete collection"
+                data-edit-collection-control
+                data-edit-collection-delete>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
             </button>
 
+            <p class="min-h-5 flex-1 text-sm text-base-content/60" aria-live="polite" data-edit-collection-status></p>
+
             <button
                 type="button"
-                class="btn btn-ghost ml-auto"
+                class="btn btn-ghost"
                 commandfor="edit-collection-modal"
                 command="close">
                 Cancel
             </button>
-            <button type="button" class="btn btn-primary min-w-32">Save changes</button>
+            <button type="submit" class="btn btn-primary min-w-32" data-edit-collection-save>Save changes</button>
         </footer>
-    </div>
+    </form>
 
     <div class="modal-backdrop">
         <button

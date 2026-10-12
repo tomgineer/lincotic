@@ -56,18 +56,26 @@ export function initEditLink() {
     }
 
     const form = dialog.querySelector('[data-edit-link-form]');
+    const modalTitle = dialog.querySelector('[data-edit-link-title]');
+    const modalDescription = dialog.querySelector('[data-edit-link-description]');
     const status = dialog.querySelector('[data-edit-link-status]');
     const saveButton = dialog.querySelector('[data-edit-link-save]');
     const deleteButton = dialog.querySelector('[data-edit-link-delete]');
+    const pasteUrlButton = dialog.querySelector('[data-edit-link-paste-url]');
     const openUrlButton = dialog.querySelector('[data-edit-link-open-url]');
+    const createEndpoint = dialog.dataset.createEndpoint;
     const endpointTemplate = dialog.dataset.endpointTemplate;
     const csrfHeader = dialog.dataset.csrfHeader;
     let csrfToken = dialog.dataset.csrfToken;
     let loadController = null;
     let loadSequence = 0;
+    let mode = 'edit';
 
     if (!(form instanceof HTMLFormElement)
+        || !(modalTitle instanceof HTMLElement)
+        || !(modalDescription instanceof HTMLElement)
         || !(saveButton instanceof HTMLButtonElement)
+        || !createEndpoint
         || !endpointTemplate
         || !csrfHeader
         || !csrfToken) {
@@ -84,13 +92,54 @@ export function initEditLink() {
         status.classList.toggle('text-base-content/60', !isError);
     };
 
-    const setBusy = (busy, label = 'Save changes') => {
+    const defaultSaveLabel = () => mode === 'create' ? 'Add link' : 'Save changes';
+
+    const setBusy = (busy, label = defaultSaveLabel()) => {
         form.setAttribute('aria-busy', String(busy));
         form.querySelectorAll(editableControlSelector).forEach((control) => {
             control.disabled = busy;
         });
         saveButton.disabled = busy;
         saveButton.textContent = label;
+    };
+
+    const setMode = (nextMode) => {
+        mode = nextMode;
+        const creating = mode === 'create';
+
+        modalTitle.textContent = creating ? 'Add link' : 'Edit link';
+        modalDescription.textContent = creating
+            ? 'Add a new destination.'
+            : 'Update the destination, organization, and status of this link.';
+
+        const collectionControl = formControl(form, 'collection_id');
+
+        if (collectionControl instanceof HTMLSelectElement) {
+            const unassignedOption = collectionControl.querySelector(
+                '[data-edit-link-unassigned-option]',
+            );
+
+            if (creating) {
+                const option = unassignedOption ?? new Option('[Unassigned]', '', true, true);
+                option.dataset.editLinkUnassignedOption = '';
+
+                if (!unassignedOption) {
+                    collectionControl.prepend(option);
+                }
+
+                option.selected = true;
+                collectionControl.required = false;
+            } else {
+                unassignedOption?.remove();
+                collectionControl.required = true;
+            }
+        }
+
+        if (deleteButton instanceof HTMLButtonElement) {
+            deleteButton.hidden = creating;
+        }
+
+        saveButton.textContent = defaultSaveLabel();
     };
 
     const updateCsrf = (result) => {
@@ -138,6 +187,7 @@ export function initEditLink() {
 
         form.reset();
         clearValidation(form);
+        setMode('edit');
         setStatus('Loading link…');
         setBusy(true, 'Loading…');
 
@@ -177,6 +227,36 @@ export function initEditLink() {
         }
     };
 
+    const openCreator = (trigger) => {
+        if (!(trigger instanceof HTMLButtonElement)) {
+            return;
+        }
+
+        loadSequence++;
+        loadController?.abort();
+        loadController = null;
+
+        form.reset();
+        clearValidation(form);
+        setMode('create');
+        setControlValue(form, 'id', '');
+
+        const collectionId = trigger.dataset.collectionId ?? '';
+
+        if (/^[1-9]\d*$/.test(collectionId)) {
+            setControlValue(form, 'collection_id', collectionId);
+        }
+
+        setStatus('');
+        setBusy(false);
+
+        if (!dialog.open) {
+            dialog.showModal();
+        }
+
+        formControl(form, 'title')?.focus();
+    };
+
     document.addEventListener(editLinkRequestEvent, (event) => {
         if (!(event instanceof CustomEvent)) {
             return;
@@ -185,7 +265,43 @@ export function initEditLink() {
         void openEditor(event.detail?.link);
     });
 
+    document.querySelectorAll('[data-add-link]').forEach((trigger) => {
+        trigger.addEventListener('click', () => openCreator(trigger));
+    });
+
     form.addEventListener('input', () => clearValidation(form));
+
+    if (pasteUrlButton instanceof HTMLButtonElement) {
+        pasteUrlButton.addEventListener('click', async () => {
+            const urlControl = formControl(form, 'url');
+
+            if (!(urlControl instanceof HTMLInputElement)) {
+                return;
+            }
+
+            if (!navigator.clipboard?.readText) {
+                setStatus('Clipboard access is not available in this browser.', true);
+                return;
+            }
+
+            try {
+                const clipboardValue = (await navigator.clipboard.readText()).trim();
+
+                if (clipboardValue === '') {
+                    setStatus('The clipboard is empty.', true);
+                    return;
+                }
+
+                urlControl.value = clipboardValue;
+                urlControl.dispatchEvent(new Event('input', { bubbles: true }));
+                setStatus('');
+                urlControl.focus();
+            } catch {
+                setStatus('Clipboard access was denied.', true);
+                urlControl.focus();
+            }
+        });
+    }
 
     if (openUrlButton instanceof HTMLButtonElement) {
         openUrlButton.addEventListener('click', () => {
@@ -217,6 +333,10 @@ export function initEditLink() {
 
     if (deleteButton instanceof HTMLButtonElement) {
         deleteButton.addEventListener('click', async () => {
+            if (mode !== 'edit') {
+                return;
+            }
+
             const idControl = formControl(form, 'id');
             const titleControl = formControl(form, 'title');
 
@@ -274,8 +394,9 @@ export function initEditLink() {
 
         const data = new FormData(form);
         const id = data.get('id');
+        const creating = mode === 'create';
 
-        if (typeof id !== 'string' || id === '') {
+        if (!creating && (typeof id !== 'string' || id === '')) {
             setStatus('No link is selected.', true);
             return;
         }
@@ -290,20 +411,23 @@ export function initEditLink() {
             is_pending_review: data.get('is_pending_review') === '1',
         };
 
-        setStatus('Saving changes…');
-        setBusy(true, 'Saving…');
+        setStatus(creating ? 'Adding link…' : 'Saving changes…');
+        setBusy(true, creating ? 'Adding…' : 'Saving…');
 
         try {
-            const response = await fetch(endpointFor(id), {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    [csrfHeader]: csrfToken,
+            const response = await fetch(
+                creating ? createEndpoint : endpointFor(id),
+                {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        [csrfHeader]: csrfToken,
+                    },
+                    body: JSON.stringify(payload),
                 },
-                body: JSON.stringify(payload),
-            });
+            );
             const result = await readResponse(response);
 
             if (!response.ok) {
@@ -314,14 +438,18 @@ export function initEditLink() {
                     form.reportValidity();
                 }
 
-                throw new Error(result.error || 'Unable to save this link.');
+                throw new Error(result.error || (creating
+                    ? 'Unable to add this link.'
+                    : 'Unable to save this link.'));
             }
 
             dialog.hidden = true;
             dialog.close();
             window.location.reload();
         } catch (error) {
-            setStatus(error.message || 'Unable to save this link.', true);
+            setStatus(error.message || (creating
+                ? 'Unable to add this link.'
+                : 'Unable to save this link.'), true);
             setBusy(false);
         }
     });
@@ -333,6 +461,7 @@ export function initEditLink() {
         form.reset();
         clearValidation(form);
         setStatus('');
+        setMode('edit');
         setBusy(false);
     });
 }

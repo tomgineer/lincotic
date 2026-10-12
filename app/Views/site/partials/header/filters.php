@@ -10,7 +10,8 @@
             <optgroup>
                 <legend>Views</legend>
                 <option value="all" <?= $filters['collection'] === 'all' ? 'selected' : '' ?>>All Collections</option>
-                <option value="featured" <?= $filters['collection'] === 'featured' ? 'selected' : '' ?>>Featured Collections</option>
+                <option value="featured" <?= $filters['collection'] === 'featured' ? 'selected' : '' ?>>Featured</option>
+                <option value="unassigned" <?= $filters['collection'] === 'unassigned' ? 'selected' : '' ?>>Unassigned</option>
             </optgroup>
             <optgroup>
                 <legend>Collections</legend>

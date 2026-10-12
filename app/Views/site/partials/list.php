@@ -1,15 +1,30 @@
-<?php $canEditLinks = auth()->loggedIn() && auth()->user()->inGroup('admin'); ?>
+<?php
+$canEditLinks = auth()->loggedIn() && auth()->user()->inGroup('admin');
+$canManageCollection = $canEditLinks && ! ($collection['is_virtual'] ?? false);
+?>
 
 <section class="mt-8">
     <h2 class="text-lg font-bold border-b border-base-content/15 pb-2 mb-4 flex gap-3 items-center">
         <span><?= esc($collection['name']) ?></span>
 
-        <?php if ($canEditLinks): ?>
+        <?php if ($canManageCollection): ?>
             <div class="flex gap-1">
-                <button class="btn btn-sm btn-soft btn-circle hover:btn-primary" type="button" title="Edit Collection">
+                <button
+                    class="btn btn-sm btn-soft btn-circle hover:btn-primary"
+                    type="button"
+                    title="Edit Collection"
+                    aria-label="Edit <?= esc($collection['name'], 'attr') ?> collection"
+                    data-edit-collection
+                    data-collection-id="<?= esc((string) $collection['id'], 'attr') ?>">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
                 </button>
-                <button class="btn btn-sm btn-soft btn-circle hover:btn-primary" type="button" title="Add Link">
+                <button
+                    class="btn btn-sm btn-soft btn-circle hover:btn-primary"
+                    type="button"
+                    title="Add Link"
+                    aria-label="Add link to <?= esc($collection['name'], 'attr') ?>"
+                    data-add-link
+                    data-collection-id="<?= esc((string) $collection['id'], 'attr') ?>">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 15l6 -6" /><path d="M11 6l.463 -.536a5 5 0 0 1 7.072 0a4.993 4.993 0 0 1 -.001 7.072" /><path d="M12.603 18.534a5.07 5.07 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" /><path d="M16 19h6" /><path d="M19 16v6" /></svg>
                 </button>
             </div>

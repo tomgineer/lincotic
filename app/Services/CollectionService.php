@@ -32,6 +32,10 @@ final class CollectionService {
      * Retrieves collections and links matching the selected home filters.
      */
     public function filter(array $filters): array {
+        if ($filters['unassignedOnly'] ?? false) {
+            return $this->findUnassignedLinks($filters);
+        }
+
         $collections = $this->findCollections($filters);
 
         if ($collections === []) {
@@ -41,6 +45,31 @@ final class CollectionService {
         $links = $this->findFilteredLinks($collections, $filters);
 
         return $this->attachLinks($collections, $links);
+    }
+
+    /**
+     * Returns links that are no longer assigned to a collection as a virtual group.
+     */
+    private function findUnassignedLinks(array $filters): array {
+        $linkModel = (new LinkModel())->where('collection_id', null);
+
+        $this->applyFlagFilter($linkModel, $filters['flag'] ?? 'all');
+        $this->applyImportanceFilter($linkModel, $filters['importance'] ?? 'all');
+        $this->applySort($linkModel, $filters['sort'] ?? 'title');
+
+        $links = $linkModel->findAll();
+
+        if ($links === []) {
+            return [];
+        }
+
+        return [[
+            'id'         => null,
+            'name'       => 'Unassigned Links',
+            'slug'       => 'unassigned',
+            'is_virtual' => true,
+            'links'      => $links,
+        ]];
     }
 
     /**
