@@ -19,6 +19,7 @@ $routes->group('edit', ['filter' => 'group:admin'], static function (RouteCollec
     $routes->post('links/(:num)', 'Editing\Links::update/$1');
     $routes->delete('links/(:num)', 'Editing\Links::delete/$1');
     $routes->post('collections', 'Editing\Collections::create');
+    $routes->post('collections/order', 'Editing\Collections::reorder');
     $routes->get('collections/(:num)', 'Editing\Collections::show/$1');
     $routes->post('collections/(:num)', 'Editing\Collections::update/$1');
     $routes->delete('collections/(:num)', 'Editing\Collections::delete/$1');

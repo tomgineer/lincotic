@@ -136,6 +136,38 @@ final class EditingServicesTest extends CIUnitTestCase
         $this->assertSame([], $result['errors']);
     }
 
+    public function testReorderCollectionsRejectsDuplicateIds(): void
+    {
+        $collections = $this->createMock(CollectionModel::class);
+        $collections->expects($this->never())->method('findColumn');
+        $collections->expects($this->never())->method('updateBatch');
+
+        $result = (new CollectionEditor($collections))->reorder([5, 5]);
+
+        $this->assertSame(EditStatus::INVALID, $result['status']);
+        $this->assertArrayHasKey('collection_ids', $result['errors']);
+    }
+
+    public function testReorderCollectionsPersistsEveryPositionInOneBatch(): void
+    {
+        $collections = $this->createMock(CollectionModel::class);
+        $collections->expects($this->once())->method('findColumn')->with('id')->willReturn(['5', '8', '13']);
+        $collections
+            ->expects($this->once())
+            ->method('updateBatch')
+            ->with([
+                ['id' => 13, 'sort_order' => 10],
+                ['id' => 5, 'sort_order' => 20],
+                ['id' => 8, 'sort_order' => 30],
+            ], 'id', 3)
+            ->willReturn(3);
+
+        $result = (new CollectionEditor($collections))->reorder(['13', '5', '8']);
+
+        $this->assertSame(EditStatus::UPDATED, $result['status']);
+        $this->assertSame([], $result['errors']);
+    }
+
     public function testUpdateCollectionRejectsInvalidInput(): void
     {
         $collections = $this->createMock(CollectionModel::class);

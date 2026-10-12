@@ -4,7 +4,11 @@
     id="sort-collections-modal"
     class="modal"
     aria-labelledby="sort-collections-modal-title"
-    aria-describedby="sort-collections-modal-description">
+    aria-describedby="sort-collections-modal-description"
+    data-sort-collections-modal
+    data-endpoint="<?= esc(site_url('edit/collections/order'), 'attr') ?>"
+    data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"
+    data-csrf-token="<?= esc(csrf_hash(), 'attr') ?>">
     <div class="modal-box -translate-y-[5vh] w-[calc(100%-2rem)] max-w-xl overflow-hidden p-0">
         <header class="flex items-start justify-between gap-6 border-b border-base-content/10 px-6 py-5 sm:px-8">
             <div class="flex min-w-0 items-start gap-4">
@@ -47,13 +51,15 @@
                     <p class="mt-1 text-xs text-base-content/55">Create at least two collections to arrange their order.</p>
                 </div>
             <?php else: ?>
-                <ol class="space-y-2" aria-label="Collection order">
+                <ol class="space-y-2" aria-label="Collection order" data-sort-collections-list>
                     <?php foreach ($sortableCollections as $index => $collection): ?>
                         <li
                             class="group flex cursor-grab select-none items-center gap-3 rounded-xl border border-base-content/10 bg-base-100 px-3 py-3 transition-colors hover:border-primary/50 hover:bg-base-200/60 active:cursor-grabbing active:opacity-70"
                             draggable="true"
+                            tabindex="0"
+                            data-sort-collection
                             data-collection-id="<?= esc((string) $collection['id'], 'attr') ?>">
-                            <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-base-200 font-mono text-xs text-base-content/55" aria-hidden="true">
+                            <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-base-200 font-mono text-xs text-base-content/55" aria-hidden="true" data-sort-collection-position>
                                 <?= $index + 1 ?>
                             </span>
 
@@ -75,7 +81,8 @@
             <?php endif ?>
         </div>
 
-        <footer class="flex items-center justify-end gap-3 border-t border-base-content/10 bg-base-200/40 px-6 py-4 sm:px-8">
+        <footer class="flex flex-wrap items-center gap-3 border-t border-base-content/10 bg-base-200/40 px-6 py-4 sm:px-8">
+            <p class="min-h-5 flex-1 text-sm text-base-content/60" aria-live="polite" data-sort-collections-status></p>
             <button
                 type="button"
                 class="btn btn-ghost"
@@ -83,7 +90,7 @@
                 command="close">
                 Cancel
             </button>
-            <button type="button" class="btn btn-primary min-w-32" <?= $sortableCollections === [] ? 'disabled' : '' ?>>Save order</button>
+            <button type="button" class="btn btn-primary min-w-32" data-sort-collections-save <?= count($sortableCollections) < 2 ? 'disabled' : '' ?>>Save order</button>
         </footer>
     </div>
 

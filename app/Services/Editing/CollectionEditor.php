@@ -74,6 +74,66 @@ final class CollectionEditor
     }
 
     /**
+     * Validates and updates the display order of every collection.
+     *
+     * @param list<mixed> $collectionIds
+     *
+     * @return array{status: string, errors: array<string, string>}
+     */
+    public function reorder(array $collectionIds): array
+    {
+        $normalizedIds = [];
+
+        foreach ($collectionIds as $collectionId) {
+            if ((is_int($collectionId) && $collectionId > 0)
+                || (is_string($collectionId) && ctype_digit($collectionId) && (int) $collectionId > 0)) {
+                $normalizedIds[] = (int) $collectionId;
+                continue;
+            }
+
+            return $this->result(EditStatus::INVALID, [
+                'collection_ids' => 'The collection order contains an invalid item.',
+            ]);
+        }
+
+        if (count($normalizedIds) !== count(array_unique($normalizedIds))) {
+            return $this->result(EditStatus::INVALID, [
+                'collection_ids' => 'Each collection must appear exactly once.',
+            ]);
+        }
+
+        $storedIds    = array_map('intval', $this->collections->findColumn('id') ?? []);
+        $requestedIds = $normalizedIds;
+        sort($storedIds, SORT_NUMERIC);
+        sort($requestedIds, SORT_NUMERIC);
+
+        if ($storedIds !== $requestedIds) {
+            return $this->result(EditStatus::INVALID, [
+                'collection_ids' => 'The complete collection order is required.',
+            ]);
+        }
+
+        if ($normalizedIds === []) {
+            return $this->result(EditStatus::UPDATED);
+        }
+
+        $rows = array_map(
+            static fn (int $id, int $index): array => [
+                'id'         => $id,
+                'sort_order' => ($index + 1) * 10,
+            ],
+            $normalizedIds,
+            array_keys($normalizedIds),
+        );
+
+        if ($this->collections->updateBatch($rows, 'id', count($rows)) === false) {
+            return $this->result(EditStatus::INVALID, $this->collections->errors());
+        }
+
+        return $this->result(EditStatus::UPDATED);
+    }
+
+    /**
      * Validates and updates one collection without changing ownership or order.
      *
      * @return array{status: string, errors: array<string, string>}

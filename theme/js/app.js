@@ -8,6 +8,7 @@ import { initEditCollection } from './edit/edit-collection.js';
 import { initEditLink } from './edit/edit-link.js';
 import { initEditMode } from './edit/edit-mode.js';
 import { initEditUser } from './edit/edit-user.js';
+import { initSortCollections } from './edit/sort-collections.js';
 
 initDateTime();
 initHashing();
@@ -19,3 +20,4 @@ initEditCollection();
 initEditLink();
 initEditMode();
 initEditUser();
+initSortCollections();

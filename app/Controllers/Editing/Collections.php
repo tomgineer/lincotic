@@ -51,6 +51,48 @@ final class Collections extends EditingController {
     }
 
     /**
+     * Validates and persists the display order of all collections.
+     */
+    public function reorder(): ResponseInterface {
+        if (($response = $this->guardAjax()) !== null) {
+            return $response;
+        }
+
+        $payload = $this->jsonPayload();
+
+        if ($payload instanceof ResponseInterface) {
+            return $payload;
+        }
+
+        $collectionIds = $payload['collection_ids'] ?? null;
+
+        if (! is_array($collectionIds)) {
+            return $this->validationError([
+                'collection_ids' => 'The complete collection order is required.',
+            ]);
+        }
+
+        try {
+            $result = (new CollectionEditor())->reorder($collectionIds);
+        } catch (Throwable $exception) {
+            log_message('error', 'Unable to reorder collections: {message}', [
+                'message' => $exception->getMessage(),
+            ]);
+
+            return $this->jsonError('Unable to save the collection order right now.', 500);
+        }
+
+        if ($result['status'] === EditStatus::INVALID) {
+            return $this->validationError($result['errors']);
+        }
+
+        return $this->response->setJSON([
+            'message' => 'Collection order updated.',
+            'csrf'    => csrf_hash(),
+        ]);
+    }
+
+    /**
      * Returns fresh collection data for the editing modal.
      */
     public function show(int $id): ResponseInterface {
