@@ -1,7 +1,6 @@
 @import "./fonts.css";
 @import "tailwindcss" source(none);
-@import "./components.css" layer(components);
-@import "./link-card.css" layer(components);
+@import "./components/index.css" layer(components);
 @import "./utilities.css" layer(utilities);
 
 @plugin "@tailwindcss/typography";

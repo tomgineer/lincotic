@@ -1,0 +1,18 @@
+.worktime-clock {
+    @apply flex min-h-72 flex-col items-center justify-center px-6 py-10 text-center sm:px-8;
+
+    background:
+        radial-gradient(circle at center, color-mix(in srgb, var(--color-acid) 8%, transparent), transparent 58%);
+}
+
+.worktime-stat {
+    @apply flex flex-col gap-1 rounded-xl border border-base-content/10 bg-base-100 p-4;
+
+    span {
+        @apply text-xs uppercase tracking-wider text-base-content/45;
+    }
+
+    strong {
+        @apply font-mono text-lg;
+    }
+}

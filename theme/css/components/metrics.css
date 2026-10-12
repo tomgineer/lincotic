@@ -1,0 +1,34 @@
+.metric-card {
+    @apply overflow-hidden rounded-2xl border border-base-content/15 bg-base-200;
+
+    .metric-card__header {
+        @apply border-b border-base-content/10 p-6;
+    }
+}
+
+.metric-list,
+.hash-list {
+    @apply divide-y divide-base-content/10;
+}
+
+.metric-row {
+    @apply grid grid-cols-1 gap-2 px-4 py-4 transition-colors sm:grid-cols-[minmax(10rem,0.8fr)_minmax(0,1.2fr)] sm:items-center sm:gap-4 sm:px-6;
+
+    &:hover,
+    &:focus-within {
+        background: color-mix(in srgb, var(--color-base-content) 4%, transparent);
+    }
+
+    > label {
+        @apply text-sm font-semibold text-base-content/70;
+    }
+}
+
+.hash-row {
+    @apply grid grid-cols-1 gap-2 px-4 py-4 transition-colors sm:grid-cols-[5rem_minmax(0,1fr)] sm:items-center sm:gap-4 sm:px-6;
+
+    &:hover,
+    &:focus-within {
+        background: color-mix(in srgb, var(--color-base-content) 4%, transparent);
+    }
+}

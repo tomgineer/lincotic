@@ -58,7 +58,6 @@
         box-shadow:
             0 0 20px color-mix(in srgb, var(--border-start) 30%, transparent),
             0 8px 24px rgb(0 0 0 / 15%);
-
     }
 
     &.edit-mode {
@@ -101,15 +100,15 @@
                 0 16px 36px color-mix(in srgb, var(--edit-teal) 26%, transparent);
         }
     }
-}
 
-@media (prefers-reduced-motion: reduce) {
-    .link-card:hover {
-        animation: none;
-        transform: none;
-    }
+    @media (prefers-reduced-motion: reduce) {
+        &:hover {
+            animation: none;
+            transform: none;
+        }
 
-    .link-card.edit-mode:hover {
-        transform: none;
+        &.edit-mode:hover {
+            transform: none;
+        }
     }
 }

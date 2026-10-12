@@ -1,0 +1,36 @@
+.password-copy,
+.utility-copy {
+    @apply flex size-11 shrink-0 cursor-pointer items-center justify-center border-l border-base-content/15 text-base-content/50 transition-colors;
+
+    &:hover {
+        @apply bg-base-content/10 text-base-content;
+    }
+
+    &:focus-visible {
+        @apply z-10 outline-2 outline-offset-[-2px] outline-base-content;
+    }
+
+    &[data-copied="true"] {
+        color: var(--color-acid);
+    }
+
+    &:disabled {
+        @apply cursor-not-allowed text-base-content/20;
+
+        &:hover {
+            @apply bg-transparent text-base-content/20;
+        }
+    }
+}
+
+.utility-output {
+    @apply flex min-w-0 overflow-hidden rounded-lg border border-base-content/15 bg-base-100;
+
+    &:focus-within {
+        @apply border-base-content outline-2 outline-offset-2 outline-base-content;
+    }
+
+    input {
+        @apply h-11 min-w-0 flex-1 bg-transparent px-3 font-mono text-sm outline-none;
+    }
+}

@@ -3861,6 +3861,11 @@
       color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
     }
   }
+  @supports (appearance: base-select) {
+    .collection-select::picker(select) {
+      max-height: min(40rem, 80svh) !important;
+    }
+  }
   .users-popover-trigger {
     anchor-name: --users-popover-trigger;
   }
@@ -3875,11 +3880,6 @@
     overflow: hidden;
     color: inherit;
     transform: translateX(-100%);
-  }
-  @supports (appearance: base-select) {
-    .collection-select::picker(select) {
-      max-height: min(40rem, 80svh) !important;
-    }
   }
   .search-control {
     display: flex;
@@ -4483,14 +4483,14 @@
         }
       }
     }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .link-card:hover {
-      animation: none;
-      transform: none;
-    }
-    .link-card.edit-mode:hover {
-      transform: none;
+    @media (prefers-reduced-motion: reduce) {
+      &:hover {
+        animation: none;
+        transform: none;
+      }
+      &.edit-mode:hover {
+        transform: none;
+      }
     }
   }
 }

@@ -1,0 +1,11 @@
+.collection-select {
+    optgroup > legend {
+        @apply font-ui font-bold text-base-content/55 border-b border-base-content/15 pt-1 pb-2 mb-2;
+    }
+
+    @supports (appearance: base-select) {
+        &::picker(select) {
+            max-height: min(40rem, 80svh) !important;
+        }
+    }
+}

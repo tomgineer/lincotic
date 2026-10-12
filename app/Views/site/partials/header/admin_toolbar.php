@@ -1,5 +1,5 @@
 <div class="flex">
-    <label title="Edit mode" title="Edit Mode">
+    <label title="Edit mode">
         <input
             type="checkbox"
             class="peer sr-only"
