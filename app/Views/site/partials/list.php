@@ -43,9 +43,7 @@ $canManageCollection = $canEditLinks && ! ($collection['is_virtual'] ?? false);
 
             <a
                 class="link-card <?= esc($importanceClass, 'attr') ?>"
-                href="<?= esc($link['url'], 'attr') ?>"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="<?= site_url('go/' . $link['id']) ?>"
                 <?php if ($canEditLinks): ?>
                     data-link-id="<?= esc((string) $link['id'], 'attr') ?>"
                 <?php endif ?>>

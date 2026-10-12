@@ -5,6 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
 $routes->get('search', 'Home::search');
+$routes->get('go/(:num)', 'Links::follow/$1');
 $routes->get('password-generator', 'Utilities::passwordGenerator');
 $routes->get('date-time-calculator', 'Utilities::dateTimeCalculator');
 $routes->get('hash-generator', 'Utilities::hashGenerator');

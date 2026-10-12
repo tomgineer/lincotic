@@ -27,4 +27,17 @@ class LinkModel extends Model
     protected $validationRules = [
         'importance' => 'permit_empty|in_list[low,medium,high]',
     ];
+
+    /**
+     * Records a visit without treating it as an edit to the link itself.
+     */
+    public function recordClick(int $id): bool
+    {
+        return $this->builder()
+            ->where($this->primaryKey, $id)
+            ->where($this->deletedField, null)
+            ->set('click_count', 'click_count + 1', false)
+            ->set('last_clicked_at', 'CURRENT_TIMESTAMP()', false)
+            ->update();
+    }
 }
