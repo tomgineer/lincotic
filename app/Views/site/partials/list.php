@@ -1,8 +1,10 @@
+<?php $canEditLinks = auth()->loggedIn() && auth()->user()->inGroup('admin'); ?>
+
 <section class="mt-8">
     <h2 class="text-lg font-bold border-b border-base-content/15 pb-2 mb-4 flex gap-3 items-center">
         <span><?= esc($collection['name']) ?></span>
 
-        <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
+        <?php if ($canEditLinks): ?>
             <div class="flex gap-1">
                 <button class="btn btn-sm btn-soft btn-circle hover:btn-primary" type="button" title="Edit Collection">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg>
@@ -28,7 +30,10 @@
                 class="link-card <?= esc($importanceClass, 'attr') ?>"
                 href="<?= esc($link['url'], 'attr') ?>"
                 target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer"
+                <?php if ($canEditLinks): ?>
+                    data-link-id="<?= esc((string) $link['id'], 'attr') ?>"
+                <?php endif ?>>
 
                 <div class="flex flex-col items-center justify-center p-4">
                     <span class="font-semibold">

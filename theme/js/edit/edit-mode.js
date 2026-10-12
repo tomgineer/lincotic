@@ -1,4 +1,5 @@
 const editableLinkSelector = '.link-card';
+export const editLinkRequestEvent = 'lincotic:edit-link';
 
 function isVisible(element) {
     return !element.hidden
@@ -33,6 +34,10 @@ export function initEditMode() {
         }
 
         event.preventDefault();
+        link.dispatchEvent(new CustomEvent(editLinkRequestEvent, {
+            bubbles: true,
+            detail: { link },
+        }));
     });
 
     syncEditableLinks();
