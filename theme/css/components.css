@@ -76,12 +76,13 @@
     &::after {
         content: "";
         position: absolute;
-        inset: auto -7rem -9rem auto;
-        width: 20rem;
-        height: 20rem;
-        border-radius: 9999px;
-        background: color-mix(in srgb, var(--color-acid) 14%, transparent);
-        filter: blur(1px);
+        inset: auto clamp(-4rem, -4vw, -2rem) clamp(-3rem, -3vw, -1.5rem) auto;
+        width: clamp(16rem, 28vw, 24rem);
+        aspect-ratio: 125.79 / 93.06;
+        background: url("../assets/images/icon.svg") center / contain no-repeat;
+        opacity: 0.1;
+        transform: rotate(-9deg);
+        filter: drop-shadow(0 0 2rem color-mix(in srgb, var(--color-acid) 28%, transparent));
         pointer-events: none;
     }
 

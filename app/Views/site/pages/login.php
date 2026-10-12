@@ -12,7 +12,11 @@
 
     <div class="mx-auto grid w-full max-w-5xl overflow-hidden rounded-3xl border border-base-content/15 bg-base-200 shadow-2xl shadow-black/25 lg:grid-cols-[0.9fr_1.1fr]">
         <section class="relative flex min-h-72 flex-col justify-between overflow-hidden border-b border-base-content/10 bg-base-100 p-8 sm:p-10 lg:min-h-[38rem] lg:border-r lg:border-b-0">
-            <div class="pointer-events-none absolute -right-32 -bottom-40 size-96 rounded-full border-[4rem] border-acid/10" aria-hidden="true"></div>
+            <img
+                src="<?= esc(base_url('assets/images/icon.svg')) ?>?v=<?= APP_VERSION ?>"
+                alt=""
+                class="pointer-events-none absolute -right-24 -bottom-12 w-[30rem] max-w-none -rotate-12 opacity-10 select-none"
+                aria-hidden="true">
 
             <a href="<?= esc(site_url('/')) ?>" class="relative block w-40 transition-transform duration-300 motion-safe:hover:scale-105" aria-label="Lincotic home">
                 <img
@@ -59,7 +63,7 @@
                 <?php endif ?>
 
                 <?php if (session('message') !== null): ?>
-                    <div class="alert alert-success mt-6" role="status">
+                    <div class="alert mt-6 text-secondary-content [--alert-border-color:var(--color-secondary)] [--alert-color:var(--color-secondary)]" role="status">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8 12l2.5 2.5L16 9" /></svg>
                         <span><?= esc(session('message')) ?></span>
                     </div>

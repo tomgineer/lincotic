@@ -92,7 +92,7 @@
 
             <label class="flex cursor-pointer items-center justify-between gap-5 rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
                 <span class="flex min-w-0 items-start gap-3">
-                    <span class="mt-0.5 text-secondary" aria-hidden="true">
+                    <span class="mt-0.5 text-accent" aria-hidden="true">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" /></svg>
                     </span>
                     <span>
@@ -100,7 +100,7 @@
                         <span class="mt-0.5 block text-xs text-base-content/55">Show this collection in the default home view.</span>
                     </span>
                 </span>
-                <input type="checkbox" name="is_featured" value="1" class="toggle toggle-secondary shrink-0" data-edit-collection-control>
+                <input type="checkbox" name="is_featured" value="1" class="toggle toggle-accent shrink-0" data-edit-collection-control>
             </label>
         </div>
 

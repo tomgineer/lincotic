@@ -28,8 +28,10 @@
 [data-theme="dark"] {
     --color-primary: var(--color-coral);
     --color-primary-content: var(--color-base-content);
-    --color-secondary: var(--color-acid);
+    --color-secondary: var(--color-brand-secondary);
     --color-secondary-content: var(--color-base-content);
+    --color-accent: var(--color-acid);
+    --color-accent-content: var(--color-base-content);
 }
 
 /*

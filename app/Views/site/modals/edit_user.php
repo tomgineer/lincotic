@@ -96,7 +96,7 @@
                     <fieldset class="rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
                         <legend class="sr-only">Account role</legend>
                         <div class="flex items-start gap-3">
-                            <span class="mt-0.5 text-secondary" aria-hidden="true">
+                            <span class="mt-0.5 text-accent" aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path d="M12 3l7 4v5c0 5 -3 8 -7 9c-4 -1 -7 -4 -7 -9v-5z" /><path d="m9 12 2 2 4 -4" /></svg>
                             </span>
                             <span>
@@ -126,7 +126,7 @@
 
                     <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
                         <span class="flex min-w-0 items-start gap-3">
-                            <span class="mt-0.5 text-success" aria-hidden="true">
+                            <span class="mt-0.5 text-secondary" aria-hidden="true">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path d="M12 3a9 9 0 1 0 9 9" /><path d="M12 7v5l3 2" /><path d="m16 5 2 2 4 -4" /></svg>
                             </span>
                             <span>
@@ -134,7 +134,7 @@
                                 <span class="mt-0.5 block text-xs leading-5 text-base-content/55">Allow this user to sign in.</span>
                             </span>
                         </span>
-                        <input type="checkbox" name="active" value="1" class="toggle toggle-success shrink-0" checked data-edit-user-control>
+                        <input type="checkbox" name="active" value="1" class="toggle toggle-secondary shrink-0" checked data-edit-user-control>
                     </label>
                 </div>
             </div>
