@@ -74,31 +74,6 @@
     }
 }
 
-.btn-coral {
-    --btn-color: var(--color-coral);
-    --btn-fg: var(--color-base-100);
-    --btn-soft-bg: initial;
-}
-
-.btn.btn-coral:focus-visible {
-    outline-color: var(--color-coral-light);
-}
-
-.badge-coral {
-    --badge-color: var(--color-coral);
-    --badge-fg: var(--color-base-100);
-}
-
-.checkbox-coral {
-    --input-color: var(--color-coral);
-
-    color: var(--color-base-100);
-}
-
-.progress-coral {
-    color: var(--color-coral-light);
-}
-
 .utility-panel {
     @apply rounded-2xl border border-base-content/15 bg-base-200;
 }
@@ -107,8 +82,8 @@
     @apply overflow-hidden rounded-2xl border border-base-content/15 bg-base-200;
 
     &.password-panel--strong {
-        border-color: color-mix(in srgb, var(--color-coral) 55%, transparent);
-        box-shadow: 0 18px 50px color-mix(in srgb, var(--color-coral) 12%, transparent);
+        border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
+        box-shadow: 0 18px 50px color-mix(in srgb, var(--color-primary) 12%, transparent);
     }
 
     .password-panel__header {

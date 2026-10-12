@@ -5,7 +5,7 @@
 <?= $this->section('content') ?>
 <main class="relative isolate flex min-h-screen items-center overflow-hidden px-6 py-10 sm:py-16">
     <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-        <div class="absolute -top-40 left-1/2 size-96 -translate-x-1/2 rounded-full bg-coral/10 blur-3xl"></div>
+        <div class="absolute -top-40 left-1/2 size-96 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl"></div>
         <div class="absolute -bottom-48 -right-32 size-[32rem] rounded-full bg-acid/5 blur-3xl"></div>
         <div class="absolute inset-0 opacity-30 [background-image:linear-gradient(to_right,color-mix(in_srgb,var(--color-base-content)_6%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_srgb,var(--color-base-content)_6%,transparent)_1px,transparent_1px)] [background-size:3rem_3rem]"></div>
     </div>
@@ -33,7 +33,7 @@
         <section class="flex items-center p-8 sm:p-10 lg:p-14" aria-labelledby="login-title">
             <div class="w-full">
                 <div>
-                    <p class="font-mono text-xs font-bold uppercase tracking-[0.2em] text-coral-light">Welcome back</p>
+                    <p class="font-mono text-xs font-bold uppercase tracking-[0.2em] text-primary">Welcome back</p>
                     <h2 id="login-title" class="mt-3 text-3xl font-bold tracking-tight">Sign in to Lincotic</h2>
                     <p class="mt-2 text-base-content/60">Enter your account details to continue.</p>
                 </div>
@@ -105,19 +105,19 @@
                                 id="remember"
                                 type="checkbox"
                                 name="remember"
-                                class="checkbox checkbox-coral checkbox-sm"
+                                class="checkbox checkbox-primary checkbox-sm"
                                 <?= old('remember') ? 'checked' : '' ?>>
                             <span>Remember me</span>
                         </label>
                     <?php endif ?>
 
-                    <button type="submit" class="btn btn-coral btn-lg btn-block">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
                         Sign in
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></svg>
                     </button>
                 </form>
 
-                <a href="<?= esc(site_url('/')) ?>" class="link link-hover mt-8 inline-flex items-center gap-2 text-sm text-base-content/55 hover:text-coral-light">
+                <a href="<?= esc(site_url('/')) ?>" class="link link-hover mt-8 inline-flex items-center gap-2 text-sm text-base-content/55 hover:text-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5" /><path d="m11 18-6-6 6-6" /></svg>
                     Back to homepage
                 </a>

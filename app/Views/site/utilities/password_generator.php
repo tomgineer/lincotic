@@ -20,7 +20,7 @@
             </p>
         </div>
 
-        <a href="<?= esc(site_url('password-generator')) ?>" class="btn btn-coral btn-lg shrink-0">
+        <a href="<?= esc(site_url('password-generator')) ?>" class="btn btn-primary btn-lg shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
                 <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
@@ -79,7 +79,7 @@
                 <div>
                     <div class="flex items-center gap-3">
                         <h2 id="strong-passwords" class="text-2xl font-bold">Strong</h2>
-                        <span class="badge badge-coral">+ symbols</span>
+                        <span class="badge badge-primary">+ symbols</span>
                     </div>
                     <p class="mt-2 text-sm text-base-content/60">Expanded character pool for higher entropy.</p>
                 </div>

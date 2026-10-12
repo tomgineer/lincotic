@@ -24,6 +24,13 @@
     --color-coral-light: #ff8e75;
 }
 
+[data-theme="dark"] {
+    --color-primary: var(--color-coral);
+    --color-primary-content: var(--color-base-content);
+    --color-secondary: var(--color-acid);
+    --color-secondary-content: var(--color-base-content);
+}
+
 /*
  * Tailwind CSS Layers
  *

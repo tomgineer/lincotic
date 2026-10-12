@@ -3,7 +3,7 @@
         <li>
             <a
                 href="<?= esc(site_url('password-generator')) ?>"
-                class="btn btn-lg btn-square <?= url_is('password-generator') ? 'btn-coral' : 'btn-ghost' ?>"
+                class="btn btn-lg btn-square <?= url_is('password-generator') ? 'btn-primary' : 'btn-ghost' ?>"
                 aria-label="Password generator"
                 title="Password generator"
                 <?= url_is('password-generator') ? 'aria-current="page"' : '' ?>>
@@ -13,7 +13,7 @@
         <li>
             <a
                 href="<?= esc(site_url('date-time-calculator')) ?>"
-                class="btn btn-lg btn-square <?= url_is('date-time-calculator') ? 'btn-coral' : 'btn-ghost' ?>"
+                class="btn btn-lg btn-square <?= url_is('date-time-calculator') ? 'btn-primary' : 'btn-ghost' ?>"
                 aria-label="Date and time calculator"
                 title="Date and time calculator"
                 <?= url_is('date-time-calculator') ? 'aria-current="page"' : '' ?>>
@@ -23,7 +23,7 @@
         <li>
             <a
                 href="<?= esc(site_url('hash-generator')) ?>"
-                class="btn btn-lg btn-square <?= url_is('hash-generator*') ? 'btn-coral' : 'btn-ghost' ?>"
+                class="btn btn-lg btn-square <?= url_is('hash-generator*') ? 'btn-primary' : 'btn-ghost' ?>"
                 aria-label="Hash generator"
                 title="Hash generator"
                 <?= url_is('hash-generator*') ? 'aria-current="page"' : '' ?>>
@@ -33,7 +33,7 @@
         <li>
             <a
                 href="<?= esc(site_url('work-time-tracker')) ?>"
-                class="btn btn-lg btn-square <?= url_is('work-time-tracker') ? 'btn-coral' : 'btn-ghost' ?>"
+                class="btn btn-lg btn-square <?= url_is('work-time-tracker') ? 'btn-primary' : 'btn-ghost' ?>"
                 aria-label="Work time tracker"
                 title="Work time tracker"
                 <?= url_is('work-time-tracker') ? 'aria-current="page"' : '' ?>>
@@ -52,7 +52,7 @@
             <?php else: ?>
                 <a
                     href="<?= esc(url_to('login')) ?>"
-                    class="btn btn-lg btn-square <?= url_is('login') ? 'btn-coral' : 'btn-ghost' ?>"
+                    class="btn btn-lg btn-square <?= url_is('login') ? 'btn-primary' : 'btn-ghost' ?>"
                     aria-label="Sign in"
                     title="Sign in"
                     <?= url_is('login') ? 'aria-current="page"' : '' ?>>

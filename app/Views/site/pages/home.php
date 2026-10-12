@@ -21,7 +21,7 @@
         </div>
 
         <div class="flex items-center justify-start">
-            <?= view('site/partials/utilities/navigation') ?>
+            <?= view('site/partials/header/navigation') ?>
         </div>
     </div>
 </header>

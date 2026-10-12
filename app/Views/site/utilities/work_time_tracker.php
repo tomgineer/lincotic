@@ -44,7 +44,7 @@
             </label>
 
             <div class="mt-4 grid grid-cols-2 gap-3">
-                <button type="button" class="btn btn-coral" data-worktime-save>
+                <button type="button" class="btn btn-primary" data-worktime-save>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5l9 -9" /></svg>
                     Start
                 </button>
@@ -67,7 +67,7 @@
             </div>
 
             <div class="px-6 pb-6 sm:px-8 sm:pb-8">
-                <progress class="progress progress-coral h-3 w-full" value="0" max="100" data-worktime-progress></progress>
+                <progress class="progress progress-primary h-3 w-full" value="0" max="100" data-worktime-progress></progress>
 
                 <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <div class="worktime-stat">
