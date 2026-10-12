@@ -41,4 +41,12 @@
     <?php endif ?>
 </main>
 
+<?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
+    <?= view('site/modals/edit_link', ['collectionOptions' => $collectionOptions]) ?>
+    <?= view('site/modals/edit_collection') ?>
+    <?= view('site/modals/edit_user') ?>
+    <?= view('site/modals/sort_collections', ['collectionOptions' => $collectionOptions]) ?>
+    <?= view('site/modals/confirmation') ?>
+<?php endif ?>
+
 <?= $this->endSection() ?>
