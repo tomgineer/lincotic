@@ -119,6 +119,7 @@
     --color-base-50: oklch(29% 0.018 251.74);
     --color-acid: #d7ff00;
     --color-coral: #ff5c35;
+    --color-brand-secondary: #46a6b5;
   }
 }
 @layer base {
@@ -2571,6 +2572,9 @@
   .grid {
     display: grid;
   }
+  .hidden {
+    display: none;
+  }
   .inline-flex {
     display: inline-flex;
   }
@@ -4183,10 +4187,61 @@
         box-shadow: 0 0 20px color-mix(in srgb, var(--border-start) 30%, transparent), 0 8px 24px rgb(0 0 0 / 15%);
       }
     }
+    &.edit-mode {
+      --edit-teal: var(--color-brand-secondary);
+      --edit-acid: var(--color-acid);
+      --border-start: var(--edit-teal);
+      --border-end: var(--edit-teal);
+      @supports (color: color-mix(in lab, red, red)) {
+        --border-end: color-mix(in srgb, var(--edit-teal) 72%, var(--edit-acid) 28%);
+      }
+      --card-bg: var(--color-base-100);
+      @supports (color: color-mix(in lab, red, red)) {
+        --card-bg: color-mix(in srgb, var(--color-base-100) 92%, var(--edit-teal) 8%);
+      }
+      position: relative;
+      outline: 2px solid var(--edit-teal);
+      @supports (color: color-mix(in lab, red, red)) {
+        outline: 2px solid color-mix(in srgb, var(--edit-teal) 72%, transparent);
+      }
+      outline-offset: 4px;
+      background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box, linear-gradient(135deg, var(--border-start), var(--border-end)) border-box;
+      box-shadow: 0 0 0 1px var(--edit-acid), 0 12px 30px var(--edit-teal);
+      @supports (color: color-mix(in lab, red, red)) {
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--edit-acid) 10%, transparent), 0 12px 30px color-mix(in srgb, var(--edit-teal) 18%, transparent);
+      }
+      &::after {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        inset: 4px;
+        border: 1px dashed var(--edit-acid);
+        @supports (color: color-mix(in lab, red, red)) {
+          border: 1px dashed color-mix(in srgb, var(--edit-acid) 26%, transparent);
+        }
+        border-radius: calc(var(--radius-xl) - 0.25rem);
+        pointer-events: none;
+      }
+      &:hover {
+        --card-bg: var(--color-base-100);
+        @supports (color: color-mix(in lab, red, red)) {
+          --card-bg: color-mix(in srgb, var(--color-base-100) 86%, var(--edit-teal) 14%);
+        }
+        animation: none;
+        transform: translateY(-2px) scale(1.01);
+        box-shadow: 0 0 0 1px var(--edit-acid), 0 16px 36px var(--edit-teal);
+        @supports (color: color-mix(in lab, red, red)) {
+          box-shadow: 0 0 0 1px color-mix(in srgb, var(--edit-acid) 18%, transparent), 0 16px 36px color-mix(in srgb, var(--edit-teal) 26%, transparent);
+        }
+      }
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .link-card:hover {
       animation: none;
+      transform: none;
+    }
+    .link-card.edit-mode:hover {
       transform: none;
     }
   }
