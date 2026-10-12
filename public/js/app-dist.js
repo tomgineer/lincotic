@@ -1,1 +1,1344 @@
-(()=>{var G=new WeakMap;async function I(t){if(navigator.clipboard?.writeText)try{await navigator.clipboard.writeText(t.value);return}catch{}if(t.focus({preventScroll:!0}),t.select(),t.setSelectionRange(0,t.value.length),!document.execCommand("copy"))throw new Error("Copy failed");t.setSelectionRange(0,0)}function A(t,e,o,n){t.querySelectorAll('[data-copied="true"]').forEach(p=>{p.removeAttribute("data-copied")}),e.dataset.copied="true",o instanceof HTMLElement&&(o.textContent=n);let c=G.get(e);window.clearTimeout(c),G.set(e,window.setTimeout(()=>{e.removeAttribute("data-copied"),G.delete(e)},1600))}var _=1e3,K=60*_,Q=60*K,$=24*Q,J={"debt-us":{date:new Date("2025-10-23T00:00:00Z"),amount:38e12,perSecond:63e3,currency:"USD"},"debt-de":{date:new Date("2025-03-31T00:00:00Z"),amount:252e10,perSecond:1800,currency:"EUR"},"debt-gr":{date:new Date("2025-06-30T00:00:00Z"),amount:403e9,perSecond:160,currency:"EUR"}},k=new Intl.NumberFormat("en-US",{maximumFractionDigits:0});function pe(t){let e=new Date(Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())),o=e.getUTCDay()||7;e.setUTCDate(e.getUTCDate()+4-o);let n=new Date(Date.UTC(e.getUTCFullYear(),0,1));return Math.ceil(((e-n)/$+1)/7)}function ye(t){let e=Date.UTC(t.getFullYear(),t.getMonth(),t.getDate()),o=Date.UTC(t.getFullYear(),0,1);return Math.floor((e-o)/$)+1}function O(t,e){let o=Math.max(0,e-t);return{years:Math.floor(o/(365.25*$)),days:Math.floor(o/$),hours:Math.floor(o/Q),minutes:Math.floor(o/K),seconds:Math.floor(o/_)}}function he(t,e){let o=(e-t.date)/_,n=t.amount+t.perSecond*o;return new Intl.NumberFormat("en-US",{style:"currency",currency:t.currency,maximumFractionDigits:0}).format(n)}function Ee(t,e){let o=new Date(e.getFullYear(),0,1),n=new Date(e.getFullYear(),e.getMonth()+1,1),c=new Date(e.getFullYear()+1,0,1),p=O(e,new Date("2030-01-01T00:00:00Z")),u=O(new Date("2015-06-15T10:30:00Z"),e),m=O(e,n),y=O(e,c),S=O(o,e),T={"current-time":e.toLocaleTimeString("en-GB"),"current-date":e.toLocaleDateString("en-GB",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}),"current-week":`Week ${pe(e)}`,"current-timestamp":String(Math.floor(e.getTime()/_)),"day-of-year":k.format(ye(e)),"minute-of-year":k.format(S.minutes),"second-of-year":k.format(S.seconds),"reset-days":k.format(p.days),"reset-hours":k.format(p.hours),"reset-seconds":k.format(p.seconds),"month-days":k.format(m.days),"month-hours":k.format(m.hours),"month-seconds":k.format(m.seconds),"year-days":k.format(y.days),"year-hours":k.format(y.hours),"year-seconds":k.format(y.seconds),"event-years":k.format(u.years),"event-days":k.format(u.days),"event-seconds":k.format(u.seconds),"unix-seconds":String(Math.floor(e.getTime()/_))};return J[t]?he(J[t],e):T[t]??"\u2014"}function ee(){let t=document.querySelector("[data-datetime-utility]");if(!(t instanceof HTMLElement))return;let e=t.querySelector("[data-datetime-hero-time]"),o=t.querySelector("[data-datetime-timezone]"),n=t.querySelector("[data-datetime-status]"),c=t.querySelectorAll("[data-datetime-value]");o instanceof HTMLElement&&(o.textContent=Intl.DateTimeFormat().resolvedOptions().timeZone||"Local timezone");let p=()=>{let u=new Date;e instanceof HTMLTimeElement&&(e.dateTime=u.toISOString(),e.textContent=u.toLocaleTimeString("en-GB")),c.forEach(m=>{m instanceof HTMLInputElement&&(m.value=Ee(m.dataset.datetimeValue,u))})};t.addEventListener("click",async u=>{let m=u.target.closest("[data-copy-datetime]");if(!(m instanceof HTMLButtonElement))return;let y=m.closest("[data-copy-entry]")?.querySelector("[data-datetime-value]");if(y instanceof HTMLInputElement)try{await I(y),A(t,m,n,`${y.value} copied.`)}catch{n instanceof HTMLElement&&(n.textContent="Unable to copy this value. Select it and copy manually.")}}),p(),window.setInterval(p,_)}function te(){let t=document.querySelector("[data-hashing-utility]");if(!(t instanceof HTMLElement))return;let e=t.querySelector("[data-hash-input]"),o=t.querySelector("[data-hash-trim]"),n=t.querySelector("[data-hash-status]"),c=t.querySelector("[data-hash-byte-count]"),p=t.querySelectorAll("[data-hash-output]"),u=t.dataset.hashUrl,m=t.dataset.csrfHeader,y=t.dataset.csrfToken,S,T;if(!(e instanceof HTMLTextAreaElement)||!u||!m||!y)return;let s=()=>{p.forEach(E=>{E instanceof HTMLInputElement&&(E.value="",E.closest("[data-copy-entry]")?.querySelector("[data-copy-hash]")?.setAttribute("disabled",""))})},l=()=>{if(c instanceof HTMLElement){let E=new TextEncoder().encode(e.value).length;c.textContent=`${E.toLocaleString("en-US")} ${E===1?"byte":"bytes"}`}},g=async()=>{let E=o instanceof HTMLInputElement&&o.checked?e.value.trim():e.value;if(l(),E===""){T?.abort(),s(),n instanceof HTMLElement&&(n.textContent="Waiting for input.");return}T?.abort(),T=new AbortController,n instanceof HTMLElement&&(n.textContent="Generating hashes\u2026");try{let h=await fetch(u,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest",[m]:y},body:JSON.stringify({value:E}),signal:T.signal}),a=await h.json();if(!h.ok||!a.hashes)throw new Error(a.error||"Unable to generate hashes.");typeof a.csrf=="string"&&a.csrf!==""&&(y=a.csrf,t.dataset.csrfToken=a.csrf),p.forEach(i=>{if(!(i instanceof HTMLInputElement))return;i.value=a.hashes[i.dataset.hashOutput]??"";let L=i.closest("[data-copy-entry]")?.querySelector("[data-copy-hash]");L instanceof HTMLButtonElement&&(L.disabled=i.value==="")}),n instanceof HTMLElement&&(n.textContent="All five hashes are ready.")}catch(h){if(h.name==="AbortError")return;s(),n instanceof HTMLElement&&(n.textContent=h.message||"Unable to generate hashes.")}},f=(E=220)=>{window.clearTimeout(S),S=window.setTimeout(g,E)};e.addEventListener("input",()=>{l(),f()}),o instanceof HTMLInputElement&&o.addEventListener("change",()=>f(0)),t.addEventListener("click",async E=>{let h=E.target.closest("[data-copy-hash]");if(!(h instanceof HTMLButtonElement))return;let a=h.closest("[data-copy-entry]")?.querySelector("[data-hash-output]");if(!(!(a instanceof HTMLInputElement)||a.value===""))try{await I(a),A(t,h,n,`${h.dataset.copyHash.toUpperCase()} copied.`)}catch{n instanceof HTMLElement&&(n.textContent="Unable to copy this hash. Select it and copy manually.")}}),l()}function ne(){let t=document.querySelector("[data-link-filters]");t instanceof HTMLFormElement&&t.querySelectorAll("select").forEach(e=>{e.addEventListener("change",()=>t.requestSubmit())})}function oe(){let t=document.querySelector("[data-link-search-form]");if(!(t instanceof HTMLFormElement))return;let e=t.elements.namedItem("q"),o=t.querySelector("[data-clear-search]");e instanceof HTMLInputElement&&(o instanceof HTMLButtonElement&&(e.addEventListener("input",()=>{o.disabled=e.value===""}),o.addEventListener("click",()=>{e.value="",t.requestSubmit()})),e.autofocus&&requestAnimationFrame(()=>{e.focus({preventScroll:!0}),e.setSelectionRange(e.value.length,e.value.length)}))}function re(){let t=document.querySelector("[data-password-generator]");if(!(t instanceof HTMLElement))return;let e=t.querySelector("[data-copy-status]");t.querySelectorAll("[data-copy-password]").forEach(o=>{o instanceof HTMLButtonElement&&o.addEventListener("click",async()=>{let c=o.closest("[data-password-entry]")?.querySelector("[data-password-value]");if(c instanceof HTMLInputElement)try{await I(c),A(t,o,e,`${c.value.length} character password copied.`)}catch{e instanceof HTMLElement&&(e.textContent="Unable to copy the password. Select it and copy manually.")}})})}var Z="lincotic.workTimeStartAt";var B=t=>String(t).padStart(2,"0");function ge(t){let e=Math.floor(Math.max(0,t)/1e3),o=Math.floor(e/3600),n=Math.floor(e%3600/60),c=e%60;return`${B(o)}:${B(n)}:${B(c)}`}function j(t){return`${B(t.getHours())}:${B(t.getMinutes())}`}function Te(t){let e=0;return t>=6*36e5&&(e+=30),t>=9*36e5&&(e+=15),e*6e4}function Le(t){if(!/^\d{2}:\d{2}$/.test(t))return null;let[e,o]=t.split(":").map(Number);if(e>23||o>59)return null;let n=new Date,c=new Date(n);if(c.setHours(e,o,0,0),c-n>12*36e5)c.setDate(c.getDate()-1);else if(c>n)return null;return c}function Se(){try{let t=localStorage.getItem(Z),e=t?new Date(t):null;return e&&!Number.isNaN(e.getTime())?e:null}catch{return null}}function ae(){let t=document.querySelector("[data-worktime-utility]");if(!(t instanceof HTMLElement))return;let e=t.querySelector("[data-worktime-start]"),o=t.querySelector("[data-worktime-save]"),n=t.querySelector("[data-worktime-reset]"),c=t.querySelector("[data-worktime-display]"),p=t.querySelector("[data-worktime-progress]"),u=t.querySelector("[data-worktime-progress-text]"),m=t.querySelector("[data-worktime-percent]"),y=t.querySelector("[data-worktime-end]"),S=t.querySelector("[data-worktime-break]"),T=t.querySelector("[data-worktime-state]"),s=Se(),l=s!==null,g;if(!(e instanceof HTMLInputElement)||!(o instanceof HTMLButtonElement))return;let f=(i,L)=>{i instanceof HTMLElement&&(i.textContent=L)},E=()=>{f(c,"00:00:00"),f(u,"Set a start time to begin tracking."),f(m,"0%"),f(y,"--:--"),f(S,"0 min"),f(T,"No start time saved."),p instanceof HTMLProgressElement&&(p.value=0)},h=()=>{if(!s){E();return}let i=Math.max(0,Date.now()-s.getTime()),L=Te(i),H=Math.max(0,i-L),v=8*36e5,C=Math.min(100,H/v*100),D=Math.round(C),Y=new Date(s.getTime()+8*36e5+30*6e4);f(c,ge(H)),f(m,`${D}%`),f(y,j(Y)),f(S,`${L/6e4} min`),f(T,l?`Started at ${j(s)} \xB7 saved in this browser.`:`Started at ${j(s)} \xB7 active in this tab only.`),p instanceof HTMLProgressElement&&(p.value=C),D>=100?f(u,"Workday complete. Eight net hours reached."):D>=75?f(u,`Almost there\u2014${D}% of your workday is complete.`):D>=50?f(u,`Good progress\u2014${D}% of your workday is complete.`):f(u,`${D}% of your eight-hour workday is complete.`)},a=()=>{window.clearInterval(g),h(),g=window.setInterval(h,1e3)};o.addEventListener("click",()=>{let i=Le(e.value);if(!i){f(T,"Enter a valid start time.");return}s=i;try{localStorage.setItem(Z,s.toISOString()),l=!0}catch{l=!1}a()}),n instanceof HTMLButtonElement&&n.addEventListener("click",()=>{s=null,l=!1,window.clearInterval(g);try{localStorage.removeItem(Z)}catch{}E()}),s?(e.value=j(s),a()):E()}function P({title:t="Are you sure?",message:e="Please confirm that you want to continue.",confirmLabel:o="Confirm"}={}){let n=document.querySelector("[data-confirmation-modal]"),c=n?.querySelector("[data-confirmation-title]"),p=n?.querySelector("[data-confirmation-message]"),u=n?.querySelector("[data-confirmation-confirm]"),m=n?.querySelectorAll("[data-confirmation-cancel]");return!(n instanceof HTMLDialogElement)||!(c instanceof HTMLElement)||!(p instanceof HTMLElement)||!(u instanceof HTMLButtonElement)||!m?.length||n.open?Promise.resolve(!1):(c.textContent=t,p.textContent=e,u.textContent=o,new Promise(y=>{let S=!1,T=g=>{S||(S=!0,u.removeEventListener("click",s),m.forEach(f=>f.removeEventListener("click",l)),n.removeEventListener("close",l),n.removeEventListener("cancel",l),n.open&&n.close(),y(g))},s=()=>T(!0),l=g=>{g?.preventDefault(),T(!1)};u.addEventListener("click",s),m.forEach(g=>g.addEventListener("click",l)),n.addEventListener("close",l),n.addEventListener("cancel",l),n.showModal(),u.focus()}))}var ve="[data-edit-collection-control]";function R(t,e){return t.elements.namedItem(e)}function N(t,e,o){let n=R(t,e);(n instanceof HTMLInputElement||n instanceof HTMLTextAreaElement)&&(n.value=o)}function W(t){t.querySelectorAll("[name]").forEach(e=>{e.setCustomValidity?.("")})}function we(t,e){Object.entries(e).forEach(([o,n])=>{R(t,o)?.setCustomValidity?.(n)})}function ie(){let t=document.querySelector("[data-edit-collection-modal]");if(!(t instanceof HTMLDialogElement))return;let e=t.querySelector("[data-edit-collection-form]"),o=t.querySelector("[data-edit-collection-status]"),n=t.querySelector("[data-edit-collection-save]"),c=t.querySelector("[data-edit-collection-delete]"),p=t.dataset.endpointTemplate,u=t.dataset.csrfHeader,m=t.dataset.csrfToken,y=null,S=0;if(!(e instanceof HTMLFormElement)||!(n instanceof HTMLButtonElement)||!p||!u||!m)return;let T=a=>p.replace("__COLLECTION_ID__",encodeURIComponent(a)),s=(a,i=!1)=>{o instanceof HTMLElement&&(o.textContent=a,o.classList.toggle("text-error",i),o.classList.toggle("text-base-content/60",!i))},l=(a,i="Save changes")=>{e.setAttribute("aria-busy",String(a)),e.querySelectorAll(ve).forEach(L=>{L.disabled=a}),n.disabled=a,n.textContent=i},g=a=>{typeof a.csrf=="string"&&a.csrf!==""&&(m=a.csrf,t.dataset.csrfToken=a.csrf)},f=async a=>{let i={};try{i=await a.json()}catch{}return g(i),i},E=a=>{N(e,"id",String(a.id)),N(e,"name",a.name??""),N(e,"slug",a.slug??""),N(e,"description",a.description??""),N(e,"icon",a.icon??"");let i=R(e,"is_featured");i instanceof HTMLInputElement&&(i.checked=!!a.is_featured)},h=async a=>{if(!(a instanceof HTMLButtonElement)||!/^[1-9]\d*$/.test(a.dataset.collectionId??""))return;y?.abort(),y=new AbortController;let i=++S,L=a.dataset.collectionId;e.reset(),W(e),s("Loading collection\u2026"),l(!0,"Loading\u2026"),t.open||t.showModal();try{let H=await fetch(T(L),{headers:{Accept:"application/json","X-Requested-With":"XMLHttpRequest"},signal:y.signal}),v=await f(H);if(i!==S)return;if(!H.ok||!v.collection)throw new Error(v.error||"Unable to load this collection.");E(v.collection),s(""),l(!1),R(e,"name")?.focus()}catch(H){if(H.name==="AbortError"||i!==S)return;s(H.message||"Unable to load this collection.",!0),l(!1)}};document.querySelectorAll("[data-edit-collection]").forEach(a=>{a.addEventListener("click",()=>{h(a)})}),e.addEventListener("input",()=>W(e)),c instanceof HTMLButtonElement&&c.addEventListener("click",async()=>{let a=R(e,"id"),i=R(e,"name");if(!(a instanceof HTMLInputElement)||a.value===""){s("No collection is selected.",!0);return}let L=i instanceof HTMLInputElement?i.value.trim():"";if(await P({title:"Delete collection?",message:L?`The collection \u201C${L}\u201D will be removed. Do you want to continue?`:"This collection will be removed. Do you want to continue?",confirmLabel:"Delete collection"})){s("Deleting collection\u2026"),l(!0);try{let v=await fetch(T(a.value),{method:"DELETE",headers:{Accept:"application/json","X-Requested-With":"XMLHttpRequest",[u]:m}}),C=await f(v);if(!v.ok)throw new Error(C.error||"Unable to delete this collection.");t.hidden=!0,t.close(),window.location.reload()}catch(v){s(v.message||"Unable to delete this collection.",!0),l(!1)}}}),e.addEventListener("submit",async a=>{a.preventDefault(),W(e);let i=new FormData(e),L=i.get("id");if(typeof L!="string"||L===""){s("No collection is selected.",!0);return}let H={name:i.get("name"),slug:i.get("slug"),description:i.get("description"),icon:i.get("icon"),is_featured:i.get("is_featured")==="1"};s("Saving changes\u2026"),l(!0,"Saving\u2026");try{let v=await fetch(T(L),{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json","X-Requested-With":"XMLHttpRequest",[u]:m},body:JSON.stringify(H)}),C=await f(v);if(!v.ok)throw l(!1),C.errors&&typeof C.errors=="object"&&(we(e,C.errors),e.reportValidity()),new Error(C.error||"Unable to save this collection.");t.hidden=!0,t.close(),window.location.reload()}catch(v){s(v.message||"Unable to save this collection.",!0),l(!1)}}),t.addEventListener("close",()=>{S++,y?.abort(),y=null,e.reset(),W(e),s(""),l(!1)})}var se=".link-card",z="lincotic:edit-link";function Me(t){return!t.hidden&&t.getClientRects().length>0&&window.getComputedStyle(t).visibility!=="hidden"}function ce(){let t=document.querySelector("[data-edit-mode-toggle]");if(!(t instanceof HTMLInputElement))return;let e=()=>{document.querySelectorAll(se).forEach(o=>{o.classList.toggle("edit-mode",t.checked&&Me(o))})};t.addEventListener("change",e),document.addEventListener("click",o=>{if(!t.checked||!(o.target instanceof Element))return;let n=o.target.closest(se);!(n instanceof HTMLAnchorElement)||!n.classList.contains("edit-mode")||(o.preventDefault(),n.dispatchEvent(new CustomEvent(z,{bubbles:!0,detail:{link:n}})))}),e()}var ke="[data-edit-link-control]";function q(t,e){return t.elements.namedItem(e)}function x(t,e,o){let n=q(t,e);(n instanceof RadioNodeList||n instanceof HTMLInputElement||n instanceof HTMLSelectElement||n instanceof HTMLTextAreaElement)&&(n.value=o)}function le(t,e,o){let n=q(t,e);n instanceof HTMLInputElement&&(n.checked=o)}function V(t){t.querySelectorAll("[name]").forEach(e=>{typeof e.setCustomValidity=="function"&&e.setCustomValidity("")})}function be(t,e){Object.entries(e).forEach(([o,n])=>{let c=q(t,o);c instanceof RadioNodeList?c[0]?.setCustomValidity?.(n):c?.setCustomValidity?.(n)})}function de(){let t=document.querySelector("[data-edit-link-modal]");if(!(t instanceof HTMLDialogElement))return;let e=t.querySelector("[data-edit-link-form]"),o=t.querySelector("[data-edit-link-title]"),n=t.querySelector("[data-edit-link-description]"),c=t.querySelector("[data-edit-link-status]"),p=t.querySelector("[data-edit-link-save]"),u=t.querySelector("[data-edit-link-delete]"),m=t.querySelector("[data-edit-link-paste-url]"),y=t.querySelector("[data-edit-link-open-url]"),S=t.dataset.createEndpoint,T=t.dataset.endpointTemplate,s=t.dataset.csrfHeader,l=t.dataset.csrfToken,g=null,f=0,E="edit";if(!(e instanceof HTMLFormElement)||!(o instanceof HTMLElement)||!(n instanceof HTMLElement)||!(p instanceof HTMLButtonElement)||!S||!T||!s||!l)return;let h=(r,d=!1)=>{c instanceof HTMLElement&&(c.textContent=r,c.classList.toggle("text-error",d),c.classList.toggle("text-base-content/60",!d))},a=()=>E==="create"?"Add link":"Save changes",i=(r,d=a())=>{e.setAttribute("aria-busy",String(r)),e.querySelectorAll(ke).forEach(M=>{M.disabled=r}),p.disabled=r,p.textContent=d},L=r=>{E=r;let d=E==="create";o.textContent=d?"Add link":"Edit link",n.textContent=d?"Add a new destination.":"Update the destination, organization, and status of this link.";let M=q(e,"collection_id");if(M instanceof HTMLSelectElement){let w=M.querySelector("[data-edit-link-unassigned-option]");if(d){let b=w??new Option("[Unassigned]","",!0,!0);b.dataset.editLinkUnassignedOption="",w||M.prepend(b),b.selected=!0,M.required=!1}else w?.remove(),M.required=!0}u instanceof HTMLButtonElement&&(u.hidden=d),p.textContent=a()},H=r=>{typeof r.csrf=="string"&&r.csrf!==""&&(l=r.csrf,t.dataset.csrfToken=r.csrf)},v=r=>T.replace("__LINK_ID__",encodeURIComponent(r)),C=async r=>{let d={};try{d=await r.json()}catch{}return H(d),d},D=r=>{x(e,"id",String(r.id)),x(e,"title",r.title??""),x(e,"url",r.url??""),x(e,"collection_id",String(r.collection_id??"")),x(e,"importance",r.importance??""),x(e,"description",r.description??""),le(e,"is_favorite",!!r.is_favorite),le(e,"is_pending_review",!!r.is_pending_review)},Y=async r=>{if(!(r instanceof HTMLAnchorElement)||!r.dataset.linkId)return;g?.abort(),g=new AbortController;let d=++f,M=r.dataset.linkId;e.reset(),V(e),L("edit"),h("Loading link\u2026"),i(!0,"Loading\u2026"),t.open||t.showModal();try{let w=await fetch(v(M),{headers:{Accept:"application/json","X-Requested-With":"XMLHttpRequest"},signal:g.signal}),b=await C(w);if(d!==f)return;if(!w.ok||!b.link)throw new Error(b.error||"Unable to load this link.");D(b.link),h(""),i(!1),q(e,"title")?.focus()}catch(w){if(w.name==="AbortError"||d!==f)return;h(w.message||"Unable to load this link.",!0),i(!1)}},me=r=>{if(!(r instanceof HTMLButtonElement))return;f++,g?.abort(),g=null,e.reset(),V(e),L("create"),x(e,"id","");let d=r.dataset.collectionId??"";/^[1-9]\d*$/.test(d)&&x(e,"collection_id",d),h(""),i(!1),t.open||t.showModal(),q(e,"title")?.focus()};document.addEventListener(z,r=>{r instanceof CustomEvent&&Y(r.detail?.link)}),document.querySelectorAll("[data-add-link]").forEach(r=>{r.addEventListener("click",()=>me(r))}),e.addEventListener("input",()=>V(e)),m instanceof HTMLButtonElement&&m.addEventListener("click",async()=>{let r=q(e,"url");if(r instanceof HTMLInputElement){if(!navigator.clipboard?.readText){h("Clipboard access is not available in this browser.",!0);return}try{let d=(await navigator.clipboard.readText()).trim();if(d===""){h("The clipboard is empty.",!0);return}r.value=d,r.dispatchEvent(new Event("input",{bubbles:!0})),h(""),r.focus()}catch{h("Clipboard access was denied.",!0),r.focus()}}}),y instanceof HTMLButtonElement&&y.addEventListener("click",()=>{let r=q(e,"url");if(!(r instanceof HTMLInputElement))return;let d;try{if(d=new URL(r.value.trim()),!["http:","https:"].includes(d.protocol))throw new TypeError("Unsupported URL protocol.")}catch{r.setCustomValidity("Enter a valid HTTP or HTTPS URL."),r.reportValidity(),r.focus();return}r.setCustomValidity(""),window.open(d.href,"_blank","noopener,noreferrer")}),u instanceof HTMLButtonElement&&u.addEventListener("click",async()=>{if(E!=="edit")return;let r=q(e,"id"),d=q(e,"title");if(!(r instanceof HTMLInputElement)||r.value===""){h("No link is selected.",!0);return}let M=d instanceof HTMLInputElement?d.value.trim():"";if(await P({title:"Delete link?",message:M?`The link \u201C${M}\u201D will be removed. Do you want to continue?`:"This link will be removed. Do you want to continue?",confirmLabel:"Delete link"})){h("Deleting link\u2026"),i(!0);try{let b=await fetch(v(r.value),{method:"DELETE",headers:{Accept:"application/json","X-Requested-With":"XMLHttpRequest",[s]:l}}),U=await C(b);if(!b.ok)throw new Error(U.error||"Unable to delete this link.");t.hidden=!0,t.close(),window.location.reload()}catch(b){h(b.message||"Unable to delete this link.",!0),i(!1)}}}),e.addEventListener("submit",async r=>{r.preventDefault(),V(e);let d=new FormData(e),M=d.get("id"),w=E==="create";if(!w&&(typeof M!="string"||M==="")){h("No link is selected.",!0);return}let b={title:d.get("title"),url:d.get("url"),collection_id:d.get("collection_id"),importance:d.get("importance"),description:d.get("description"),is_favorite:d.get("is_favorite")==="1",is_pending_review:d.get("is_pending_review")==="1"};h(w?"Adding link\u2026":"Saving changes\u2026"),i(!0,w?"Adding\u2026":"Saving\u2026");try{let U=await fetch(w?S:v(M),{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json","X-Requested-With":"XMLHttpRequest",[s]:l},body:JSON.stringify(b)}),F=await C(U);if(!U.ok)throw i(!1),F.errors&&typeof F.errors=="object"&&(be(e,F.errors),e.reportValidity()),new Error(F.error||(w?"Unable to add this link.":"Unable to save this link."));t.hidden=!0,t.close(),window.location.reload()}catch(U){h(U.message||(w?"Unable to add this link.":"Unable to save this link."),!0),i(!1)}}),t.addEventListener("close",()=>{f++,g?.abort(),g=null,e.reset(),V(e),h(""),L("edit"),i(!1)})}var He="[data-edit-user-control]";function ue(t,e){return t.elements.namedItem(e)}function X(t){t.querySelectorAll("[name]").forEach(e=>{e.setCustomValidity?.("")})}function Ce(t,e){Object.entries(e).forEach(([o,n])=>{let c=ue(t,o);c instanceof RadioNodeList?c[0]?.setCustomValidity?.(n):c?.setCustomValidity?.(n)})}function fe(){let t=document.querySelector("[data-edit-user-modal]");if(!(t instanceof HTMLDialogElement))return;let e=t.querySelector("[data-edit-user-form]"),o=t.querySelector("[data-edit-user-status]"),n=t.querySelector("[data-edit-user-save]"),c=t.dataset.createEndpoint,p=t.dataset.csrfHeader,u=t.dataset.csrfToken;if(!(e instanceof HTMLFormElement)||!(n instanceof HTMLButtonElement)||!c||!p||!u)return;let m=(s,l=!1)=>{o instanceof HTMLElement&&(o.textContent=s,o.classList.toggle("text-error",l),o.classList.toggle("text-base-content/60",!l))},y=(s,l="Add user")=>{e.setAttribute("aria-busy",String(s)),e.querySelectorAll(He).forEach(g=>{g.disabled=s}),n.disabled=s,n.textContent=l},S=s=>{typeof s.csrf=="string"&&s.csrf!==""&&(u=s.csrf,t.dataset.csrfToken=s.csrf)},T=async s=>{let l={};try{l=await s.json()}catch{}return S(l),l};document.querySelectorAll("[data-add-user]").forEach(s=>{s.addEventListener("click",()=>{e.reset(),X(e),m(""),y(!1),t.open||t.showModal(),ue(e,"username")?.focus()})}),e.addEventListener("input",()=>X(e)),e.addEventListener("submit",async s=>{if(s.preventDefault(),X(e),!e.reportValidity())return;let l=new FormData(e),g={username:l.get("username"),email:l.get("email"),password:l.get("password"),role:l.get("role"),active:l.get("active")==="1"};m("Adding user\u2026"),y(!0,"Adding\u2026");try{let f=await fetch(c,{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json","X-Requested-With":"XMLHttpRequest",[p]:u},body:JSON.stringify(g)}),E=await T(f);if(!f.ok)throw y(!1),E.errors&&typeof E.errors=="object"&&(Ce(e,E.errors),e.reportValidity()),new Error(E.error||"Unable to add this user.");t.hidden=!0,t.close(),window.location.reload()}catch(f){m(f.message||"Unable to add this user.",!0),y(!1)}}),t.addEventListener("close",()=>{e.reset(),X(e),m(""),y(!1)})}ee();te();ne();oe();re();ae();ie();de();ce();fe();})();
+(() => {
+  // theme/js/lib/clipboard.js
+  var resetTimers = /* @__PURE__ */ new WeakMap();
+  async function copyInputValue(input) {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(input.value);
+        return;
+      } catch {
+      }
+    }
+    input.focus({ preventScroll: true });
+    input.select();
+    input.setSelectionRange(0, input.value.length);
+    if (!document.execCommand("copy")) {
+      throw new Error("Copy failed");
+    }
+    input.setSelectionRange(0, 0);
+  }
+  function showCopyFeedback(root, button, status, message) {
+    root.querySelectorAll('[data-copied="true"]').forEach((copiedButton) => {
+      copiedButton.removeAttribute("data-copied");
+    });
+    button.dataset.copied = "true";
+    if (status instanceof HTMLElement) {
+      status.textContent = message;
+    }
+    const activeTimer = resetTimers.get(button);
+    window.clearTimeout(activeTimer);
+    resetTimers.set(button, window.setTimeout(() => {
+      button.removeAttribute("data-copied");
+      resetTimers.delete(button);
+    }, 1600));
+  }
+
+  // theme/js/components/datetime.js
+  var SECOND = 1e3;
+  var MINUTE = 60 * SECOND;
+  var HOUR = 60 * MINUTE;
+  var DAY = 24 * HOUR;
+  var DEBT_BASELINES = {
+    "debt-us": {
+      date: /* @__PURE__ */ new Date("2025-10-23T00:00:00Z"),
+      amount: 38e12,
+      perSecond: 63e3,
+      currency: "USD"
+    },
+    "debt-de": {
+      date: /* @__PURE__ */ new Date("2025-03-31T00:00:00Z"),
+      amount: 252e10,
+      perSecond: 1800,
+      currency: "EUR"
+    },
+    "debt-gr": {
+      date: /* @__PURE__ */ new Date("2025-06-30T00:00:00Z"),
+      amount: 403e9,
+      perSecond: 160,
+      currency: "EUR"
+    }
+  };
+  var integerFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+  function isoWeek(date) {
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const weekday = utcDate.getUTCDay() || 7;
+    utcDate.setUTCDate(utcDate.getUTCDate() + 4 - weekday);
+    const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+    return Math.ceil(((utcDate - yearStart) / DAY + 1) / 7);
+  }
+  function dayOfYear(date) {
+    const currentDay = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+    const yearStart = Date.UTC(date.getFullYear(), 0, 1);
+    return Math.floor((currentDay - yearStart) / DAY) + 1;
+  }
+  function elapsedParts(start, end) {
+    const difference = Math.max(0, end - start);
+    return {
+      years: Math.floor(difference / (365.25 * DAY)),
+      days: Math.floor(difference / DAY),
+      hours: Math.floor(difference / HOUR),
+      minutes: Math.floor(difference / MINUTE),
+      seconds: Math.floor(difference / SECOND)
+    };
+  }
+  function debtEstimate(baseline, now) {
+    const elapsedSeconds = (now - baseline.date) / SECOND;
+    const amount = baseline.amount + baseline.perSecond * elapsedSeconds;
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: baseline.currency,
+      maximumFractionDigits: 0
+    }).format(amount);
+  }
+  function metricValue(key, now) {
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const startOfNextYear = new Date(now.getFullYear() + 1, 0, 1);
+    const untilReset = elapsedParts(now, /* @__PURE__ */ new Date("2030-01-01T00:00:00Z"));
+    const sinceEvent = elapsedParts(/* @__PURE__ */ new Date("2015-06-15T10:30:00Z"), now);
+    const monthRemaining = elapsedParts(now, startOfNextMonth);
+    const yearRemaining = elapsedParts(now, startOfNextYear);
+    const yearElapsed = elapsedParts(startOfYear, now);
+    const values = {
+      "current-time": now.toLocaleTimeString("en-GB"),
+      "current-date": now.toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      }),
+      "current-week": `Week ${isoWeek(now)}`,
+      "current-timestamp": String(Math.floor(now.getTime() / SECOND)),
+      "day-of-year": integerFormatter.format(dayOfYear(now)),
+      "minute-of-year": integerFormatter.format(yearElapsed.minutes),
+      "second-of-year": integerFormatter.format(yearElapsed.seconds),
+      "reset-days": integerFormatter.format(untilReset.days),
+      "reset-hours": integerFormatter.format(untilReset.hours),
+      "reset-seconds": integerFormatter.format(untilReset.seconds),
+      "month-days": integerFormatter.format(monthRemaining.days),
+      "month-hours": integerFormatter.format(monthRemaining.hours),
+      "month-seconds": integerFormatter.format(monthRemaining.seconds),
+      "year-days": integerFormatter.format(yearRemaining.days),
+      "year-hours": integerFormatter.format(yearRemaining.hours),
+      "year-seconds": integerFormatter.format(yearRemaining.seconds),
+      "event-years": integerFormatter.format(sinceEvent.years),
+      "event-days": integerFormatter.format(sinceEvent.days),
+      "event-seconds": integerFormatter.format(sinceEvent.seconds),
+      "unix-seconds": String(Math.floor(now.getTime() / SECOND))
+    };
+    if (DEBT_BASELINES[key]) {
+      return debtEstimate(DEBT_BASELINES[key], now);
+    }
+    return values[key] ?? "\u2014";
+  }
+  function initDateTime() {
+    const root = document.querySelector("[data-datetime-utility]");
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+    const heroTime = root.querySelector("[data-datetime-hero-time]");
+    const timezone = root.querySelector("[data-datetime-timezone]");
+    const status = root.querySelector("[data-datetime-status]");
+    const fields = root.querySelectorAll("[data-datetime-value]");
+    if (timezone instanceof HTMLElement) {
+      timezone.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || "Local timezone";
+    }
+    const update = () => {
+      const now = /* @__PURE__ */ new Date();
+      if (heroTime instanceof HTMLTimeElement) {
+        heroTime.dateTime = now.toISOString();
+        heroTime.textContent = now.toLocaleTimeString("en-GB");
+      }
+      fields.forEach((field) => {
+        if (field instanceof HTMLInputElement) {
+          field.value = metricValue(field.dataset.datetimeValue, now);
+        }
+      });
+    };
+    root.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy-datetime]");
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+      const input = button.closest("[data-copy-entry]")?.querySelector("[data-datetime-value]");
+      if (!(input instanceof HTMLInputElement)) {
+        return;
+      }
+      try {
+        await copyInputValue(input);
+        showCopyFeedback(root, button, status, `${input.value} copied.`);
+      } catch {
+        if (status instanceof HTMLElement) {
+          status.textContent = "Unable to copy this value. Select it and copy manually.";
+        }
+      }
+    });
+    update();
+    window.setInterval(update, SECOND);
+  }
+
+  // theme/js/components/hashing.js
+  function initHashing() {
+    const root = document.querySelector("[data-hashing-utility]");
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+    const input = root.querySelector("[data-hash-input]");
+    const trim = root.querySelector("[data-hash-trim]");
+    const status = root.querySelector("[data-hash-status]");
+    const byteCount = root.querySelector("[data-hash-byte-count]");
+    const outputs = root.querySelectorAll("[data-hash-output]");
+    const endpoint = root.dataset.hashUrl;
+    const csrfHeader = root.dataset.csrfHeader;
+    let csrfToken = root.dataset.csrfToken;
+    let debounceTimer;
+    let activeRequest;
+    if (!(input instanceof HTMLTextAreaElement) || !endpoint || !csrfHeader || !csrfToken) {
+      return;
+    }
+    const clearOutputs = () => {
+      outputs.forEach((output) => {
+        if (output instanceof HTMLInputElement) {
+          output.value = "";
+          output.closest("[data-copy-entry]")?.querySelector("[data-copy-hash]")?.setAttribute("disabled", "");
+        }
+      });
+    };
+    const updateByteCount = () => {
+      if (byteCount instanceof HTMLElement) {
+        const bytes = new TextEncoder().encode(input.value).length;
+        byteCount.textContent = `${bytes.toLocaleString("en-US")} ${bytes === 1 ? "byte" : "bytes"}`;
+      }
+    };
+    const generate = async () => {
+      const value = trim instanceof HTMLInputElement && trim.checked ? input.value.trim() : input.value;
+      updateByteCount();
+      if (value === "") {
+        activeRequest?.abort();
+        clearOutputs();
+        if (status instanceof HTMLElement) {
+          status.textContent = "Waiting for input.";
+        }
+        return;
+      }
+      activeRequest?.abort();
+      activeRequest = new AbortController();
+      if (status instanceof HTMLElement) {
+        status.textContent = "Generating hashes\u2026";
+      }
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({ value }),
+          signal: activeRequest.signal
+        });
+        const result = await response.json();
+        if (!response.ok || !result.hashes) {
+          throw new Error(result.error || "Unable to generate hashes.");
+        }
+        if (typeof result.csrf === "string" && result.csrf !== "") {
+          csrfToken = result.csrf;
+          root.dataset.csrfToken = result.csrf;
+        }
+        outputs.forEach((output) => {
+          if (!(output instanceof HTMLInputElement)) {
+            return;
+          }
+          output.value = result.hashes[output.dataset.hashOutput] ?? "";
+          const button = output.closest("[data-copy-entry]")?.querySelector("[data-copy-hash]");
+          if (button instanceof HTMLButtonElement) {
+            button.disabled = output.value === "";
+          }
+        });
+        if (status instanceof HTMLElement) {
+          status.textContent = "All five hashes are ready.";
+        }
+      } catch (error) {
+        if (error.name === "AbortError") {
+          return;
+        }
+        clearOutputs();
+        if (status instanceof HTMLElement) {
+          status.textContent = error.message || "Unable to generate hashes.";
+        }
+      }
+    };
+    const scheduleGeneration = (delay = 220) => {
+      window.clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(generate, delay);
+    };
+    input.addEventListener("input", () => {
+      updateByteCount();
+      scheduleGeneration();
+    });
+    if (trim instanceof HTMLInputElement) {
+      trim.addEventListener("change", () => scheduleGeneration(0));
+    }
+    root.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy-hash]");
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+      const output = button.closest("[data-copy-entry]")?.querySelector("[data-hash-output]");
+      if (!(output instanceof HTMLInputElement) || output.value === "") {
+        return;
+      }
+      try {
+        await copyInputValue(output);
+        showCopyFeedback(root, button, status, `${button.dataset.copyHash.toUpperCase()} copied.`);
+      } catch {
+        if (status instanceof HTMLElement) {
+          status.textContent = "Unable to copy this hash. Select it and copy manually.";
+        }
+      }
+    });
+    updateByteCount();
+  }
+
+  // theme/js/components/link-filters.js
+  function initLinkFilters() {
+    const filters = document.querySelector("[data-link-filters]");
+    if (filters instanceof HTMLFormElement) {
+      filters.querySelectorAll("select").forEach((select) => {
+        select.addEventListener("change", () => filters.requestSubmit());
+      });
+    }
+  }
+
+  // theme/js/components/link-search.js
+  function initLinkSearch() {
+    const search = document.querySelector("[data-link-search-form]");
+    if (!(search instanceof HTMLFormElement)) {
+      return;
+    }
+    const input = search.elements.namedItem("q");
+    const clearSearch = search.querySelector("[data-clear-search]");
+    if (!(input instanceof HTMLInputElement)) {
+      return;
+    }
+    if (clearSearch instanceof HTMLButtonElement) {
+      input.addEventListener("input", () => {
+        clearSearch.disabled = input.value === "";
+      });
+      clearSearch.addEventListener("click", () => {
+        input.value = "";
+        search.requestSubmit();
+      });
+    }
+    if (input.autofocus) {
+      requestAnimationFrame(() => {
+        input.focus({ preventScroll: true });
+        input.setSelectionRange(input.value.length, input.value.length);
+      });
+    }
+  }
+
+  // theme/js/components/password-generator.js
+  function initPasswordGenerator() {
+    const generator = document.querySelector("[data-password-generator]");
+    if (!(generator instanceof HTMLElement)) {
+      return;
+    }
+    const status = generator.querySelector("[data-copy-status]");
+    generator.querySelectorAll("[data-copy-password]").forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+      button.addEventListener("click", async () => {
+        const entry = button.closest("[data-password-entry]");
+        const input = entry?.querySelector("[data-password-value]");
+        if (!(input instanceof HTMLInputElement)) {
+          return;
+        }
+        try {
+          await copyInputValue(input);
+          showCopyFeedback(
+            generator,
+            button,
+            status,
+            `${input.value.length} character password copied.`
+          );
+        } catch {
+          if (status instanceof HTMLElement) {
+            status.textContent = "Unable to copy the password. Select it and copy manually.";
+          }
+        }
+      });
+    });
+  }
+
+  // theme/js/components/worktime.js
+  var STORAGE_KEY = "lincotic.workTimeStartAt";
+  var SECOND2 = 1e3;
+  var MINUTE2 = 60 * SECOND2;
+  var HOUR2 = 60 * MINUTE2;
+  var TARGET_NET_HOURS = 8;
+  var pad = (value) => String(value).padStart(2, "0");
+  function formatDuration(milliseconds) {
+    const totalSeconds = Math.floor(Math.max(0, milliseconds) / SECOND2);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor(totalSeconds % 3600 / 60);
+    const seconds = totalSeconds % 60;
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  }
+  function formatTime(date) {
+    return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+  function breakDuration(elapsed) {
+    let minutes = 0;
+    if (elapsed >= 6 * HOUR2) {
+      minutes += 30;
+    }
+    if (elapsed >= 9 * HOUR2) {
+      minutes += 15;
+    }
+    return minutes * MINUTE2;
+  }
+  function parseStartTime(value) {
+    if (!/^\d{2}:\d{2}$/.test(value)) {
+      return null;
+    }
+    const [hours, minutes] = value.split(":").map(Number);
+    if (hours > 23 || minutes > 59) {
+      return null;
+    }
+    const now = /* @__PURE__ */ new Date();
+    const start = new Date(now);
+    start.setHours(hours, minutes, 0, 0);
+    if (start - now > 12 * HOUR2) {
+      start.setDate(start.getDate() - 1);
+    } else if (start > now) {
+      return null;
+    }
+    return start;
+  }
+  function storedStartTime() {
+    try {
+      const value = localStorage.getItem(STORAGE_KEY);
+      const date = value ? new Date(value) : null;
+      return date && !Number.isNaN(date.getTime()) ? date : null;
+    } catch {
+      return null;
+    }
+  }
+  function initWorkTime() {
+    const root = document.querySelector("[data-worktime-utility]");
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+    const input = root.querySelector("[data-worktime-start]");
+    const save = root.querySelector("[data-worktime-save]");
+    const reset = root.querySelector("[data-worktime-reset]");
+    const display = root.querySelector("[data-worktime-display]");
+    const progress = root.querySelector("[data-worktime-progress]");
+    const progressText = root.querySelector("[data-worktime-progress-text]");
+    const percent = root.querySelector("[data-worktime-percent]");
+    const end = root.querySelector("[data-worktime-end]");
+    const breakOutput = root.querySelector("[data-worktime-break]");
+    const state = root.querySelector("[data-worktime-state]");
+    let startTime = storedStartTime();
+    let persisted = startTime !== null;
+    let timer;
+    if (!(input instanceof HTMLInputElement) || !(save instanceof HTMLButtonElement)) {
+      return;
+    }
+    const setText = (element, value) => {
+      if (element instanceof HTMLElement) {
+        element.textContent = value;
+      }
+    };
+    const showIdle = () => {
+      setText(display, "00:00:00");
+      setText(progressText, "Set a start time to begin tracking.");
+      setText(percent, "0%");
+      setText(end, "--:--");
+      setText(breakOutput, "0 min");
+      setText(state, "No start time saved.");
+      if (progress instanceof HTMLProgressElement) {
+        progress.value = 0;
+      }
+    };
+    const update = () => {
+      if (!startTime) {
+        showIdle();
+        return;
+      }
+      const elapsed = Math.max(0, Date.now() - startTime.getTime());
+      const deductedBreak = breakDuration(elapsed);
+      const netWorked = Math.max(0, elapsed - deductedBreak);
+      const target = TARGET_NET_HOURS * HOUR2;
+      const progressValue = Math.min(100, netWorked / target * 100);
+      const roundedProgress = Math.round(progressValue);
+      const targetEnd = new Date(startTime.getTime() + 8 * HOUR2 + 30 * MINUTE2);
+      setText(display, formatDuration(netWorked));
+      setText(percent, `${roundedProgress}%`);
+      setText(end, formatTime(targetEnd));
+      setText(breakOutput, `${deductedBreak / MINUTE2} min`);
+      setText(
+        state,
+        persisted ? `Started at ${formatTime(startTime)} \xB7 saved in this browser.` : `Started at ${formatTime(startTime)} \xB7 active in this tab only.`
+      );
+      if (progress instanceof HTMLProgressElement) {
+        progress.value = progressValue;
+      }
+      if (roundedProgress >= 100) {
+        setText(progressText, "Workday complete. Eight net hours reached.");
+      } else if (roundedProgress >= 75) {
+        setText(progressText, `Almost there\u2014${roundedProgress}% of your workday is complete.`);
+      } else if (roundedProgress >= 50) {
+        setText(progressText, `Good progress\u2014${roundedProgress}% of your workday is complete.`);
+      } else {
+        setText(progressText, `${roundedProgress}% of your eight-hour workday is complete.`);
+      }
+    };
+    const run = () => {
+      window.clearInterval(timer);
+      update();
+      timer = window.setInterval(update, SECOND2);
+    };
+    save.addEventListener("click", () => {
+      const parsed = parseStartTime(input.value);
+      if (!parsed) {
+        setText(state, "Enter a valid start time.");
+        return;
+      }
+      startTime = parsed;
+      try {
+        localStorage.setItem(STORAGE_KEY, startTime.toISOString());
+        persisted = true;
+      } catch {
+        persisted = false;
+      }
+      run();
+    });
+    if (reset instanceof HTMLButtonElement) {
+      reset.addEventListener("click", () => {
+        startTime = null;
+        persisted = false;
+        window.clearInterval(timer);
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch {
+        }
+        showIdle();
+      });
+    }
+    if (startTime) {
+      input.value = formatTime(startTime);
+      run();
+    } else {
+      showIdle();
+    }
+  }
+
+  // theme/js/lib/confirmation.js
+  function confirmDialog({
+    title = "Are you sure?",
+    message = "Please confirm that you want to continue.",
+    confirmLabel = "Confirm"
+  } = {}) {
+    const dialog = document.querySelector("[data-confirmation-modal]");
+    const titleElement = dialog?.querySelector("[data-confirmation-title]");
+    const messageElement = dialog?.querySelector("[data-confirmation-message]");
+    const confirmButton = dialog?.querySelector("[data-confirmation-confirm]");
+    const cancelButtons = dialog?.querySelectorAll("[data-confirmation-cancel]");
+    if (!(dialog instanceof HTMLDialogElement) || !(titleElement instanceof HTMLElement) || !(messageElement instanceof HTMLElement) || !(confirmButton instanceof HTMLButtonElement) || !cancelButtons?.length) {
+      return Promise.resolve(false);
+    }
+    if (dialog.open) {
+      return Promise.resolve(false);
+    }
+    titleElement.textContent = title;
+    messageElement.textContent = message;
+    confirmButton.textContent = confirmLabel;
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (confirmed) => {
+        if (settled) return;
+        settled = true;
+        confirmButton.removeEventListener("click", confirm);
+        cancelButtons.forEach((button) => button.removeEventListener("click", cancel));
+        dialog.removeEventListener("close", cancel);
+        dialog.removeEventListener("cancel", cancel);
+        if (dialog.open) {
+          dialog.close();
+        }
+        resolve(confirmed);
+      };
+      const confirm = () => finish(true);
+      const cancel = (event) => {
+        event?.preventDefault();
+        finish(false);
+      };
+      confirmButton.addEventListener("click", confirm);
+      cancelButtons.forEach((button) => button.addEventListener("click", cancel));
+      dialog.addEventListener("close", cancel);
+      dialog.addEventListener("cancel", cancel);
+      dialog.showModal();
+      confirmButton.focus();
+    });
+  }
+
+  // theme/js/edit/edit-collection.js
+  var editableControlSelector = "[data-edit-collection-control]";
+  function formControl(form, name) {
+    return form.elements.namedItem(name);
+  }
+  function setControlValue(form, name, value) {
+    const control = formControl(form, name);
+    if (control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement) {
+      control.value = value;
+    }
+  }
+  function clearValidation(form) {
+    form.querySelectorAll("[name]").forEach((control) => {
+      control.setCustomValidity?.("");
+    });
+  }
+  function applyValidation(form, errors) {
+    Object.entries(errors).forEach(([name, message]) => {
+      formControl(form, name)?.setCustomValidity?.(message);
+    });
+  }
+  function initEditCollection() {
+    const dialog = document.querySelector("[data-edit-collection-modal]");
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+    const form = dialog.querySelector("[data-edit-collection-form]");
+    const status = dialog.querySelector("[data-edit-collection-status]");
+    const saveButton = dialog.querySelector("[data-edit-collection-save]");
+    const deleteButton = dialog.querySelector("[data-edit-collection-delete]");
+    const endpointTemplate = dialog.dataset.endpointTemplate;
+    const csrfHeader = dialog.dataset.csrfHeader;
+    let csrfToken = dialog.dataset.csrfToken;
+    let loadController = null;
+    let loadSequence = 0;
+    if (!(form instanceof HTMLFormElement) || !(saveButton instanceof HTMLButtonElement) || !endpointTemplate || !csrfHeader || !csrfToken) {
+      return;
+    }
+    const endpointFor = (id) => endpointTemplate.replace(
+      "__COLLECTION_ID__",
+      encodeURIComponent(id)
+    );
+    const setStatus = (message, isError = false) => {
+      if (!(status instanceof HTMLElement)) return;
+      status.textContent = message;
+      status.classList.toggle("text-error", isError);
+      status.classList.toggle("text-base-content/60", !isError);
+    };
+    const setBusy = (busy, label = "Save changes") => {
+      form.setAttribute("aria-busy", String(busy));
+      form.querySelectorAll(editableControlSelector).forEach((control) => {
+        control.disabled = busy;
+      });
+      saveButton.disabled = busy;
+      saveButton.textContent = label;
+    };
+    const updateCsrf = (result) => {
+      if (typeof result.csrf === "string" && result.csrf !== "") {
+        csrfToken = result.csrf;
+        dialog.dataset.csrfToken = result.csrf;
+      }
+    };
+    const readResponse = async (response) => {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+      }
+      updateCsrf(result);
+      return result;
+    };
+    const populateForm = (collection) => {
+      setControlValue(form, "id", String(collection.id));
+      setControlValue(form, "name", collection.name ?? "");
+      setControlValue(form, "slug", collection.slug ?? "");
+      setControlValue(form, "description", collection.description ?? "");
+      setControlValue(form, "icon", collection.icon ?? "");
+      const featured = formControl(form, "is_featured");
+      if (featured instanceof HTMLInputElement) {
+        featured.checked = Boolean(collection.is_featured);
+      }
+    };
+    const openEditor = async (trigger) => {
+      if (!(trigger instanceof HTMLButtonElement) || !/^[1-9]\d*$/.test(trigger.dataset.collectionId ?? "")) {
+        return;
+      }
+      loadController?.abort();
+      loadController = new AbortController();
+      const sequence = ++loadSequence;
+      const id = trigger.dataset.collectionId;
+      form.reset();
+      clearValidation(form);
+      setStatus("Loading collection\u2026");
+      setBusy(true, "Loading\u2026");
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+      try {
+        const response = await fetch(endpointFor(id), {
+          headers: {
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          signal: loadController.signal
+        });
+        const result = await readResponse(response);
+        if (sequence !== loadSequence) return;
+        if (!response.ok || !result.collection) {
+          throw new Error(result.error || "Unable to load this collection.");
+        }
+        populateForm(result.collection);
+        setStatus("");
+        setBusy(false);
+        formControl(form, "name")?.focus();
+      } catch (error) {
+        if (error.name === "AbortError" || sequence !== loadSequence) return;
+        setStatus(error.message || "Unable to load this collection.", true);
+        setBusy(false);
+      }
+    };
+    document.querySelectorAll("[data-edit-collection]").forEach((trigger) => {
+      trigger.addEventListener("click", () => void openEditor(trigger));
+    });
+    form.addEventListener("input", () => clearValidation(form));
+    if (deleteButton instanceof HTMLButtonElement) {
+      deleteButton.addEventListener("click", async () => {
+        const idControl = formControl(form, "id");
+        const nameControl = formControl(form, "name");
+        if (!(idControl instanceof HTMLInputElement) || idControl.value === "") {
+          setStatus("No collection is selected.", true);
+          return;
+        }
+        const name = nameControl instanceof HTMLInputElement ? nameControl.value.trim() : "";
+        const confirmed = await confirmDialog({
+          title: "Delete collection?",
+          message: name ? `The collection \u201C${name}\u201D will be removed. Do you want to continue?` : "This collection will be removed. Do you want to continue?",
+          confirmLabel: "Delete collection"
+        });
+        if (!confirmed) return;
+        setStatus("Deleting collection\u2026");
+        setBusy(true);
+        try {
+          const response = await fetch(endpointFor(idControl.value), {
+            method: "DELETE",
+            headers: {
+              Accept: "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+              [csrfHeader]: csrfToken
+            }
+          });
+          const result = await readResponse(response);
+          if (!response.ok) {
+            throw new Error(result.error || "Unable to delete this collection.");
+          }
+          dialog.hidden = true;
+          dialog.close();
+          window.location.reload();
+        } catch (error) {
+          setStatus(error.message || "Unable to delete this collection.", true);
+          setBusy(false);
+        }
+      });
+    }
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearValidation(form);
+      const data = new FormData(form);
+      const id = data.get("id");
+      if (typeof id !== "string" || id === "") {
+        setStatus("No collection is selected.", true);
+        return;
+      }
+      const payload = {
+        name: data.get("name"),
+        slug: data.get("slug"),
+        description: data.get("description"),
+        icon: data.get("icon"),
+        is_featured: data.get("is_featured") === "1"
+      };
+      setStatus("Saving changes\u2026");
+      setBusy(true, "Saving\u2026");
+      try {
+        const response = await fetch(endpointFor(id), {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await readResponse(response);
+        if (!response.ok) {
+          setBusy(false);
+          if (result.errors && typeof result.errors === "object") {
+            applyValidation(form, result.errors);
+            form.reportValidity();
+          }
+          throw new Error(result.error || "Unable to save this collection.");
+        }
+        dialog.hidden = true;
+        dialog.close();
+        window.location.reload();
+      } catch (error) {
+        setStatus(error.message || "Unable to save this collection.", true);
+        setBusy(false);
+      }
+    });
+    dialog.addEventListener("close", () => {
+      loadSequence++;
+      loadController?.abort();
+      loadController = null;
+      form.reset();
+      clearValidation(form);
+      setStatus("");
+      setBusy(false);
+    });
+  }
+
+  // theme/js/edit/edit-mode.js
+  var editableLinkSelector = ".link-card";
+  var editLinkRequestEvent = "lincotic:edit-link";
+  function isVisible(element) {
+    return !element.hidden && element.getClientRects().length > 0 && window.getComputedStyle(element).visibility !== "hidden";
+  }
+  function initEditMode() {
+    const toggle = document.querySelector("[data-edit-mode-toggle]");
+    if (!(toggle instanceof HTMLInputElement)) {
+      return;
+    }
+    const syncEditableLinks = () => {
+      document.querySelectorAll(editableLinkSelector).forEach((link) => {
+        link.classList.toggle("edit-mode", toggle.checked && isVisible(link));
+      });
+    };
+    toggle.addEventListener("change", syncEditableLinks);
+    document.addEventListener("click", (event) => {
+      if (!toggle.checked || !(event.target instanceof Element)) {
+        return;
+      }
+      const link = event.target.closest(editableLinkSelector);
+      if (!(link instanceof HTMLAnchorElement) || !link.classList.contains("edit-mode")) {
+        return;
+      }
+      event.preventDefault();
+      link.dispatchEvent(new CustomEvent(editLinkRequestEvent, {
+        bubbles: true,
+        detail: { link }
+      }));
+    });
+    syncEditableLinks();
+  }
+
+  // theme/js/edit/edit-link.js
+  var editableControlSelector2 = "[data-edit-link-control]";
+  function formControl2(form, name) {
+    return form.elements.namedItem(name);
+  }
+  function setControlValue2(form, name, value) {
+    const control = formControl2(form, name);
+    if (control instanceof RadioNodeList) {
+      control.value = value;
+    } else if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement) {
+      control.value = value;
+    }
+  }
+  function setCheckboxValue(form, name, checked) {
+    const control = formControl2(form, name);
+    if (control instanceof HTMLInputElement) {
+      control.checked = checked;
+    }
+  }
+  function clearValidation2(form) {
+    form.querySelectorAll("[name]").forEach((control) => {
+      if (typeof control.setCustomValidity === "function") {
+        control.setCustomValidity("");
+      }
+    });
+  }
+  function applyValidation2(form, errors) {
+    Object.entries(errors).forEach(([name, message]) => {
+      const control = formControl2(form, name);
+      if (control instanceof RadioNodeList) {
+        const firstControl = control[0];
+        firstControl?.setCustomValidity?.(message);
+      } else {
+        control?.setCustomValidity?.(message);
+      }
+    });
+  }
+  function initEditLink() {
+    const dialog = document.querySelector("[data-edit-link-modal]");
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+    const form = dialog.querySelector("[data-edit-link-form]");
+    const modalTitle = dialog.querySelector("[data-edit-link-title]");
+    const modalDescription = dialog.querySelector("[data-edit-link-description]");
+    const status = dialog.querySelector("[data-edit-link-status]");
+    const saveButton = dialog.querySelector("[data-edit-link-save]");
+    const deleteButton = dialog.querySelector("[data-edit-link-delete]");
+    const pasteUrlButton = dialog.querySelector("[data-edit-link-paste-url]");
+    const openUrlButton = dialog.querySelector("[data-edit-link-open-url]");
+    const createEndpoint = dialog.dataset.createEndpoint;
+    const endpointTemplate = dialog.dataset.endpointTemplate;
+    const csrfHeader = dialog.dataset.csrfHeader;
+    let csrfToken = dialog.dataset.csrfToken;
+    let loadController = null;
+    let loadSequence = 0;
+    let mode = "edit";
+    if (!(form instanceof HTMLFormElement) || !(modalTitle instanceof HTMLElement) || !(modalDescription instanceof HTMLElement) || !(saveButton instanceof HTMLButtonElement) || !createEndpoint || !endpointTemplate || !csrfHeader || !csrfToken) {
+      return;
+    }
+    const setStatus = (message, isError = false) => {
+      if (!(status instanceof HTMLElement)) {
+        return;
+      }
+      status.textContent = message;
+      status.classList.toggle("text-error", isError);
+      status.classList.toggle("text-base-content/60", !isError);
+    };
+    const defaultSaveLabel = () => mode === "create" ? "Add link" : "Save changes";
+    const setBusy = (busy, label = defaultSaveLabel()) => {
+      form.setAttribute("aria-busy", String(busy));
+      form.querySelectorAll(editableControlSelector2).forEach((control) => {
+        control.disabled = busy;
+      });
+      saveButton.disabled = busy;
+      saveButton.textContent = label;
+    };
+    const setMode = (nextMode) => {
+      mode = nextMode;
+      const creating = mode === "create";
+      modalTitle.textContent = creating ? "Add link" : "Edit link";
+      modalDescription.textContent = creating ? "Add a new destination." : "Update the destination, organization, and status of this link.";
+      const collectionControl = formControl2(form, "collection_id");
+      if (collectionControl instanceof HTMLSelectElement) {
+        const unassignedOption = collectionControl.querySelector(
+          "[data-edit-link-unassigned-option]"
+        );
+        if (creating) {
+          const option = unassignedOption ?? new Option("[Unassigned]", "", true, true);
+          option.dataset.editLinkUnassignedOption = "";
+          if (!unassignedOption) {
+            collectionControl.prepend(option);
+          }
+          option.selected = true;
+          collectionControl.required = false;
+        } else {
+          unassignedOption?.remove();
+          collectionControl.required = true;
+        }
+      }
+      if (deleteButton instanceof HTMLButtonElement) {
+        deleteButton.hidden = creating;
+      }
+      saveButton.textContent = defaultSaveLabel();
+    };
+    const updateCsrf = (result) => {
+      if (typeof result.csrf === "string" && result.csrf !== "") {
+        csrfToken = result.csrf;
+        dialog.dataset.csrfToken = result.csrf;
+      }
+    };
+    const endpointFor = (id) => endpointTemplate.replace("__LINK_ID__", encodeURIComponent(id));
+    const readResponse = async (response) => {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+      }
+      updateCsrf(result);
+      return result;
+    };
+    const populateForm = (link) => {
+      setControlValue2(form, "id", String(link.id));
+      setControlValue2(form, "title", link.title ?? "");
+      setControlValue2(form, "url", link.url ?? "");
+      setControlValue2(form, "collection_id", String(link.collection_id ?? ""));
+      setControlValue2(form, "importance", link.importance ?? "");
+      setControlValue2(form, "description", link.description ?? "");
+      setCheckboxValue(form, "is_favorite", Boolean(link.is_favorite));
+      setCheckboxValue(form, "is_pending_review", Boolean(link.is_pending_review));
+    };
+    const openEditor = async (link) => {
+      if (!(link instanceof HTMLAnchorElement) || !link.dataset.linkId) {
+        return;
+      }
+      loadController?.abort();
+      loadController = new AbortController();
+      const sequence = ++loadSequence;
+      const id = link.dataset.linkId;
+      form.reset();
+      clearValidation2(form);
+      setMode("edit");
+      setStatus("Loading link\u2026");
+      setBusy(true, "Loading\u2026");
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+      try {
+        const response = await fetch(endpointFor(id), {
+          headers: {
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          signal: loadController.signal
+        });
+        const result = await readResponse(response);
+        if (sequence !== loadSequence) {
+          return;
+        }
+        if (!response.ok || !result.link) {
+          throw new Error(result.error || "Unable to load this link.");
+        }
+        populateForm(result.link);
+        setStatus("");
+        setBusy(false);
+        formControl2(form, "title")?.focus();
+      } catch (error) {
+        if (error.name === "AbortError" || sequence !== loadSequence) {
+          return;
+        }
+        setStatus(error.message || "Unable to load this link.", true);
+        setBusy(false);
+      }
+    };
+    const openCreator = (trigger) => {
+      if (!(trigger instanceof HTMLButtonElement)) {
+        return;
+      }
+      loadSequence++;
+      loadController?.abort();
+      loadController = null;
+      form.reset();
+      clearValidation2(form);
+      setMode("create");
+      setControlValue2(form, "id", "");
+      const collectionId = trigger.dataset.collectionId ?? "";
+      if (/^[1-9]\d*$/.test(collectionId)) {
+        setControlValue2(form, "collection_id", collectionId);
+      }
+      setStatus("");
+      setBusy(false);
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+      formControl2(form, "title")?.focus();
+    };
+    document.addEventListener(editLinkRequestEvent, (event) => {
+      if (!(event instanceof CustomEvent)) {
+        return;
+      }
+      void openEditor(event.detail?.link);
+    });
+    document.querySelectorAll("[data-add-link]").forEach((trigger) => {
+      trigger.addEventListener("click", () => openCreator(trigger));
+    });
+    form.addEventListener("input", () => clearValidation2(form));
+    if (pasteUrlButton instanceof HTMLButtonElement) {
+      pasteUrlButton.addEventListener("click", async () => {
+        const urlControl = formControl2(form, "url");
+        if (!(urlControl instanceof HTMLInputElement)) {
+          return;
+        }
+        if (!navigator.clipboard?.readText) {
+          setStatus("Clipboard access is not available in this browser.", true);
+          return;
+        }
+        try {
+          const clipboardValue = (await navigator.clipboard.readText()).trim();
+          if (clipboardValue === "") {
+            setStatus("The clipboard is empty.", true);
+            return;
+          }
+          urlControl.value = clipboardValue;
+          urlControl.dispatchEvent(new Event("input", { bubbles: true }));
+          setStatus("");
+          urlControl.focus();
+        } catch {
+          setStatus("Clipboard access was denied.", true);
+          urlControl.focus();
+        }
+      });
+    }
+    if (openUrlButton instanceof HTMLButtonElement) {
+      openUrlButton.addEventListener("click", () => {
+        const urlControl = formControl2(form, "url");
+        if (!(urlControl instanceof HTMLInputElement)) {
+          return;
+        }
+        let url;
+        try {
+          url = new URL(urlControl.value.trim());
+          if (!["http:", "https:"].includes(url.protocol)) {
+            throw new TypeError("Unsupported URL protocol.");
+          }
+        } catch {
+          urlControl.setCustomValidity("Enter a valid HTTP or HTTPS URL.");
+          urlControl.reportValidity();
+          urlControl.focus();
+          return;
+        }
+        urlControl.setCustomValidity("");
+        window.open(url.href, "_blank", "noopener,noreferrer");
+      });
+    }
+    if (deleteButton instanceof HTMLButtonElement) {
+      deleteButton.addEventListener("click", async () => {
+        if (mode !== "edit") {
+          return;
+        }
+        const idControl = formControl2(form, "id");
+        const titleControl = formControl2(form, "title");
+        if (!(idControl instanceof HTMLInputElement) || idControl.value === "") {
+          setStatus("No link is selected.", true);
+          return;
+        }
+        const title = titleControl instanceof HTMLInputElement ? titleControl.value.trim() : "";
+        const confirmed = await confirmDialog({
+          title: "Delete link?",
+          message: title ? `The link \u201C${title}\u201D will be removed. Do you want to continue?` : "This link will be removed. Do you want to continue?",
+          confirmLabel: "Delete link"
+        });
+        if (!confirmed) {
+          return;
+        }
+        setStatus("Deleting link\u2026");
+        setBusy(true);
+        try {
+          const response = await fetch(endpointFor(idControl.value), {
+            method: "DELETE",
+            headers: {
+              Accept: "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+              [csrfHeader]: csrfToken
+            }
+          });
+          const result = await readResponse(response);
+          if (!response.ok) {
+            throw new Error(result.error || "Unable to delete this link.");
+          }
+          dialog.hidden = true;
+          dialog.close();
+          window.location.reload();
+        } catch (error) {
+          setStatus(error.message || "Unable to delete this link.", true);
+          setBusy(false);
+        }
+      });
+    }
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearValidation2(form);
+      const data = new FormData(form);
+      const id = data.get("id");
+      const creating = mode === "create";
+      if (!creating && (typeof id !== "string" || id === "")) {
+        setStatus("No link is selected.", true);
+        return;
+      }
+      const payload = {
+        title: data.get("title"),
+        url: data.get("url"),
+        collection_id: data.get("collection_id"),
+        importance: data.get("importance"),
+        description: data.get("description"),
+        is_favorite: data.get("is_favorite") === "1",
+        is_pending_review: data.get("is_pending_review") === "1"
+      };
+      setStatus(creating ? "Adding link\u2026" : "Saving changes\u2026");
+      setBusy(true, creating ? "Adding\u2026" : "Saving\u2026");
+      try {
+        const response = await fetch(
+          creating ? createEndpoint : endpointFor(id),
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+              [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify(payload)
+          }
+        );
+        const result = await readResponse(response);
+        if (!response.ok) {
+          setBusy(false);
+          if (result.errors && typeof result.errors === "object") {
+            applyValidation2(form, result.errors);
+            form.reportValidity();
+          }
+          throw new Error(result.error || (creating ? "Unable to add this link." : "Unable to save this link."));
+        }
+        dialog.hidden = true;
+        dialog.close();
+        window.location.reload();
+      } catch (error) {
+        setStatus(error.message || (creating ? "Unable to add this link." : "Unable to save this link."), true);
+        setBusy(false);
+      }
+    });
+    dialog.addEventListener("close", () => {
+      loadSequence++;
+      loadController?.abort();
+      loadController = null;
+      form.reset();
+      clearValidation2(form);
+      setStatus("");
+      setMode("edit");
+      setBusy(false);
+    });
+  }
+
+  // theme/js/edit/edit-user.js
+  var editableControlSelector3 = "[data-edit-user-control]";
+  function formControl3(form, name) {
+    return form.elements.namedItem(name);
+  }
+  function clearValidation3(form) {
+    form.querySelectorAll("[name]").forEach((control) => {
+      control.setCustomValidity?.("");
+    });
+  }
+  function applyValidation3(form, errors) {
+    Object.entries(errors).forEach(([name, message]) => {
+      const control = formControl3(form, name);
+      if (control instanceof RadioNodeList) {
+        control[0]?.setCustomValidity?.(message);
+      } else {
+        control?.setCustomValidity?.(message);
+      }
+    });
+  }
+  function initEditUser() {
+    const dialog = document.querySelector("[data-edit-user-modal]");
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+    const form = dialog.querySelector("[data-edit-user-form]");
+    const status = dialog.querySelector("[data-edit-user-status]");
+    const saveButton = dialog.querySelector("[data-edit-user-save]");
+    const createEndpoint = dialog.dataset.createEndpoint;
+    const csrfHeader = dialog.dataset.csrfHeader;
+    let csrfToken = dialog.dataset.csrfToken;
+    if (!(form instanceof HTMLFormElement) || !(saveButton instanceof HTMLButtonElement) || !createEndpoint || !csrfHeader || !csrfToken) {
+      return;
+    }
+    const setStatus = (message, isError = false) => {
+      if (!(status instanceof HTMLElement)) {
+        return;
+      }
+      status.textContent = message;
+      status.classList.toggle("text-error", isError);
+      status.classList.toggle("text-base-content/60", !isError);
+    };
+    const setBusy = (busy, label = "Add user") => {
+      form.setAttribute("aria-busy", String(busy));
+      form.querySelectorAll(editableControlSelector3).forEach((control) => {
+        control.disabled = busy;
+      });
+      saveButton.disabled = busy;
+      saveButton.textContent = label;
+    };
+    const updateCsrf = (result) => {
+      if (typeof result.csrf === "string" && result.csrf !== "") {
+        csrfToken = result.csrf;
+        dialog.dataset.csrfToken = result.csrf;
+      }
+    };
+    const readResponse = async (response) => {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+      }
+      updateCsrf(result);
+      return result;
+    };
+    document.querySelectorAll("[data-add-user]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        form.reset();
+        clearValidation3(form);
+        setStatus("");
+        setBusy(false);
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+        formControl3(form, "username")?.focus();
+      });
+    });
+    form.addEventListener("input", () => clearValidation3(form));
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearValidation3(form);
+      if (!form.reportValidity()) {
+        return;
+      }
+      const data = new FormData(form);
+      const payload = {
+        username: data.get("username"),
+        email: data.get("email"),
+        password: data.get("password"),
+        role: data.get("role"),
+        active: data.get("active") === "1"
+      };
+      setStatus("Adding user\u2026");
+      setBusy(true, "Adding\u2026");
+      try {
+        const response = await fetch(createEndpoint, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await readResponse(response);
+        if (!response.ok) {
+          setBusy(false);
+          if (result.errors && typeof result.errors === "object") {
+            applyValidation3(form, result.errors);
+            form.reportValidity();
+          }
+          throw new Error(result.error || "Unable to add this user.");
+        }
+        dialog.hidden = true;
+        dialog.close();
+        window.location.reload();
+      } catch (error) {
+        setStatus(error.message || "Unable to add this user.", true);
+        setBusy(false);
+      }
+    });
+    dialog.addEventListener("close", () => {
+      form.reset();
+      clearValidation3(form);
+      setStatus("");
+      setBusy(false);
+    });
+  }
+
+  // theme/js/app.js
+  initDateTime();
+  initHashing();
+  initLinkFilters();
+  initLinkSearch();
+  initPasswordGenerator();
+  initWorkTime();
+  initEditCollection();
+  initEditLink();
+  initEditMode();
+  initEditUser();
+})();

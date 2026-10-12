@@ -17,7 +17,7 @@
         </div>
 
         <div class="flex items-center justify-start px-6 pb-6 xl:px-0 xl:pb-0">
-            <?= view('site/partials/utilities/navigation') ?>
+            <?= $this->include('site/partials/navigation') ?>
         </div>
     </div>
 </header>

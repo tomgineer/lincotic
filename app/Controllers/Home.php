@@ -8,11 +8,7 @@ use CodeIgniter\HTTP\RedirectResponse;
 class Home extends BaseController {
 
     public function index(): string {
-        $cache = config('Lincotic')->cache;
-
-        if ($cache['enabled'] && $cache['duration'] > 0) {
-            $this->cachePage($cache['duration']);
-        }
+        $this->cachePage(config('Lincotic')->cache['duration']);
 
         $service = new CollectionService();
         $filters = $this->filters();
