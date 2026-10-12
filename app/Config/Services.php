@@ -2,6 +2,10 @@
 
 namespace Config;
 
+use App\Services\CronTasks\CheckRobotsTxt;
+use App\Services\CronTasks\ClearCache;
+use App\Services\CronTasks\RemoveOldSessionFiles;
+use App\Services\PseudoCron;
 use CodeIgniter\Config\BaseService;
 
 /**
@@ -19,14 +23,19 @@ use CodeIgniter\Config\BaseService;
  */
 class Services extends BaseService
 {
-    /*
-     * public static function example($getShared = true)
-     * {
-     *     if ($getShared) {
-     *         return static::getSharedInstance('example');
-     *     }
-     *
-     *     return new \CodeIgniter\Example();
-     * }
+    /**
+     * Returns the shared pseudo-cron task coordinator.
      */
+    public static function pseudoCron(bool $getShared = true): PseudoCron
+    {
+        if ($getShared) {
+            return static::getSharedInstance('pseudoCron');
+        }
+
+        return new PseudoCron(
+            new ClearCache(),
+            new RemoveOldSessionFiles(),
+            new CheckRobotsTxt(),
+        );
+    }
 }

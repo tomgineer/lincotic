@@ -5,6 +5,7 @@ namespace Config;
 use CodeIgniter\Events\Events;
 use CodeIgniter\Exceptions\FrameworkException;
 use CodeIgniter\HotReloader\HotReloader;
+use Throwable;
 
 /*
  * --------------------------------------------------------------------
@@ -53,5 +54,15 @@ Events::on('pre_system', static function (): void {
                 (new HotReloader())->run();
             });
         }
+    }
+});
+
+Events::on('login', static function (): void {
+    try {
+        service('pseudoCron')->run();
+    } catch (Throwable $exception) {
+        log_message('error', 'Pseudo-cron failed after login: {exception}', [
+            'exception' => $exception,
+        ]);
     }
 });
