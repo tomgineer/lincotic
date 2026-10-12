@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Services\CollectionService;
-use App\Services\EditService;
+use App\Services\LibraryQueryService;
+use App\Services\UserQueryService;
 use CodeIgniter\HTTP\RedirectResponse;
 
 class Home extends BaseController {
@@ -11,7 +11,7 @@ class Home extends BaseController {
     public function index(): string {
         $this->cachePage(config('Lincotic')->cache['duration']);
 
-        $service = new CollectionService();
+        $service = new LibraryQueryService();
         $filters = $this->filters();
 
         return view('site/pages/home', [
@@ -34,7 +34,7 @@ class Home extends BaseController {
             return redirect()->to(site_url('/'));
         }
 
-        $service = new CollectionService();
+        $service = new LibraryQueryService();
 
         return view('site/pages/home', [
             'collections'       => $service->search($search),
@@ -110,6 +110,6 @@ class Home extends BaseController {
             return [];
         }
 
-        return (new EditService())->users();
+        return (new UserQueryService())->all();
     }
 }

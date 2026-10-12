@@ -2,14 +2,17 @@
 
 use App\Models\CollectionModel;
 use App\Models\LinkModel;
-use App\Services\EditService;
+use App\Services\Editing\CollectionEditor;
+use App\Services\Editing\EditStatus;
+use App\Services\Editing\LinkEditor;
+use App\Services\Editing\UserEditor;
 use CodeIgniter\Shield\Models\UserModel;
 use CodeIgniter\Test\CIUnitTestCase;
 
 /**
  * @internal
  */
-final class EditServiceTest extends CIUnitTestCase
+final class EditingServicesTest extends CIUnitTestCase
 {
     public function testCreateUserRejectsInvalidInputBeforeUsingShieldModel(): void
     {
@@ -17,19 +20,15 @@ final class EditServiceTest extends CIUnitTestCase
         $users->expects($this->never())->method('createNewUser');
         $users->expects($this->never())->method('save');
 
-        $service = new EditService(
-            $this->createMock(LinkModel::class),
-            $this->createMock(CollectionModel::class),
-            $users,
-        );
-        $result = $service->createUser([
+        $service = new UserEditor($users);
+        $result = $service->create([
             'username' => '',
             'email'    => 'not-an-email',
             'password' => '',
             'role'     => 'owner',
         ]);
 
-        $this->assertSame(EditService::INVALID, $result['status']);
+        $this->assertSame(EditStatus::INVALID, $result['status']);
         $this->assertArrayHasKey('username', $result['errors']);
         $this->assertArrayHasKey('email', $result['errors']);
         $this->assertArrayHasKey('password', $result['errors']);
@@ -52,7 +51,7 @@ final class EditServiceTest extends CIUnitTestCase
             'click_count'       => '99',
         ]);
 
-        $service = new EditService($links, $this->createMock(CollectionModel::class));
+        $service = new LinkEditor($links, $this->createMock(CollectionModel::class));
 
         $this->assertSame([
             'id'                => 12,
@@ -63,7 +62,7 @@ final class EditServiceTest extends CIUnitTestCase
             'importance'        => '',
             'is_favorite'       => true,
             'is_pending_review' => false,
-        ], $service->getLink(12));
+        ], $service->get(12));
     }
 
     public function testGetCollectionReturnsOnlyNormalizedEditorFields(): void
@@ -80,7 +79,7 @@ final class EditServiceTest extends CIUnitTestCase
             'sort_order'  => '20',
         ]);
 
-        $service = new EditService($this->createMock(LinkModel::class), $collections);
+        $service = new CollectionEditor($collections);
 
         $this->assertSame([
             'id'          => 8,
@@ -89,7 +88,7 @@ final class EditServiceTest extends CIUnitTestCase
             'description' => '',
             'icon'        => '',
             'is_featured' => true,
-        ], $service->getCollection(8));
+        ], $service->get(8));
     }
 
     public function testCreateCollectionRejectsInvalidInput(): void
@@ -97,13 +96,13 @@ final class EditServiceTest extends CIUnitTestCase
         $collections = $this->createMock(CollectionModel::class);
         $collections->expects($this->never())->method('insert');
 
-        $service = new EditService($this->createMock(LinkModel::class), $collections);
-        $result  = $service->createCollection([
+        $service = new CollectionEditor($collections);
+        $result  = $service->create([
             'name' => '',
             'slug' => 'Not a slug',
         ], 4);
 
-        $this->assertSame(EditService::INVALID, $result['status']);
+        $this->assertSame(EditStatus::INVALID, $result['status']);
         $this->assertArrayHasKey('name', $result['errors']);
         $this->assertArrayHasKey('slug', $result['errors']);
     }
@@ -124,8 +123,8 @@ final class EditServiceTest extends CIUnitTestCase
             ])
             ->willReturn(15);
 
-        $service = new EditService($this->createMock(LinkModel::class), $collections);
-        $result  = $service->createCollection([
+        $service = new CollectionEditor($collections);
+        $result  = $service->create([
             'name'        => '  New collection  ',
             'slug'        => '  NEW-COLLECTION  ',
             'description' => '  Useful links  ',
@@ -133,7 +132,7 @@ final class EditServiceTest extends CIUnitTestCase
             'is_featured' => true,
         ], 4);
 
-        $this->assertSame(EditService::CREATED, $result['status']);
+        $this->assertSame(EditStatus::CREATED, $result['status']);
         $this->assertSame([], $result['errors']);
     }
 
@@ -143,13 +142,13 @@ final class EditServiceTest extends CIUnitTestCase
         $collections->method('find')->with(8)->willReturn($this->storedCollection());
         $collections->expects($this->never())->method('update');
 
-        $service = new EditService($this->createMock(LinkModel::class), $collections);
-        $result  = $service->updateCollection(8, [
+        $service = new CollectionEditor($collections);
+        $result  = $service->update(8, [
             'name' => '',
             'slug' => 'Not a slug',
         ]);
 
-        $this->assertSame(EditService::INVALID, $result['status']);
+        $this->assertSame(EditStatus::INVALID, $result['status']);
         $this->assertArrayHasKey('name', $result['errors']);
         $this->assertArrayHasKey('slug', $result['errors']);
     }
@@ -170,8 +169,8 @@ final class EditServiceTest extends CIUnitTestCase
             ])
             ->willReturn(true);
 
-        $service = new EditService($this->createMock(LinkModel::class), $collections);
-        $result  = $service->updateCollection(8, [
+        $service = new CollectionEditor($collections);
+        $result  = $service->update(8, [
             'name'        => '  Updated collection  ',
             'slug'        => '  UPDATED-COLLECTION  ',
             'description' => '  Useful links  ',
@@ -179,7 +178,7 @@ final class EditServiceTest extends CIUnitTestCase
             'is_featured' => true,
         ]);
 
-        $this->assertSame(EditService::UPDATED, $result['status']);
+        $this->assertSame(EditStatus::UPDATED, $result['status']);
         $this->assertSame([], $result['errors']);
     }
 
@@ -189,10 +188,10 @@ final class EditServiceTest extends CIUnitTestCase
         $collections->expects($this->once())->method('find')->with(8)->willReturn($this->storedCollection());
         $collections->expects($this->once())->method('delete')->with(8)->willReturn(true);
 
-        $service = new EditService($this->createMock(LinkModel::class), $collections);
-        $result  = $service->deleteCollection(8);
+        $service = new CollectionEditor($collections);
+        $result  = $service->delete(8);
 
-        $this->assertSame(EditService::DELETED, $result['status']);
+        $this->assertSame(EditStatus::DELETED, $result['status']);
         $this->assertSame([], $result['errors']);
     }
 
@@ -204,14 +203,14 @@ final class EditServiceTest extends CIUnitTestCase
         $collections = $this->createMock(CollectionModel::class);
         $collections->expects($this->never())->method('find');
 
-        $service = new EditService($links, $collections);
-        $result  = $service->createLink([
+        $service = new LinkEditor($links, $collections);
+        $result  = $service->create([
             'title'         => '',
             'url'           => 'not-a-url',
             'collection_id' => '0',
         ], 4);
 
-        $this->assertSame(EditService::INVALID, $result['status']);
+        $this->assertSame(EditStatus::INVALID, $result['status']);
         $this->assertArrayHasKey('title', $result['errors']);
         $this->assertArrayHasKey('url', $result['errors']);
         $this->assertArrayHasKey('collection_id', $result['errors']);
@@ -241,8 +240,8 @@ final class EditServiceTest extends CIUnitTestCase
             'user_id' => 4,
         ]);
 
-        $service = new EditService($links, $collections);
-        $result  = $service->createLink([
+        $service = new LinkEditor($links, $collections);
+        $result  = $service->create([
             'title'             => '  New link  ',
             'url'               => ' https://example.com/new ',
             'collection_id'     => '8',
@@ -252,7 +251,7 @@ final class EditServiceTest extends CIUnitTestCase
             'is_pending_review' => true,
         ], 99);
 
-        $this->assertSame(EditService::CREATED, $result['status']);
+        $this->assertSame(EditStatus::CREATED, $result['status']);
         $this->assertNull($result['link']);
         $this->assertSame([], $result['errors']);
     }
@@ -278,14 +277,14 @@ final class EditServiceTest extends CIUnitTestCase
         $collections = $this->createMock(CollectionModel::class);
         $collections->expects($this->never())->method('find');
 
-        $service = new EditService($links, $collections);
-        $result  = $service->createLink([
+        $service = new LinkEditor($links, $collections);
+        $result  = $service->create([
             'title'         => 'Inbox link',
             'url'           => 'https://example.com/inbox',
             'collection_id' => '',
         ], 9);
 
-        $this->assertSame(EditService::CREATED, $result['status']);
+        $this->assertSame(EditStatus::CREATED, $result['status']);
         $this->assertSame([], $result['errors']);
     }
 
@@ -295,10 +294,10 @@ final class EditServiceTest extends CIUnitTestCase
         $links->method('find')->with(404)->willReturn(null);
         $links->expects($this->never())->method('update');
 
-        $service = new EditService($links, $this->createMock(CollectionModel::class));
-        $result  = $service->updateLink(404, []);
+        $service = new LinkEditor($links, $this->createMock(CollectionModel::class));
+        $result  = $service->update(404, []);
 
-        $this->assertSame(EditService::NOT_FOUND, $result['status']);
+        $this->assertSame(EditStatus::NOT_FOUND, $result['status']);
         $this->assertNull($result['link']);
         $this->assertSame([], $result['errors']);
     }
@@ -312,15 +311,15 @@ final class EditServiceTest extends CIUnitTestCase
         $collections = $this->createMock(CollectionModel::class);
         $collections->expects($this->never())->method('find');
 
-        $service = new EditService($links, $collections);
-        $result  = $service->updateLink(3, [
+        $service = new LinkEditor($links, $collections);
+        $result  = $service->update(3, [
             'title'         => '',
             'url'           => 'not-a-url',
             'collection_id' => '0',
             'importance'    => 'urgent',
         ]);
 
-        $this->assertSame(EditService::INVALID, $result['status']);
+        $this->assertSame(EditStatus::INVALID, $result['status']);
         $this->assertArrayHasKey('title', $result['errors']);
         $this->assertArrayHasKey('url', $result['errors']);
         $this->assertArrayHasKey('collection_id', $result['errors']);
@@ -336,14 +335,14 @@ final class EditServiceTest extends CIUnitTestCase
         $collections = $this->createMock(CollectionModel::class);
         $collections->expects($this->never())->method('find');
 
-        $service = new EditService($links, $collections);
-        $result  = $service->updateLink(3, [
+        $service = new LinkEditor($links, $collections);
+        $result  = $service->update(3, [
             'title'         => 'Existing title',
             'url'           => 'https://example.com',
             'collection_id' => '',
         ]);
 
-        $this->assertSame(EditService::INVALID, $result['status']);
+        $this->assertSame(EditStatus::INVALID, $result['status']);
         $this->assertSame('Select a collection.', $result['errors']['collection_id']);
     }
 
@@ -373,8 +372,8 @@ final class EditServiceTest extends CIUnitTestCase
         $collections = $this->createMock(CollectionModel::class);
         $collections->method('find')->with(8)->willReturn(['id' => 8]);
 
-        $service = new EditService($links, $collections);
-        $result  = $service->updateLink(3, [
+        $service = new LinkEditor($links, $collections);
+        $result  = $service->update(3, [
             'title'             => '  Updated title  ',
             'url'               => ' https://example.com/path ',
             'collection_id'     => '8',
@@ -384,7 +383,7 @@ final class EditServiceTest extends CIUnitTestCase
             'is_pending_review' => false,
         ]);
 
-        $this->assertSame(EditService::UPDATED, $result['status']);
+        $this->assertSame(EditStatus::UPDATED, $result['status']);
         $this->assertNull($result['link']);
         $this->assertSame([], $result['errors']);
     }
@@ -395,10 +394,10 @@ final class EditServiceTest extends CIUnitTestCase
         $links->method('find')->with(404)->willReturn(null);
         $links->expects($this->never())->method('delete');
 
-        $service = new EditService($links, $this->createMock(CollectionModel::class));
-        $result  = $service->deleteLink(404);
+        $service = new LinkEditor($links, $this->createMock(CollectionModel::class));
+        $result  = $service->delete(404);
 
-        $this->assertSame(EditService::NOT_FOUND, $result['status']);
+        $this->assertSame(EditStatus::NOT_FOUND, $result['status']);
         $this->assertNull($result['link']);
         $this->assertSame([], $result['errors']);
     }
@@ -409,10 +408,10 @@ final class EditServiceTest extends CIUnitTestCase
         $links->expects($this->once())->method('find')->with(3)->willReturn($this->storedLink());
         $links->expects($this->once())->method('delete')->with(3)->willReturn(true);
 
-        $service = new EditService($links, $this->createMock(CollectionModel::class));
-        $result  = $service->deleteLink(3);
+        $service = new LinkEditor($links, $this->createMock(CollectionModel::class));
+        $result  = $service->delete(3);
 
-        $this->assertSame(EditService::DELETED, $result['status']);
+        $this->assertSame(EditStatus::DELETED, $result['status']);
         $this->assertNull($result['link']);
         $this->assertSame([], $result['errors']);
     }
@@ -445,3 +444,4 @@ final class EditServiceTest extends CIUnitTestCase
         ];
     }
 }
+

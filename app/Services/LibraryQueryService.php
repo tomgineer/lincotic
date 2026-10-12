@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\CollectionModel;
 use App\Models\LinkModel;
 
-final class CollectionService {
+final class LibraryQueryService {
 
     private const array SORTS = [
         'title'      => ['title', 'ASC'],
