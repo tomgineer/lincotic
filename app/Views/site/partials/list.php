@@ -63,8 +63,8 @@ $urlFormatter = service('urlFormatter');
                     data-link-id="<?= esc((string) $link['id'], 'attr') ?>"
                 <?php endif ?>>
 
-                <div class="flex flex-col items-center justify-center p-4">
-                    <span class="font-semibold">
+                <div class="flex flex-col items-center justify-center p-4 text-center">
+                    <span class="font-semibold leading-snug">
                         <?= esc($link['title']) ?>
                     </span>
 
