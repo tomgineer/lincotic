@@ -74,10 +74,10 @@ final class EditingServicesTest extends CIUnitTestCase
             'id'          => '8',
             'user_id'     => '4',
             'name'        => 'Work',
-            'slug'        => 'work',
             'description' => null,
             'icon'        => null,
             'is_featured' => '1',
+            'is_hidden'   => '1',
             'sort_order'  => '20',
         ]);
 
@@ -86,10 +86,10 @@ final class EditingServicesTest extends CIUnitTestCase
         $this->assertSame([
             'id'          => 8,
             'name'        => 'Work',
-            'slug'        => 'work',
             'description' => '',
             'icon'        => '',
             'is_featured' => true,
+            'is_hidden'   => true,
         ], $service->get(8));
     }
 
@@ -101,12 +101,10 @@ final class EditingServicesTest extends CIUnitTestCase
         $service = new CollectionEditor($collections);
         $result  = $service->create([
             'name' => '',
-            'slug' => 'Not a slug',
         ], 4);
 
         $this->assertSame(EditStatus::INVALID, $result['status']);
         $this->assertArrayHasKey('name', $result['errors']);
-        $this->assertArrayHasKey('slug', $result['errors']);
     }
 
     public function testCreateCollectionNormalizesAndPersistsInputForCurrentUser(): void
@@ -117,10 +115,10 @@ final class EditingServicesTest extends CIUnitTestCase
             ->method('insert')
             ->with([
                 'name'        => 'New collection',
-                'slug'        => 'new-collection',
                 'description' => 'Useful links',
                 'icon'        => null,
                 'is_featured' => 1,
+                'is_hidden'   => 1,
                 'user_id'     => 4,
             ])
             ->willReturn(15);
@@ -128,14 +126,56 @@ final class EditingServicesTest extends CIUnitTestCase
         $service = new CollectionEditor($collections);
         $result  = $service->create([
             'name'        => '  New collection  ',
-            'slug'        => '  NEW-COLLECTION  ',
             'description' => '  Useful links  ',
             'icon'        => '',
             'is_featured' => true,
+            'is_hidden'   => true,
         ], 4);
 
         $this->assertSame(EditStatus::CREATED, $result['status']);
         $this->assertSame([], $result['errors']);
+    }
+
+    public function testCreateCollectionSanitizesSvgIconBeforePersisting(): void
+    {
+        $persisted = null;
+        $collections = $this->createMock(CollectionModel::class);
+        $collections
+            ->expects($this->once())
+            ->method('insert')
+            ->willReturnCallback(static function (array $data) use (&$persisted): int {
+                $persisted = $data;
+
+                return 15;
+            });
+
+        $result = (new CollectionEditor($collections))->create([
+            'name' => 'Infrastructure',
+            'icon' => '<svg width="24" height="24" class="icon icon-tabler" onload="alert(1)"><path d="M3 18h18" /></svg>',
+        ], 4);
+
+        $this->assertSame(EditStatus::CREATED, $result['status']);
+        $this->assertIsArray($persisted);
+        $this->assertStringContainsString('viewBox="0 0 24 24"', $persisted['icon']);
+        $this->assertStringContainsString('d="M3 18h18"', $persisted['icon']);
+        $this->assertStringNotContainsString('width="24"', $persisted['icon']);
+        $this->assertStringNotContainsString('height="24"', $persisted['icon']);
+        $this->assertStringNotContainsString('class=', $persisted['icon']);
+        $this->assertStringNotContainsString('onload', $persisted['icon']);
+    }
+
+    public function testCreateCollectionRejectsInvalidSvgIcon(): void
+    {
+        $collections = $this->createMock(CollectionModel::class);
+        $collections->expects($this->never())->method('insert');
+
+        $result = (new CollectionEditor($collections))->create([
+            'name' => 'Infrastructure',
+            'icon' => '<svg><script>alert(1)</script></svg>',
+        ], 4);
+
+        $this->assertSame(EditStatus::INVALID, $result['status']);
+        $this->assertArrayHasKey('icon', $result['errors']);
     }
 
     public function testReorderCollectionsRejectsDuplicateIds(): void
@@ -179,12 +219,10 @@ final class EditingServicesTest extends CIUnitTestCase
         $service = new CollectionEditor($collections);
         $result  = $service->update(8, [
             'name' => '',
-            'slug' => 'Not a slug',
         ]);
 
         $this->assertSame(EditStatus::INVALID, $result['status']);
         $this->assertArrayHasKey('name', $result['errors']);
-        $this->assertArrayHasKey('slug', $result['errors']);
     }
 
     public function testUpdateCollectionNormalizesAndPersistsEditorInput(): void
@@ -196,20 +234,20 @@ final class EditingServicesTest extends CIUnitTestCase
             ->method('update')
             ->with(8, [
                 'name'        => 'Updated collection',
-                'slug'        => 'updated-collection',
                 'description' => 'Useful links',
                 'icon'        => null,
                 'is_featured' => 1,
+                'is_hidden'   => 1,
             ])
             ->willReturn(true);
 
         $service = new CollectionEditor($collections);
         $result  = $service->update(8, [
             'name'        => '  Updated collection  ',
-            'slug'        => '  UPDATED-COLLECTION  ',
             'description' => '  Useful links  ',
             'icon'        => '',
             'is_featured' => true,
+            'is_hidden'   => true,
         ]);
 
         $this->assertSame(EditStatus::UPDATED, $result['status']);
@@ -476,10 +514,10 @@ final class EditingServicesTest extends CIUnitTestCase
             'id'          => '8',
             'user_id'     => '4',
             'name'        => 'Work',
-            'slug'        => 'work',
             'description' => null,
             'icon'        => null,
             'is_featured' => '0',
+            'is_hidden'   => '0',
             'sort_order'  => '20',
         ];
     }

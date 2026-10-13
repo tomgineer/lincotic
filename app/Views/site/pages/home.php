@@ -5,7 +5,7 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<main class="mx-auto max-w-5xl px-6 pt-10 pb-16">
+<main class="mx-auto max-w-7xl px-6 pt-4 lg:pt-8 pb-16">
     <?php if ($collections === []): ?>
         <div class="rounded-box border border-base-content/10 bg-base-200 px-6 py-12 text-center">
             <h2 class="text-lg font-semibold">No links found</h2>

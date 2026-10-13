@@ -1,5 +1,26 @@
 const editableLinkSelector = '.link-card';
+const editModeStorageKey = 'lincotic.editMode';
 export const editLinkRequestEvent = 'lincotic:edit-link';
+
+function restoreEditMode() {
+    try {
+        return sessionStorage.getItem(editModeStorageKey) === '1';
+    } catch {
+        return false;
+    }
+}
+
+function persistEditMode(enabled) {
+    try {
+        if (enabled) {
+            sessionStorage.setItem(editModeStorageKey, '1');
+        } else {
+            sessionStorage.removeItem(editModeStorageKey);
+        }
+    } catch {
+        // Edit mode still works when browser storage is unavailable.
+    }
+}
 
 function isVisible(element) {
     return !element.hidden
@@ -20,7 +41,12 @@ export function initEditMode() {
         });
     };
 
-    toggle.addEventListener('change', syncEditableLinks);
+    toggle.checked = restoreEditMode();
+
+    toggle.addEventListener('change', () => {
+        persistEditMode(toggle.checked);
+        syncEditableLinks();
+    });
 
     document.addEventListener('click', (event) => {
         if (!toggle.checked || !(event.target instanceof Element)) {

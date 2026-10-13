@@ -2,7 +2,9 @@
 
 namespace App\Services\Editing;
 
+use App\Libraries\SvgIconSanitizer;
 use App\Models\CollectionModel;
+use InvalidArgumentException;
 
 final class CollectionEditor
 {
@@ -10,10 +12,6 @@ final class CollectionEditor
         'name' => [
             'label' => 'Name',
             'rules' => 'required|max_length[120]',
-        ],
-        'slug' => [
-            'label' => 'Slug',
-            'rules' => 'required|max_length[150]|regex_match[/^[a-z0-9]+(?:-[a-z0-9]+)*$/]',
         ],
         'description' => [
             'label' => 'Description',
@@ -27,10 +25,15 @@ final class CollectionEditor
             'label' => 'Featured',
             'rules' => 'required|in_list[0,1]',
         ],
+        'is_hidden' => [
+            'label' => 'Hidden',
+            'rules' => 'required|in_list[0,1]',
+        ],
     ];
 
     public function __construct(
         private readonly CollectionModel $collections = new CollectionModel(),
+        private readonly SvgIconSanitizer $svgIconSanitizer = new SvgIconSanitizer(),
     ) {
     }
 
@@ -58,6 +61,14 @@ final class CollectionEditor
 
         if (! $validation->run($data)) {
             return $this->result(EditStatus::INVALID, $validation->getErrors());
+        }
+
+        try {
+            $data['icon'] = $this->svgIconSanitizer->sanitize($data['icon']);
+        } catch (InvalidArgumentException $exception) {
+            return $this->result(EditStatus::INVALID, [
+                'icon' => $exception->getMessage(),
+            ]);
         }
 
         if ($userId < 1) {
@@ -153,6 +164,14 @@ final class CollectionEditor
             return $this->result(EditStatus::INVALID, $validation->getErrors());
         }
 
+        try {
+            $data['icon'] = $this->svgIconSanitizer->sanitize($data['icon']);
+        } catch (InvalidArgumentException $exception) {
+            return $this->result(EditStatus::INVALID, [
+                'icon' => $exception->getMessage(),
+            ]);
+        }
+
         if (! $this->collections->update($id, $data)) {
             return $this->result(EditStatus::INVALID, $this->collections->errors());
         }
@@ -185,10 +204,10 @@ final class CollectionEditor
 
         return [
             'name'        => $this->stringValue($input, 'name'),
-            'slug'        => strtolower($this->stringValue($input, 'slug')),
             'description' => $description === '' ? null : $description,
             'icon'        => $icon === '' ? null : $icon,
             'is_featured' => $this->booleanValue($input['is_featured'] ?? false),
+            'is_hidden'   => $this->booleanValue($input['is_hidden'] ?? false),
         ];
     }
 
@@ -197,10 +216,10 @@ final class CollectionEditor
         return [
             'id'          => (int) $collection['id'],
             'name'        => (string) $collection['name'],
-            'slug'        => (string) $collection['slug'],
             'description' => (string) ($collection['description'] ?? ''),
             'icon'        => (string) ($collection['icon'] ?? ''),
             'is_featured' => (bool) $collection['is_featured'],
+            'is_hidden'   => (bool) $collection['is_hidden'],
         ];
     }
 

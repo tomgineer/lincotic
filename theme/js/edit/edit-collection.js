@@ -121,14 +121,18 @@ export function initEditCollection() {
     const populateForm = (collection) => {
         setControlValue(form, 'id', String(collection.id));
         setControlValue(form, 'name', collection.name ?? '');
-        setControlValue(form, 'slug', collection.slug ?? '');
         setControlValue(form, 'description', collection.description ?? '');
         setControlValue(form, 'icon', collection.icon ?? '');
 
         const featured = formControl(form, 'is_featured');
+        const hidden = formControl(form, 'is_hidden');
 
         if (featured instanceof HTMLInputElement) {
             featured.checked = Boolean(collection.is_featured);
+        }
+
+        if (hidden instanceof HTMLInputElement) {
+            hidden.checked = Boolean(collection.is_hidden);
         }
     };
 
@@ -284,10 +288,10 @@ export function initEditCollection() {
 
         const payload = {
             name: data.get('name'),
-            slug: data.get('slug'),
             description: data.get('description'),
             icon: data.get('icon'),
             is_featured: data.get('is_featured') === '1',
+            is_hidden: data.get('is_hidden') === '1',
         };
 
         setStatus(creating ? 'Adding collection…' : 'Saving changes…');

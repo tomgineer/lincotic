@@ -20,8 +20,12 @@ final class LibraryQueryService {
     /**
      * Returns the collections available in the collection filter.
      */
-    public function getFilterOptions(): array {
-        return (new CollectionModel())
+    public function getFilterOptions(bool $includeHidden = false): array {
+        $collectionModel = new CollectionModel();
+
+        $this->applyCollectionVisibilityFilter($collectionModel, $includeHidden);
+
+        return $collectionModel
             ->select('id, name')
             ->orderBy('sort_order', 'ASC')
             ->orderBy('name', 'ASC')
@@ -36,7 +40,7 @@ final class LibraryQueryService {
             return $this->findUnassignedLinks($filters, $includeHidden);
         }
 
-        $collections = $this->findCollections($filters);
+        $collections = $this->findCollections($filters, $includeHidden);
 
         if ($collections === []) {
             return [];
@@ -44,7 +48,11 @@ final class LibraryQueryService {
 
         $links = $this->findFilteredLinks($collections, $filters, $includeHidden);
 
-        return $this->attachLinks($collections, $links);
+        return $this->attachLinks(
+            $collections,
+            $links,
+            $this->shouldIncludeEmptyCollections($filters),
+        );
     }
 
     /**
@@ -56,7 +64,7 @@ final class LibraryQueryService {
         $this->applyVisibilityFilter($linkModel, $includeHidden);
         $this->applyFlagFilter($linkModel, $filters['flag'] ?? 'all');
         $this->applyImportanceFilter($linkModel, $filters['importance'] ?? 'all');
-        $this->applySort($linkModel, $filters['sort'] ?? 'title');
+        $this->applySort($linkModel, $filters['sort'] ?? 'importance');
 
         $links = $linkModel->findAll();
 
@@ -67,7 +75,6 @@ final class LibraryQueryService {
         return [[
             'id'         => null,
             'name'       => 'Unassigned Links',
-            'slug'       => 'unassigned',
             'is_virtual' => true,
             'links'      => $links,
         ]];
@@ -77,7 +84,7 @@ final class LibraryQueryService {
      * Searches all links without applying any of the home filters.
      */
     public function search(string $term, bool $includeHidden = false): array {
-        $collections = $this->findCollections();
+        $collections = $this->findCollections([], $includeHidden);
 
         if ($collections === []) {
             return [];
@@ -100,8 +107,10 @@ final class LibraryQueryService {
     /**
      * Finds collections that match the selected collection scope.
      */
-    private function findCollections(array $filters = []): array {
+    private function findCollections(array $filters = [], bool $includeHidden = false): array {
         $collectionModel = new CollectionModel();
+
+        $this->applyCollectionVisibilityFilter($collectionModel, $includeHidden);
 
         if ($filters['featuredOnly'] ?? false) {
             $collectionModel->where('is_featured', 1);
@@ -117,6 +126,18 @@ final class LibraryQueryService {
     }
 
     /**
+     * Hidden collections are available to authenticated users only.
+     */
+    private function applyCollectionVisibilityFilter(
+        CollectionModel $collectionModel,
+        bool $includeHidden,
+    ): void {
+        if (! $includeHidden) {
+            $collectionModel->where('is_hidden', 0);
+        }
+    }
+
+    /**
      * Finds links within the selected collections and applies all link filters.
      */
     private function findFilteredLinks(array $collections, array $filters, bool $includeHidden): array {
@@ -125,7 +146,7 @@ final class LibraryQueryService {
         $this->applyVisibilityFilter($linkModel, $includeHidden);
         $this->applyFlagFilter($linkModel, $filters['flag'] ?? 'all');
         $this->applyImportanceFilter($linkModel, $filters['importance'] ?? 'all');
-        $this->applySort($linkModel, $filters['sort'] ?? 'title');
+        $this->applySort($linkModel, $filters['sort'] ?? 'importance');
 
         return $linkModel->findAll();
     }
@@ -175,7 +196,19 @@ final class LibraryQueryService {
      * Applies the requested ordering with a title-based tie-breaker.
      */
     private function applySort(LinkModel $linkModel, string $sort): void {
-        [$sortField, $sortDirection] = self::SORTS[$sort] ?? self::SORTS['title'];
+        if ($sort === 'importance' || ! isset(self::SORTS[$sort])) {
+            $linkModel
+                ->orderBy(
+                    "CASE importance WHEN 'high' THEN 1 WHEN 'medium' THEN 2 WHEN 'low' THEN 3 ELSE 4 END",
+                    'ASC',
+                    false,
+                )
+                ->orderBy('title', 'ASC');
+
+            return;
+        }
+
+        [$sortField, $sortDirection] = self::SORTS[$sort];
 
         $linkModel->orderBy($sortField, $sortDirection);
 
@@ -187,7 +220,11 @@ final class LibraryQueryService {
     /**
      * Groups links by collection and removes collections with no matching links.
      */
-    private function attachLinks(array $collections, array $links): array {
+    private function attachLinks(
+        array $collections,
+        array $links,
+        bool $includeEmpty = false,
+    ): array {
         $linksByCollection = [];
 
         foreach ($links as $link) {
@@ -202,9 +239,25 @@ final class LibraryQueryService {
             $collections
         );
 
+        if ($includeEmpty) {
+            return $collectionsWithLinks;
+        }
+
         return array_values(array_filter(
             $collectionsWithLinks,
-            static fn(array $collection): bool => $collection['links'] !== []
+            static fn(array $collection): bool => $collection['links'] !== [],
         ));
+    }
+
+    /**
+     * Keeps genuinely empty collections manageable without filling narrowed
+     * filter results with collections that simply have no matching links.
+     */
+    private function shouldIncludeEmptyCollections(array $filters): bool {
+        return ($filters['collectionId'] ?? null) !== null
+            || (
+                ($filters['flag'] ?? 'all') === 'all'
+                && ($filters['importance'] ?? 'all') === 'all'
+            );
     }
 }

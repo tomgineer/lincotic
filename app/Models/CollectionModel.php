@@ -13,10 +13,10 @@ class CollectionModel extends Model
     protected $allowedFields = [
         'user_id',
         'name',
-        'slug',
         'description',
         'icon',
         'is_featured',
+        'is_hidden',
         'sort_order',
     ];
 }

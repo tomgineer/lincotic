@@ -50,6 +50,7 @@
     <fieldset class="fieldset hidden min-w-0 md:block">
         <legend class="fieldset-legend font-heading">Sort Order</legend>
         <select name="sort" class="select w-full bg-base-50" aria-label="Sort links">
+            <option value="importance" <?= $filters['sort'] === 'importance' ? 'selected' : '' ?>>Importance</option>
             <option value="title" <?= $filters['sort'] === 'title' ? 'selected' : '' ?>>Title (A–Z)</option>
             <option value="title_desc" <?= $filters['sort'] === 'title_desc' ? 'selected' : '' ?>>Title (Z–A)</option>
             <option value="recent" <?= $filters['sort'] === 'recent' ? 'selected' : '' ?>>Most Recent</option>

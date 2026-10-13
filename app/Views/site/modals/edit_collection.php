@@ -51,23 +51,6 @@
                 </fieldset>
 
                 <fieldset class="fieldset">
-                    <legend class="fieldset-legend font-heading">Slug</legend>
-                    <label class="input w-full bg-base-100">
-                        <span class="font-mono text-sm text-base-content/40" aria-hidden="true">/</span>
-                        <input
-                            type="text"
-                            name="slug"
-                            placeholder="collection-name"
-                            autocomplete="off"
-                            spellcheck="false"
-                            maxlength="150"
-                            pattern="[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*"
-                            required
-                            data-edit-collection-control>
-                    </label>
-                </fieldset>
-
-                <fieldset class="fieldset">
                     <legend class="fieldset-legend font-heading">Description</legend>
                     <textarea
                         name="description"
@@ -90,18 +73,33 @@
                 </fieldset>
             </div>
 
-            <label class="flex cursor-pointer items-center justify-between gap-5 rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
-                <span class="flex min-w-0 items-start gap-3">
-                    <span class="mt-0.5 text-accent" aria-hidden="true">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" /></svg>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
+                    <span class="flex min-w-0 items-start gap-3">
+                        <span class="mt-0.5 text-accent" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" /></svg>
+                        </span>
+                        <span>
+                            <span class="block font-heading text-sm font-semibold">Featured collection</span>
+                            <span class="mt-0.5 block text-xs text-base-content/55">Show this collection in the default home view.</span>
+                        </span>
                     </span>
-                    <span>
-                        <span class="block font-heading text-sm font-semibold">Featured collection</span>
-                        <span class="mt-0.5 block text-xs text-base-content/55">Show this collection in the default home view.</span>
+                    <input type="checkbox" name="is_featured" value="1" class="toggle toggle-accent shrink-0" data-edit-collection-control>
+                </label>
+
+                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
+                    <span class="flex min-w-0 items-start gap-3">
+                        <span class="mt-0.5 text-primary" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 8.3 4 9 6-.3.9-1.1 2.2-2.3 3.4" /><path d="M6.6 6.6C4.6 7.8 3.4 9.5 3 10c.7 2 4 6 9 6 1 0 1.9-.2 2.7-.5" /></svg>
+                        </span>
+                        <span>
+                            <span class="block font-heading text-sm font-semibold">Hidden collection</span>
+                            <span class="mt-0.5 block text-xs text-base-content/55">Hide this collection and all its links from guests.</span>
+                        </span>
                     </span>
-                </span>
-                <input type="checkbox" name="is_featured" value="1" class="toggle toggle-accent shrink-0" data-edit-collection-control>
-            </label>
+                    <input type="checkbox" name="is_hidden" value="1" class="toggle toggle-primary shrink-0" data-edit-collection-control>
+                </label>
+            </div>
         </div>
 
         <footer class="flex flex-wrap items-center gap-3 border-t border-base-content/10 bg-base-200/40 px-6 py-4 sm:px-8">

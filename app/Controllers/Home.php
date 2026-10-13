@@ -13,10 +13,11 @@ class Home extends BaseController {
 
         $service = new LibraryQueryService();
         $filters = $this->filters();
+        $includeHidden = auth()->loggedIn();
 
         return view('site/pages/home', [
-            'collections'       => $service->filter($filters, auth()->loggedIn()),
-            'collectionOptions' => $service->getFilterOptions(),
+            'collections'       => $service->filter($filters, $includeHidden),
+            'collectionOptions' => $service->getFilterOptions($includeHidden),
             'filters'           => $filters,
             'search'            => '',
             'adminUsers'        => $this->adminUsers(),
@@ -35,10 +36,11 @@ class Home extends BaseController {
         }
 
         $service = new LibraryQueryService();
+        $includeHidden = auth()->loggedIn();
 
         return view('site/pages/home', [
-            'collections'       => $service->search($search, auth()->loggedIn()),
-            'collectionOptions' => $service->getFilterOptions(),
+            'collections'       => $service->search($search, $includeHidden),
+            'collectionOptions' => $service->getFilterOptions($includeHidden),
             'filters'           => $this->defaultFilters(),
             'search'            => $search,
             'adminUsers'        => $this->adminUsers(),
@@ -78,8 +80,8 @@ class Home extends BaseController {
             $importance = 'all';
         }
 
-        if (! in_array($sort, ['title', 'title_desc', 'recent', 'updated', 'popular', 'visited', 'oldest'], true)) {
-            $sort = 'title';
+        if (! in_array($sort, ['importance', 'title', 'title_desc', 'recent', 'updated', 'popular', 'visited', 'oldest'], true)) {
+            $sort = 'importance';
         }
 
         return [
@@ -101,7 +103,7 @@ class Home extends BaseController {
             'unassignedOnly'    => false,
             'flag'              => 'all',
             'importance'        => 'all',
-            'sort'              => 'title',
+            'sort'              => 'importance',
         ];
     }
 
