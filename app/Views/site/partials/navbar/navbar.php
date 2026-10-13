@@ -1,5 +1,5 @@
 <nav class="sticky top-0">
-    <div class="grid grid-cols-[1fr_auto_1fr] h-24 border-b border-base-content/15">
+    <div class="grid grid-cols-[1fr_auto_1fr] h-24 border-b border-base-content/15 relative isolate overflow-hidden">
 
         <div data-component="nav-left">
             <div class="grid grid-cols-[auto_1fr] auto-rows-12">
@@ -61,5 +61,8 @@
             </div>
         </div>
 
+        <div class="absolute -z-1 -top-[45px] right-8 opacity-10 pointer-events-none">
+            <img class="size-[250px]" src="<?= esc(base_url('assets/images/icon.svg')) ?>?v=<?= APP_VERSION ?>" loading="lazy">
+        </div>
     </div>
 </nav>
