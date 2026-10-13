@@ -11,11 +11,11 @@
     }
 
     .search-control__field {
-        @apply flex h-12 min-w-0 flex-1 items-center rounded-l-sm border border-base-content/20 bg-base-50 px-3;
+        @apply flex h-10 min-w-0 flex-1 items-center rounded-l-sm border border-base-content/20 bg-base-50 px-3;
     }
 
     .search-control__input {
-        @apply h-full min-w-0 flex-1 appearance-none border-0 bg-transparent text-lg outline-none;
+        @apply h-full min-w-0 flex-1 appearance-none border-0 bg-transparent text-base outline-none;
 
         &::-webkit-search-cancel-button {
             appearance: none;
@@ -23,7 +23,7 @@
     }
 
     .search-control__clear {
-        @apply -ml-px flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-r-sm border border-base-content/20 bg-base-50 text-base-content/50 transition-colors;
+        @apply -ml-px flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-r-sm border border-base-content/20 bg-base-50 text-base-content/50 transition-colors;
 
         &:hover {
             @apply bg-base-content/10 text-base-content;

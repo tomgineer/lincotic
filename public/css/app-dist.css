@@ -2345,6 +2345,12 @@
   .z-20 {
     z-index: 20;
   }
+  .order-2 {
+    order: 2;
+  }
+  .order-3 {
+    order: 3;
+  }
   @layer daisyui.l1.l2.l3 {
     .modal-box {
       grid-column-start: 1;
@@ -3310,6 +3316,12 @@
   .py-12 {
     padding-block: calc(var(--spacing) * 12);
   }
+  .pt-0 {
+    padding-top: 0px;
+  }
+  .pt-3 {
+    padding-top: calc(var(--spacing) * 3);
+  }
   .pt-4 {
     padding-top: calc(var(--spacing) * 4);
   }
@@ -3795,9 +3807,6 @@
     .sm\:py-16 {
       padding-block: calc(var(--spacing) * 16);
     }
-    .sm\:pb-0 {
-      padding-bottom: 0px;
-    }
     .sm\:pb-8 {
       padding-bottom: calc(var(--spacing) * 8);
     }
@@ -3811,8 +3820,23 @@
     }
   }
   @media (width >= 48rem) {
+    .md\:sticky {
+      position: sticky;
+    }
+    .md\:top-0 {
+      top: 0px;
+    }
+    .md\:order-2 {
+      order: 2;
+    }
+    .md\:order-3 {
+      order: 3;
+    }
     .md\:col-span-2 {
       grid-column: span 2 / span 2;
+    }
+    .md\:block {
+      display: block;
     }
     .md\:grid-cols-\[auto_minmax\(0\,1fr\)\] {
       grid-template-columns: auto minmax(0,1fr);
@@ -3826,11 +3850,25 @@
     .md\:gap-x-6 {
       column-gap: calc(var(--spacing) * 6);
     }
-    .md\:pb-0 {
-      padding-bottom: 0px;
+    .md\:py-6 {
+      padding-block: calc(var(--spacing) * 6);
+    }
+    .md\:pt-0 {
+      padding-top: 0px;
     }
   }
   @media (width >= 64rem) {
+    .lg\:sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border-width: 0;
+    }
     .lg\:col-span-1 {
       grid-column: span 1 / span 1;
     }
@@ -3878,8 +3916,8 @@
     .lg\:py-6 {
       padding-block: calc(var(--spacing) * 6);
     }
-    .lg\:pb-0 {
-      padding-bottom: 0px;
+    .lg\:pt-1 {
+      padding-top: var(--spacing);
     }
     .lg\:text-right {
       text-align: right;
@@ -3954,7 +3992,7 @@
     }
     .search-control__field {
       display: flex;
-      height: calc(var(--spacing) * 12);
+      height: calc(var(--spacing) * 10);
       min-width: 0px;
       flex: 1;
       align-items: center;
@@ -3977,8 +4015,8 @@
       border-style: var(--tw-border-style);
       border-width: 0px;
       background-color: transparent;
-      font-size: var(--text-lg);
-      line-height: var(--tw-leading, var(--text-lg--line-height));
+      font-size: var(--text-base);
+      line-height: var(--tw-leading, var(--text-base--line-height));
       --tw-outline-style: none;
       outline-style: none;
       &::-webkit-search-cancel-button {
@@ -3988,8 +4026,8 @@
     .search-control__clear {
       margin-left: -1px;
       display: flex;
-      width: calc(var(--spacing) * 12);
-      height: calc(var(--spacing) * 12);
+      width: calc(var(--spacing) * 10);
+      height: calc(var(--spacing) * 10);
       flex-shrink: 0;
       cursor: pointer;
       align-items: center;

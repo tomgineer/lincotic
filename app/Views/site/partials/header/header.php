@@ -1,4 +1,4 @@
-<header id="site-header" class="sticky top-0 z-20 border-b border-base-content/15 bg-base-100">
+<header id="site-header" class="z-20 border-b border-base-content/15 bg-base-100 md:sticky md:top-0">
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_min(100%,64rem)_1fr]">
         <div class="flex items-center px-6 pt-6 xl:justify-end xl:py-6">
             <a href="<?= esc(site_url('/')) ?>" class="group block w-full max-w-42" aria-label="Lincotic home">
@@ -9,7 +9,7 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 px-6 py-6">
+        <div class="order-3 grid grid-cols-1 gap-3 px-6 pt-3 pb-6 md:order-2 md:py-6">
             <?= view('site/partials/header/filters', [
                 'collectionOptions' => $collectionOptions,
                 'filters'           => $filters,
@@ -17,7 +17,7 @@
             <?= view('site/partials/header/search', ['search' => $search]) ?>
         </div>
 
-        <div class="flex flex-col items-start justify-center gap-2">
+        <div class="order-2 flex flex-col items-start justify-center gap-2 pt-3 md:order-3 md:pt-0">
             <?= $this->include('site/partials/navigation') ?>
 
             <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>

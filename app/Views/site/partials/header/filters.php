@@ -26,7 +26,7 @@
         </select>
     </fieldset>
 
-    <fieldset class="fieldset min-w-0">
+    <fieldset class="fieldset hidden min-w-0 md:block">
         <legend class="fieldset-legend font-heading">Flag</legend>
         <select name="flag" class="select w-full bg-base-50" aria-label="Filter links by flag">
             <option value="all" <?= $filters['flag'] === 'all' ? 'selected' : '' ?>>All Flags</option>
@@ -36,7 +36,7 @@
         </select>
     </fieldset>
 
-    <fieldset class="fieldset min-w-0">
+    <fieldset class="fieldset hidden min-w-0 md:block">
         <legend class="fieldset-legend font-heading">Importance</legend>
         <select name="importance" class="select w-full bg-base-50" aria-label="Filter links by importance">
             <option value="all" <?= $filters['importance'] === 'all' ? 'selected' : '' ?>>All Levels</option>
@@ -47,7 +47,7 @@
         </select>
     </fieldset>
 
-    <fieldset class="fieldset min-w-0">
+    <fieldset class="fieldset hidden min-w-0 md:block">
         <legend class="fieldset-legend font-heading">Sort Order</legend>
         <select name="sort" class="select w-full bg-base-50" aria-label="Sort links">
             <option value="title" <?= $filters['sort'] === 'title' ? 'selected' : '' ?>>Title (A–Z)</option>
