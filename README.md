@@ -2,7 +2,7 @@
 
 ### Your links, finally working like a system.
 
-Lincotic is a focused, self-hosted link library for people who have outgrown browser bookmark folders. It turns saved URLs into a structured, searchable workspace—complete with collections, priorities, review states, visibility controls, visit insights, and a polished administration experience.
+Lincotic is a focused, self-hosted link library for people who have outgrown browser bookmark folders. It turns saved URLs into a structured, searchable workspace, complete with collections, priorities, review states, visibility controls, visit insights, and a polished administration experience.
 
 Save less blindly. Find things faster. Keep the links that matter genuinely useful.
 
@@ -69,7 +69,7 @@ The result is a fast editorial workflow that keeps attention on the library itse
 
 ## Share the useful parts, protect the rest
 
-Lincotic supports both open browsing and authenticated access. Public visitors can use the visible link library without an account, while selected links can be restricted to signed-in users—including protection on direct outbound redirects.
+Lincotic supports both open browsing and authenticated access. Public visitors can use the visible link library without an account, while selected links can be restricted to signed-in users, including protection on direct outbound redirects.
 
 Authentication and role-based administration are powered by CodeIgniter Shield. Cache-aware public pages keep repeat visits fast, while library changes invalidate stale guest views so published information stays current.
 
@@ -109,12 +109,12 @@ It is a natural fit for:
 
 ## Why self-host Lincotic?
 
-- **Ownership** — keep your link data and accounts on infrastructure you control.
-- **Clarity** — use purposeful metadata instead of deep, fragile folder trees.
-- **Speed** — reach important destinations through search, filters, and activity-based sorting.
-- **Privacy** — separate guest-visible resources from authenticated-only links.
-- **Focus** — get a dedicated link workspace without the weight of a general-purpose knowledge platform.
-- **Freedom** — inspect, adapt, and extend an MIT-licensed codebase.
+- **Ownership**: keep your link data and accounts on infrastructure you control.
+- **Clarity**: use purposeful metadata instead of deep, fragile folder trees.
+- **Speed**: reach important destinations through search, filters, and activity-based sorting.
+- **Privacy**: separate guest-visible resources from authenticated-only links.
+- **Focus**: get a dedicated link workspace without the weight of a general-purpose knowledge platform.
+- **Freedom**: inspect, adapt, and extend an MIT-licensed codebase.
 
 ## Built on a modern, maintainable foundation
 
