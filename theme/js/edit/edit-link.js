@@ -173,6 +173,7 @@ export function initEditLink() {
         setControlValue(form, 'description', link.description ?? '');
         setCheckboxValue(form, 'is_favorite', Boolean(link.is_favorite));
         setCheckboxValue(form, 'is_pending_review', Boolean(link.is_pending_review));
+        setCheckboxValue(form, 'is_hidden', Boolean(link.is_hidden));
     };
 
     const openEditor = async (link) => {
@@ -409,6 +410,7 @@ export function initEditLink() {
             description: data.get('description'),
             is_favorite: data.get('is_favorite') === '1',
             is_pending_review: data.get('is_pending_review') === '1',
+            is_hidden: data.get('is_hidden') === '1',
         };
 
         setStatus(creating ? 'Adding link…' : 'Saving changes…');

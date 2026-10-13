@@ -42,6 +42,8 @@ final class Collections extends EditingController {
             return $this->validationError($result['errors']);
         }
 
+        $this->invalidateGuestPageCache();
+
         return $this->response
             ->setStatusCode(201)
             ->setJSON([
@@ -85,6 +87,8 @@ final class Collections extends EditingController {
         if ($result['status'] === EditStatus::INVALID) {
             return $this->validationError($result['errors']);
         }
+
+        $this->invalidateGuestPageCache();
 
         return $this->response->setJSON([
             'message' => 'Collection order updated.',
@@ -154,6 +158,8 @@ final class Collections extends EditingController {
             return $this->validationError($result['errors']);
         }
 
+        $this->invalidateGuestPageCache();
+
         return $this->response->setJSON([
             'message' => 'Collection updated.',
             'csrf'    => csrf_hash(),
@@ -186,6 +192,8 @@ final class Collections extends EditingController {
         if ($result['status'] === EditStatus::INVALID) {
             return $this->jsonError('Unable to delete the collection right now.', 500);
         }
+
+        $this->invalidateGuestPageCache();
 
         return $this->response->setJSON([
             'message' => 'Collection deleted.',

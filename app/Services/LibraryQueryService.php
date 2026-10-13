@@ -31,9 +31,9 @@ final class LibraryQueryService {
     /**
      * Retrieves collections and links matching the selected home filters.
      */
-    public function filter(array $filters): array {
+    public function filter(array $filters, bool $includeHidden = false): array {
         if ($filters['unassignedOnly'] ?? false) {
-            return $this->findUnassignedLinks($filters);
+            return $this->findUnassignedLinks($filters, $includeHidden);
         }
 
         $collections = $this->findCollections($filters);
@@ -42,7 +42,7 @@ final class LibraryQueryService {
             return [];
         }
 
-        $links = $this->findFilteredLinks($collections, $filters);
+        $links = $this->findFilteredLinks($collections, $filters, $includeHidden);
 
         return $this->attachLinks($collections, $links);
     }
@@ -50,9 +50,10 @@ final class LibraryQueryService {
     /**
      * Returns links that are no longer assigned to a collection as a virtual group.
      */
-    private function findUnassignedLinks(array $filters): array {
+    private function findUnassignedLinks(array $filters, bool $includeHidden): array {
         $linkModel = (new LinkModel())->where('collection_id', null);
 
+        $this->applyVisibilityFilter($linkModel, $includeHidden);
         $this->applyFlagFilter($linkModel, $filters['flag'] ?? 'all');
         $this->applyImportanceFilter($linkModel, $filters['importance'] ?? 'all');
         $this->applySort($linkModel, $filters['sort'] ?? 'title');
@@ -75,7 +76,7 @@ final class LibraryQueryService {
     /**
      * Searches all links without applying any of the home filters.
      */
-    public function search(string $term): array {
+    public function search(string $term, bool $includeHidden = false): array {
         $collections = $this->findCollections();
 
         if ($collections === []) {
@@ -84,6 +85,7 @@ final class LibraryQueryService {
 
         $linkModel = $this->linksIn($collections);
 
+        $this->applyVisibilityFilter($linkModel, $includeHidden);
         $linkModel
             ->groupStart()
             ->like('title', $term)
@@ -117,9 +119,10 @@ final class LibraryQueryService {
     /**
      * Finds links within the selected collections and applies all link filters.
      */
-    private function findFilteredLinks(array $collections, array $filters): array {
+    private function findFilteredLinks(array $collections, array $filters, bool $includeHidden): array {
         $linkModel = $this->linksIn($collections);
 
+        $this->applyVisibilityFilter($linkModel, $includeHidden);
         $this->applyFlagFilter($linkModel, $filters['flag'] ?? 'all');
         $this->applyImportanceFilter($linkModel, $filters['importance'] ?? 'all');
         $this->applySort($linkModel, $filters['sort'] ?? 'title');
@@ -132,6 +135,15 @@ final class LibraryQueryService {
             'collection_id',
             array_column($collections, 'id')
         );
+    }
+
+    /**
+     * Hidden links are available to authenticated users only.
+     */
+    private function applyVisibilityFilter(LinkModel $linkModel, bool $includeHidden): void {
+        if (! $includeHidden) {
+            $linkModel->where('is_hidden', 0);
+        }
     }
 
     /**

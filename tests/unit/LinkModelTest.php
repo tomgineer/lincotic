@@ -43,4 +43,16 @@ final class LinkModelTest extends CIUnitTestCase
         $this->assertFalse($model->validate(['importance' => 'urgent']));
         $this->assertFalse($model->validate(['importance' => 'normal']));
     }
+
+    public function testHiddenFlagCanBePersisted(): void
+    {
+        $model = new class extends LinkModel {
+            public function allowedFields(): array
+            {
+                return $this->allowedFields;
+            }
+        };
+
+        $this->assertContains('is_hidden', $model->allowedFields());
+    }
 }

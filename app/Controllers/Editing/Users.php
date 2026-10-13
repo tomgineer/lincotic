@@ -37,6 +37,8 @@ final class Users extends EditingController {
             return $this->validationError($result['errors']);
         }
 
+        $this->invalidateGuestPageCache();
+
         return $this->response
             ->setStatusCode(201)
             ->setJSON([
@@ -77,6 +79,8 @@ final class Users extends EditingController {
         if ($result['status'] === EditStatus::INVALID) {
             return $this->validationError($result['errors']);
         }
+
+        $this->invalidateGuestPageCache();
 
         return $this->response->setJSON([
             'message' => 'User updated.',

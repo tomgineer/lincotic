@@ -43,6 +43,8 @@ final class Links extends EditingController {
             return $this->validationError($result['errors']);
         }
 
+        $this->invalidateGuestPageCache();
+
         return $this->response
             ->setStatusCode(201)
             ->setJSON([
@@ -113,6 +115,8 @@ final class Links extends EditingController {
             return $this->validationError($result['errors']);
         }
 
+        $this->invalidateGuestPageCache();
+
         return $this->response->setJSON([
             'message' => 'Link updated.',
             'csrf'    => csrf_hash(),
@@ -146,9 +150,12 @@ final class Links extends EditingController {
             return $this->jsonError('Unable to delete the link right now.', 500);
         }
 
+        $this->invalidateGuestPageCache();
+
         return $this->response->setJSON([
             'message' => 'Link deleted.',
             'csrf'    => csrf_hash(),
         ]);
     }
+
 }

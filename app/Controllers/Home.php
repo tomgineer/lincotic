@@ -15,7 +15,7 @@ class Home extends BaseController {
         $filters = $this->filters();
 
         return view('site/pages/home', [
-            'collections'       => $service->filter($filters),
+            'collections'       => $service->filter($filters, auth()->loggedIn()),
             'collectionOptions' => $service->getFilterOptions(),
             'filters'           => $filters,
             'search'            => '',
@@ -37,7 +37,7 @@ class Home extends BaseController {
         $service = new LibraryQueryService();
 
         return view('site/pages/home', [
-            'collections'       => $service->search($search),
+            'collections'       => $service->search($search, auth()->loggedIn()),
             'collectionOptions' => $service->getFilterOptions(),
             'filters'           => $this->defaultFilters(),
             'search'            => $search,

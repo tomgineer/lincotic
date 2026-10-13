@@ -48,6 +48,7 @@ final class EditingServicesTest extends CIUnitTestCase
             'importance'        => null,
             'is_favorite'       => '1',
             'is_pending_review' => '0',
+            'is_hidden'         => '1',
             'click_count'       => '99',
         ]);
 
@@ -62,6 +63,7 @@ final class EditingServicesTest extends CIUnitTestCase
             'importance'        => '',
             'is_favorite'       => true,
             'is_pending_review' => false,
+            'is_hidden'         => true,
         ], $service->get(12));
     }
 
@@ -262,6 +264,7 @@ final class EditingServicesTest extends CIUnitTestCase
                 'importance'        => 'high',
                 'is_favorite'       => 0,
                 'is_pending_review' => 1,
+                'is_hidden'         => 1,
                 'user_id'           => 4,
             ])
             ->willReturn(27);
@@ -281,6 +284,7 @@ final class EditingServicesTest extends CIUnitTestCase
             'importance'        => 'high',
             'is_favorite'       => false,
             'is_pending_review' => true,
+            'is_hidden'         => true,
         ], 99);
 
         $this->assertSame(EditStatus::CREATED, $result['status']);
@@ -302,6 +306,7 @@ final class EditingServicesTest extends CIUnitTestCase
                 'importance'        => null,
                 'is_favorite'       => 0,
                 'is_pending_review' => 0,
+                'is_hidden'         => 0,
                 'user_id'           => 9,
             ])
             ->willReturn(28);
@@ -398,6 +403,7 @@ final class EditingServicesTest extends CIUnitTestCase
                 'importance'        => null,
                 'is_favorite'       => 1,
                 'is_pending_review' => 0,
+                'is_hidden'         => 1,
             ])
             ->willReturn(true);
 
@@ -413,6 +419,7 @@ final class EditingServicesTest extends CIUnitTestCase
             'importance'        => '',
             'is_favorite'       => true,
             'is_pending_review' => false,
+            'is_hidden'         => true,
         ]);
 
         $this->assertSame(EditStatus::UPDATED, $result['status']);
@@ -459,6 +466,7 @@ final class EditingServicesTest extends CIUnitTestCase
             'importance'        => 'low',
             'is_favorite'       => '0',
             'is_pending_review' => '1',
+            'is_hidden'         => '0',
         ];
     }
 

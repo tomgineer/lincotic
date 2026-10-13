@@ -118,7 +118,7 @@
                 </fieldset>
             </div>
 
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-3">
                     <span>
                         <span class="block font-heading text-sm font-semibold">Favorite</span>
@@ -133,6 +133,14 @@
                         <span class="mt-0.5 block text-xs text-base-content/55">Mark it for a later check.</span>
                     </span>
                     <input type="checkbox" name="is_pending_review" value="1" class="toggle toggle-primary" data-edit-link-control>
+                </label>
+
+                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-3">
+                    <span>
+                        <span class="block font-heading text-sm font-semibold">Hidden</span>
+                        <span class="mt-0.5 block text-xs text-base-content/55">Show only to logged-in users.</span>
+                    </span>
+                    <input type="checkbox" name="is_hidden" value="1" class="toggle toggle-primary" data-edit-link-control>
                 </label>
             </div>
         </div>

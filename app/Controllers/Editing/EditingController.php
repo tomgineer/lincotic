@@ -4,6 +4,7 @@ namespace App\Controllers\Editing;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
+use Throwable;
 
 abstract class EditingController extends BaseController {
 
@@ -44,6 +45,25 @@ abstract class EditingController extends BaseController {
                 'errors' => $errors,
                 'csrf'   => csrf_hash(),
             ]);
+    }
+
+    /**
+     * Invalidates cached guest pages after a successful editing operation.
+     */
+    protected function invalidateGuestPageCache(): void {
+        if (ENVIRONMENT !== 'production' || ! config('Lincotic')->cache['enabled']) {
+            return;
+        }
+
+        try {
+            if (! cache()->clean()) {
+                log_message('warning', 'Unable to clear cached guest pages after an editing operation.');
+            }
+        } catch (Throwable $exception) {
+            log_message('warning', 'Unable to clear cached guest pages after an editing operation: {message}', [
+                'message' => $exception->getMessage(),
+            ]);
+        }
     }
 
     /**

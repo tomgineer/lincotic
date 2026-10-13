@@ -21,6 +21,7 @@ class LinkModel extends Model
         'importance',
         'is_favorite',
         'is_pending_review',
+        'is_hidden',
         'click_count',
         'last_clicked_at',
     ];

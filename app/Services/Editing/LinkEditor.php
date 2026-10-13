@@ -36,6 +36,10 @@ final class LinkEditor
             'label' => 'Pending review',
             'rules' => 'required|in_list[0,1]',
         ],
+        'is_hidden' => [
+            'label' => 'Hidden',
+            'rules' => 'required|in_list[0,1]',
+        ],
     ];
 
     public function __construct(
@@ -210,6 +214,7 @@ final class LinkEditor
             'importance'        => $importance === '' ? null : $importance,
             'is_favorite'       => $this->booleanValue($input['is_favorite'] ?? false),
             'is_pending_review' => $this->booleanValue($input['is_pending_review'] ?? false),
+            'is_hidden'         => $this->booleanValue($input['is_hidden'] ?? false),
         ];
     }
 
@@ -224,6 +229,7 @@ final class LinkEditor
             'importance'        => (string) ($link['importance'] ?? ''),
             'is_favorite'       => (bool) $link['is_favorite'],
             'is_pending_review' => (bool) $link['is_pending_review'],
+            'is_hidden'         => (bool) $link['is_hidden'],
         ];
     }
 
