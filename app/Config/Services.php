@@ -2,6 +2,7 @@
 
 namespace Config;
 
+use App\Libraries\UrlFormatter;
 use App\Services\CronTasks\CheckRobotsTxt;
 use App\Services\CronTasks\ClearCache;
 use App\Services\CronTasks\RemoveOldSessionFiles;
@@ -23,6 +24,18 @@ use CodeIgniter\Config\BaseService;
  */
 class Services extends BaseService
 {
+    /**
+     * Returns the shared formatter used for compact URL labels.
+     */
+    public static function urlFormatter(bool $getShared = true): UrlFormatter
+    {
+        if ($getShared) {
+            return static::getSharedInstance('urlFormatter');
+        }
+
+        return new UrlFormatter();
+    }
+
     /**
      * Returns the shared pseudo-cron task coordinator.
      */

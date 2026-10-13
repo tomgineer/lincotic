@@ -1,6 +1,7 @@
 <?php
 $canEditLinks = auth()->loggedIn() && auth()->user()->inGroup('admin');
 $canManageCollection = $canEditLinks && ! ($collection['is_virtual'] ?? false);
+$urlFormatter = service('urlFormatter');
 ?>
 
 <section class="mt-8">
@@ -54,7 +55,7 @@ $canManageCollection = $canEditLinks && ! ($collection['is_virtual'] ?? false);
                     </span>
 
                     <span class="text-sm text-base-content/65">
-                        <?= esc(display_url($link['url'], 32)) ?>
+                        <?= esc($urlFormatter->forDisplay($link['url'], 32)) ?>
                     </span>
                 </div>
 
