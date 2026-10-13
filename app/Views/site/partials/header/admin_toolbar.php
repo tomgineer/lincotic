@@ -1,4 +1,4 @@
-<div class="flex px-2 border-t border-base-content/15 pt-4 pb-4 xl:pb-0 mt-2 relative">
+<div class="flex px-2 border-t border-base-content/15 pt-4 pb-4 2xl:pb-0 mt-2 relative">
     <label title="Edit mode">
         <input
             type="checkbox"

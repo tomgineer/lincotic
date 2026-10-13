@@ -3923,17 +3923,17 @@
       text-align: right;
     }
   }
-  @media (width >= 80rem) {
-    .xl\:grid-cols-\[1fr_min\(100\%\,64rem\)_1fr\] {
+  @media (width >= 96rem) {
+    .\32 xl\:grid-cols-\[1fr_min\(100\%\,64rem\)_1fr\] {
       grid-template-columns: 1fr min(100%, 64rem) 1fr;
     }
-    .xl\:justify-end {
+    .\32 xl\:justify-end {
       justify-content: flex-end;
     }
-    .xl\:py-6 {
+    .\32 xl\:py-6 {
       padding-block: calc(var(--spacing) * 6);
     }
-    .xl\:pb-0 {
+    .\32 xl\:pb-0 {
       padding-bottom: 0px;
     }
   }
