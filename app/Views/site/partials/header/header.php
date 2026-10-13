@@ -17,7 +17,7 @@
             <?= view('site/partials/header/search', ['search' => $search]) ?>
         </div>
 
-        <div class="order-2 flex flex-col items-start justify-center gap-2 pt-3 md:order-3 md:pt-0">
+        <div class="order-2 flex flex-col items-start justify-center gap-2 pt-3 md:order-3 md:flex-row md:items-center md:justify-between md:pt-0 2xl:flex-col 2xl:items-start 2xl:justify-center">
             <?= $this->include('site/partials/navigation') ?>
 
             <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
