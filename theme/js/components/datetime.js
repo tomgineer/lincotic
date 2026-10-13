@@ -74,7 +74,7 @@ function metricValue(key, now) {
     const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     const startOfNextYear = new Date(now.getFullYear() + 1, 0, 1);
     const untilReset = elapsedParts(now, new Date('2030-01-01T00:00:00Z'));
-    const sinceEvent = elapsedParts(new Date('2015-06-15T10:30:00Z'), now);
+    const sinceEvent = elapsedParts(new Date('2018-06-11T10:30:00Z'), now);
     const monthRemaining = elapsedParts(now, startOfNextMonth);
     const yearRemaining = elapsedParts(now, startOfNextYear);
     const yearElapsed = elapsedParts(startOfYear, now);

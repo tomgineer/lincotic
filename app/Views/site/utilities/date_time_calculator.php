@@ -42,7 +42,7 @@ $groups = [
     ],
     [
         'title' => 'Since the great event',
-        'note'  => 'Elapsed since June 15, 2015 at 10:30 UTC.',
+        'note'  => 'Elapsed since June 11, 2018 at 10:30 UTC.',
         'items' => [
             ['key' => 'event-years', 'label' => 'Full years'],
             ['key' => 'event-days', 'label' => 'Total days'],
@@ -50,8 +50,8 @@ $groups = [
         ],
     ],
     [
-        'title' => 'Debt estimates',
-        'note'  => 'Approximate legacy counters, not official live figures.',
+        'title' => 'National Debt',
+        'note'  => 'Estimated indicators targeting less than 1% deviation from official figures.',
         'items' => [
             ['key' => 'debt-us', 'label' => 'United States'],
             ['key' => 'debt-de', 'label' => 'Germany'],
@@ -97,37 +97,41 @@ $groups = [
     </section>
 
     <div class="mt-8 grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
-        <?php foreach ($groups as $group): ?>
-            <section class="metric-card">
-                <header class="metric-card__header">
-                    <h2 class="text-xl font-bold"><?= esc($group['title']) ?></h2>
-                    <p class="mt-1 text-sm text-base-content/55"><?= esc($group['note']) ?></p>
-                </header>
+        <?php foreach ([array_slice($groups, 0, 3), array_slice($groups, 3)] as $column): ?>
+            <div class="grid gap-6">
+                <?php foreach ($column as $group): ?>
+                    <section class="metric-card">
+                        <header class="metric-card__header">
+                            <h2 class="text-xl font-bold"><?= esc($group['title']) ?></h2>
+                            <p class="mt-1 text-sm text-base-content/55"><?= esc($group['note']) ?></p>
+                        </header>
 
-                <div class="metric-list">
-                    <?php foreach ($group['items'] as $item): ?>
-                        <div class="metric-row" data-copy-entry>
-                            <label for="datetime-<?= esc($item['key'], 'attr') ?>"><?= esc($item['label']) ?></label>
-                            <div class="utility-output">
-                                <input
-                                    id="datetime-<?= esc($item['key'], 'attr') ?>"
-                                    type="text"
-                                    value="—"
-                                    readonly
-                                    spellcheck="false"
-                                    data-datetime-value="<?= esc($item['key'], 'attr') ?>">
-                                <button
-                                    type="button"
-                                    class="utility-copy"
-                                    aria-label="Copy <?= esc($item['label'], 'attr') ?>"
-                                    data-copy-datetime>
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" /></svg>
-                                </button>
-                            </div>
+                        <div class="metric-list">
+                            <?php foreach ($group['items'] as $item): ?>
+                                <div class="metric-row" data-copy-entry>
+                                    <label for="datetime-<?= esc($item['key'], 'attr') ?>"><?= esc($item['label']) ?></label>
+                                    <div class="utility-output">
+                                        <input
+                                            id="datetime-<?= esc($item['key'], 'attr') ?>"
+                                            type="text"
+                                            value="—"
+                                            readonly
+                                            spellcheck="false"
+                                            data-datetime-value="<?= esc($item['key'], 'attr') ?>">
+                                        <button
+                                            type="button"
+                                            class="utility-copy"
+                                            aria-label="Copy <?= esc($item['label'], 'attr') ?>"
+                                            data-copy-datetime>
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            <?php endforeach ?>
                         </div>
-                    <?php endforeach ?>
-                </div>
-            </section>
+                    </section>
+                <?php endforeach ?>
+            </div>
         <?php endforeach ?>
     </div>
 
