@@ -18,6 +18,24 @@ final class LibraryQueryService {
     ];
 
     /**
+     * Returns the size of the complete library, regardless of visibility.
+     */
+    public function countAllLinks(): int {
+        return (new LinkModel())->countAllResults();
+    }
+
+    /**
+     * Returns the accumulated visits across the complete library.
+     */
+    public function countAllClicks(): int {
+        $result = (new LinkModel())
+            ->selectSum('click_count', 'total_clicks')
+            ->first();
+
+        return (int) ($result['total_clicks'] ?? 0);
+    }
+
+    /**
      * Returns the collections available in the collection filter.
      */
     public function getFilterOptions(bool $includeHidden = false): array {

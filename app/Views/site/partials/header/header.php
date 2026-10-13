@@ -1,4 +1,4 @@
-<header id="site-header" class="library-header z-20 border-b border-base-content/15 bg-base-100 md:sticky md:top-0">
+<header id="site-header" class="library-header z-20 border-b border-base-content/15 bg-base-100 md:sticky md:top-0 relative">
     <span class="library-header__decoration" aria-hidden="true"></span>
 
     <div class="grid grid-cols-1 2xl:grid-cols-[1fr_min(100%,64rem)_1fr]">
@@ -28,5 +28,16 @@
         </div>
 
     </div>
+
+    <div class="hidden md:flex md:gap-1 absolute right-0 top-full mt-1 text-[10px] font-mono text-base-content/75">
+        <div class="px-3 py-2 bg-base-200">
+            <span class="font-semibold"><?= number_format((int) ($totalLinkCount ?? 0)) ?></span> Total Links
+        </div>
+
+        <div class="px-3 py-2 bg-base-200">
+            <span class="font-semibold"><?= number_format((int) ($totalClickCount ?? 0)) ?></span> Total Clicks
+        </div>
+    </div>
+
 
 </header>

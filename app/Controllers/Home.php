@@ -18,6 +18,8 @@ class Home extends BaseController {
         return view('site/pages/home', [
             'collections'       => $service->filter($filters, $includeHidden),
             'collectionOptions' => $service->getFilterOptions($includeHidden),
+            'totalLinkCount'    => $service->countAllLinks(),
+            'totalClickCount'   => $service->countAllClicks(),
             'filters'           => $filters,
             'search'            => '',
             'adminUsers'        => $this->adminUsers(),
@@ -41,6 +43,8 @@ class Home extends BaseController {
         return view('site/pages/home', [
             'collections'       => $service->search($search, $includeHidden),
             'collectionOptions' => $service->getFilterOptions($includeHidden),
+            'totalLinkCount'    => $service->countAllLinks(),
+            'totalClickCount'   => $service->countAllClicks(),
             'filters'           => $this->defaultFilters(),
             'search'            => $search,
             'adminUsers'        => $this->adminUsers(),

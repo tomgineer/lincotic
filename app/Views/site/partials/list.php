@@ -15,6 +15,8 @@ $urlFormatter = service('urlFormatter');
         <span><?= esc($collection['name']) ?></span>
 
         <?php if ($canManageCollection): ?>
+            <span class="badge badge-sm font-mono text-secondary">id:<?= esc((string) $collection['id']) ?></span>
+
             <div class="flex gap-1 ml-1">
                 <button
                     class="btn btn-sm btn-soft btn-circle hover:btn-primary"
