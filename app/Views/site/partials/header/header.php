@@ -1,4 +1,6 @@
-<header id="site-header" class="z-20 border-b border-base-content/15 bg-base-100 md:sticky md:top-0">
+<header id="site-header" class="library-header z-20 border-b border-base-content/15 bg-base-100 md:sticky md:top-0">
+    <span class="library-header__decoration" aria-hidden="true"></span>
+
     <div class="grid grid-cols-1 2xl:grid-cols-[1fr_min(100%,64rem)_1fr]">
         <div class="flex items-center px-6 pt-6 2xl:justify-end 2xl:py-6">
             <a href="<?= esc(site_url('/')) ?>" class="group block w-full max-w-42" aria-label="Lincotic home">
