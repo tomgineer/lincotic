@@ -1,5 +1,4 @@
 <nav
-    id="site-header"
     class="sticky top-0 z-20 border-b border-base-content/15 bg-base-100"
     aria-label="Utility navigation">
     <div class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-y-4 px-6 py-5 md:grid-cols-[auto_minmax(0,1fr)] md:items-center md:gap-x-6 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-x-8 lg:py-6">
