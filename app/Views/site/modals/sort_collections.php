@@ -9,7 +9,7 @@
     data-endpoint="<?= esc(site_url('edit/collections/order'), 'attr') ?>"
     data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"
     data-csrf-token="<?= esc(csrf_hash(), 'attr') ?>">
-    <div class="modal-box -translate-y-[5vh] flex h-[38rem] max-h-[calc(90dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden p-0">
+    <div class="modal-box -translate-y-[5vh] flex h-[48rem] max-h-[calc(90dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden p-0">
         <header class="flex shrink-0 items-start justify-between gap-6 border-b border-base-content/10 px-6 py-4 sm:px-8">
             <div class="flex min-w-0 items-start gap-4">
                 <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary" aria-hidden="true">
