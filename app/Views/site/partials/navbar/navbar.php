@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="flex items-center">
-                    <ul class="text-base-content/55 uppercase flex flex-col gap-1 font-ui text-[10px]">
+                    <ul class="text-base-content/55 uppercase flex flex-col font-ui text-[10px]">
                         <li class="tracking-[0.5em]">Links • Chaotic • Lincotic</li>
                         <li class="tracking-[0.1em]">
                             <span class="text-acid font-semibold"><?= number_format((int) ($totalLinkCount ?? 0)) ?></span> links collected • <span class="text-acid font-semibold"><?= number_format((int) ($totalClickCount ?? 0)) ?></span> times hammered
@@ -34,7 +34,7 @@
                     <?= $this->include('site/partials/navbar/filters') ?>
                 </div>
                 <div class="flex items-center">
-                    Middle Bottom
+
                 </div>
             </div>
         </div>
