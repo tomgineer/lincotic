@@ -133,6 +133,7 @@ final class EditingServicesTest extends CIUnitTestCase
         ], 4);
 
         $this->assertSame(EditStatus::CREATED, $result['status']);
+        $this->assertSame(15, $result['collection_id']);
         $this->assertSame([], $result['errors']);
     }
 

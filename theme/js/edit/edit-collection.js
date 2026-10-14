@@ -39,6 +39,7 @@ export function initEditCollection() {
     const status = dialog.querySelector('[data-edit-collection-status]');
     const saveButton = dialog.querySelector('[data-edit-collection-save]');
     const deleteButton = dialog.querySelector('[data-edit-collection-delete]');
+    const libraryUrl = dialog.dataset.libraryUrl;
     const createEndpoint = dialog.dataset.createEndpoint;
     const endpointTemplate = dialog.dataset.endpointTemplate;
     const csrfHeader = dialog.dataset.csrfHeader;
@@ -51,6 +52,7 @@ export function initEditCollection() {
         || !(modalTitle instanceof HTMLElement)
         || !(modalDescription instanceof HTMLElement)
         || !(saveButton instanceof HTMLButtonElement)
+        || !libraryUrl
         || !createEndpoint
         || !endpointTemplate
         || !csrfHeader
@@ -324,6 +326,19 @@ export function initEditCollection() {
                 throw new Error(result.error || (creating
                     ? 'Unable to add this collection.'
                     : 'Unable to save this collection.'));
+            }
+
+            if (creating) {
+                const collectionId = result.collection?.id;
+
+                if (!Number.isInteger(collectionId) || collectionId < 1) {
+                    throw new Error('The collection was added, but it could not be opened automatically.');
+                }
+
+                const location = new URL(libraryUrl, window.location.href);
+                location.searchParams.set('collection', String(collectionId));
+                window.location.assign(location);
+                return;
             }
 
             dialog.hidden = true;

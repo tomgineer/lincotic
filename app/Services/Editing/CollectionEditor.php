@@ -50,7 +50,7 @@ final class CollectionEditor
     /**
      * Validates and creates one collection for the current user.
      *
-     * @return array{status: string, errors: array<string, string>}
+     * @return array{status: string, errors: array<string, string>, collection_id?: int}
      */
     public function create(array $input, int $userId): array
     {
@@ -77,11 +77,16 @@ final class CollectionEditor
 
         $data['user_id'] = $userId;
 
-        if ($this->collections->insert($data) === false) {
+        $collectionId = $this->collections->insert($data);
+
+        if ($collectionId === false) {
             return $this->result(EditStatus::INVALID, $this->collections->errors());
         }
 
-        return $this->result(EditStatus::CREATED);
+        return [
+            ...$this->result(EditStatus::CREATED),
+            'collection_id' => (int) $collectionId,
+        ];
     }
 
     /**

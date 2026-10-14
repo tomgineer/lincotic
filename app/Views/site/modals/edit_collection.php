@@ -4,6 +4,7 @@
     aria-labelledby="edit-collection-modal-title"
     aria-describedby="edit-collection-modal-description"
     data-edit-collection-modal
+    data-library-url="<?= esc(site_url('/'), 'attr') ?>"
     data-create-endpoint="<?= esc(site_url('edit/collections'), 'attr') ?>"
     data-endpoint-template="<?= esc(site_url('edit/collections/__COLLECTION_ID__'), 'attr') ?>"
     data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"

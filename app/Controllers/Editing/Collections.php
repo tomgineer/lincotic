@@ -47,8 +47,9 @@ final class Collections extends EditingController {
         return $this->response
             ->setStatusCode(201)
             ->setJSON([
-                'message' => 'Collection added.',
-                'csrf'    => csrf_hash(),
+                'message'    => 'Collection added.',
+                'collection' => ['id' => $result['collection_id']],
+                'csrf'       => csrf_hash(),
             ]);
     }
 
