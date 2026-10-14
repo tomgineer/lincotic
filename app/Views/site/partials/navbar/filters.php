@@ -1,10 +1,11 @@
 <form
     action="<?= esc(site_url('/')) ?>"
+    class="w-full"
     method="get"
     aria-label="Link filters"
     data-link-filters>
 <ul class="flex gap-2">
-    <li>
+    <li class="flex-1 lg:flex-initial">
         <fieldset class="fieldset min-w-0">
             <select name="collection" class="collection-select select w-full bg-base-50" aria-label="Filter links by collection">
                 <optgroup>
@@ -27,7 +28,7 @@
             </select>
         </fieldset>
     </li>
-    <li>
+    <li class="hidden 2xl:block">
         <fieldset class="fieldset min-w-0">
             <select name="flag" class="select w-full bg-base-50" aria-label="Filter links by flag">
                 <option value="all" <?= $filters['flag'] === 'all' ? 'selected' : '' ?>>All Flags</option>
@@ -37,7 +38,7 @@
             </select>
         </fieldset>
     </li>
-    <li>
+    <li class="hidden lg:block">
         <fieldset class="fieldset min-w-0">
             <select name="importance" class="select w-full bg-base-50" aria-label="Filter links by importance">
                 <option value="all" <?= $filters['importance'] === 'all' ? 'selected' : '' ?>>All Levels</option>
@@ -48,7 +49,7 @@
             </select>
         </fieldset>
     </li>
-    <li>
+    <li class="hidden lg:block">
         <fieldset class="fieldset min-w-0">
             <select name="sort" class="select w-full bg-base-50" aria-label="Sort links">
                 <option value="importance" <?= $filters['sort'] === 'importance' ? 'selected' : '' ?>>Importance</option>
