@@ -9,6 +9,14 @@ function updatePositions(list) {
         if (position instanceof HTMLElement) {
             position.textContent = String(index + 1);
         }
+
+        const destination = item.querySelector('[data-sort-collection-destination]');
+
+        if (destination instanceof HTMLInputElement) {
+            destination.value = String(index + 1);
+        }
+
+        item.setAttribute('aria-label', `${item.dataset.collectionName}, position ${index + 1}`);
     });
 }
 
@@ -22,6 +30,12 @@ export function initSortCollections() {
     const list = dialog.querySelector('[data-sort-collections-list]');
     const saveButton = dialog.querySelector('[data-sort-collections-save]');
     const status = dialog.querySelector('[data-sort-collections-status]');
+    const search = dialog.querySelector('[data-sort-collections-search]');
+    const clearSearch = dialog.querySelector('[data-sort-collections-clear]');
+    const count = dialog.querySelector('[data-sort-collections-count]');
+    const empty = dialog.querySelector('[data-sort-collections-empty]');
+    const hint = dialog.querySelector('[data-sort-collections-hint]');
+    const scrollArea = dialog.querySelector('[data-sort-collections-scroll]');
     const endpoint = dialog.dataset.endpoint;
     const csrfHeader = dialog.dataset.csrfHeader;
     let csrfToken = dialog.dataset.csrfToken;
@@ -36,6 +50,39 @@ export function initSortCollections() {
 
     const initialOrder = collectionItems(list).map((item) => item.dataset.collectionId);
     let draggedItem = null;
+    let isSaving = false;
+
+    const searchQuery = () => search instanceof HTMLInputElement
+        ? search.value.trim().toLocaleLowerCase()
+        : '';
+
+    const filterItems = () => {
+        const query = searchQuery();
+        const items = collectionItems(list);
+        let visible = 0;
+
+        items.forEach((item) => {
+            item.hidden = !(item.dataset.collectionName ?? '').toLocaleLowerCase().includes(query);
+            item.draggable = !isSaving && !query;
+            item.classList.toggle('cursor-grab', !query);
+            if (!item.hidden) visible += 1;
+        });
+
+        if (count instanceof HTMLElement) {
+            count.textContent = query
+                ? `${visible} of ${items.length} collections`
+                : `${items.length} ${items.length === 1 ? 'collection' : 'collections'}`;
+        }
+        if (empty instanceof HTMLElement) empty.hidden = visible !== 0;
+        if (clearSearch instanceof HTMLButtonElement) {
+            clearSearch.disabled = isSaving || !(search instanceof HTMLInputElement) || !search.value;
+        }
+        if (hint instanceof HTMLElement) {
+            hint.textContent = query
+                ? 'Positions refer to the full list. Enter a position and press Move; clear search to drag.'
+                : 'Enter a position and press Move. Drag or use ↑ / ↓ on a row; Home / End moves it first / last.';
+        }
+    };
 
     const setStatus = (message, isError = false) => {
         if (!(status instanceof HTMLElement)) {
@@ -49,15 +96,20 @@ export function initSortCollections() {
 
     const setBusy = (busy) => {
         const items = collectionItems(list);
+        isSaving = busy;
 
         dialog.setAttribute('aria-busy', String(busy));
         saveButton.disabled = busy || items.length < 2;
         saveButton.textContent = busy ? 'Saving…' : 'Save order';
 
         items.forEach((item) => {
-            item.draggable = !busy;
             item.toggleAttribute('aria-disabled', busy);
+            item.querySelectorAll('input, button').forEach((control) => {
+                control.disabled = busy;
+            });
         });
+        if (search instanceof HTMLInputElement) search.disabled = busy;
+        filterItems();
     };
 
     const restoreInitialOrder = () => {
@@ -75,6 +127,48 @@ export function initSortCollections() {
 
         updatePositions(list);
     };
+
+    const moveItem = (item, position) => {
+        if (isSaving) return;
+
+        const items = collectionItems(list);
+        const oldPosition = items.indexOf(item) + 1;
+        const target = items[position - 1];
+        if (!target) return;
+
+        if (position !== oldPosition) {
+            list.insertBefore(item, position > oldPosition ? target.nextElementSibling : target);
+        }
+        updatePositions(list);
+        setStatus(`${item.dataset.collectionName} moved to position ${position} of ${items.length}.`);
+    };
+
+    const moveToDestination = (item) => {
+        const destination = item.querySelector('[data-sort-collection-destination]');
+        if (!(destination instanceof HTMLInputElement) || !destination.reportValidity()) return;
+        moveItem(item, destination.valueAsNumber);
+    };
+
+    search?.addEventListener('input', () => {
+        filterItems();
+        if (scrollArea instanceof HTMLElement) scrollArea.scrollTop = 0;
+    });
+
+    clearSearch?.addEventListener('click', () => {
+        if (!(search instanceof HTMLInputElement)) return;
+        search.value = '';
+        filterItems();
+        if (scrollArea instanceof HTMLElement) scrollArea.scrollTop = 0;
+        search.focus();
+    });
+
+    list.addEventListener('click', (event) => {
+        const button = event.target instanceof Element
+            ? event.target.closest('[data-sort-collection-move]')
+            : null;
+        const item = button?.closest('[data-sort-collection]');
+        if (item instanceof HTMLLIElement) moveToDestination(item);
+    });
 
     const updateCsrf = (result) => {
         if (typeof result.csrf === 'string' && result.csrf !== '') {
@@ -99,8 +193,10 @@ export function initSortCollections() {
     document.querySelectorAll('[data-sort-collections]').forEach((trigger) => {
         trigger.addEventListener('click', () => {
             restoreInitialOrder();
+            if (search instanceof HTMLInputElement) search.value = '';
             setStatus('');
             setBusy(false);
+            if (scrollArea instanceof HTMLElement) scrollArea.scrollTop = 0;
 
             if (!dialog.open) {
                 dialog.showModal();
@@ -113,7 +209,9 @@ export function initSortCollections() {
             ? event.target.closest('[data-sort-collection]')
             : null;
 
-        if (!(item instanceof HTMLLIElement)) {
+        if (!(item instanceof HTMLLIElement) || isSaving || searchQuery()
+            || (event.target instanceof Element && event.target.closest('input, button'))) {
+            event.preventDefault();
             return;
         }
 
@@ -168,39 +266,41 @@ export function initSortCollections() {
     });
 
     list.addEventListener('keydown', (event) => {
-        if (!['ArrowUp', 'ArrowDown'].includes(event.key)) {
-            return;
-        }
-
         const item = event.target instanceof Element
             ? event.target.closest('[data-sort-collection]')
             : null;
 
-        if (!(item instanceof HTMLLIElement)) {
+        if (!(item instanceof HTMLLIElement) || isSaving) {
             return;
         }
 
-        const sibling = event.key === 'ArrowUp'
-            ? item.previousElementSibling
-            : item.nextElementSibling;
-
-        if (!(sibling instanceof HTMLLIElement)) {
+        if (event.target instanceof HTMLInputElement) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                moveToDestination(item);
+            }
             return;
         }
+
+        if (event.target !== item || searchQuery()
+            || !['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
 
         event.preventDefault();
-
-        if (event.key === 'ArrowUp') {
-            list.insertBefore(item, sibling);
-        } else {
-            list.insertBefore(sibling, item);
-        }
-
-        updatePositions(list);
+        const items = collectionItems(list);
+        const position = items.indexOf(item) + 1;
+        const nextPosition = {
+            ArrowUp: Math.max(1, position - 1),
+            ArrowDown: Math.min(items.length, position + 1),
+            Home: 1,
+            End: items.length,
+        }[event.key];
+        moveItem(item, nextPosition);
         item.focus();
+        item.scrollIntoView({ block: 'nearest' });
     });
 
     saveButton.addEventListener('click', async () => {
+        if (isSaving) return;
         const collectionIds = collectionItems(list).map((item) => item.dataset.collectionId);
 
         setStatus('Saving collection order…');
@@ -234,7 +334,11 @@ export function initSortCollections() {
 
     dialog.addEventListener('close', () => {
         restoreInitialOrder();
+        if (search instanceof HTMLInputElement) search.value = '';
         setStatus('');
         setBusy(false);
     });
+
+    updatePositions(list);
+    filterItems();
 }
