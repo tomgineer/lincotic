@@ -8,7 +8,28 @@ use CodeIgniter\HTTP\RedirectResponse;
 
 class Home extends BaseController {
 
-    public function index(): string {
+    public function index(): string|RedirectResponse {
+        $collectionInput = $this->request->getGet('collection');
+        $collection      = is_string($collectionInput) ? trim($collectionInput) : '';
+        $isCollectionId  = ctype_digit($collection) && (int) $collection > 0;
+        $isKnownView     = in_array($collection, ['featured', 'unassigned'], true);
+
+        if ($collection !== '' && ! $isCollectionId && ! $isKnownView) {
+            $query = $this->request->getGet();
+
+            if (is_array($query)) {
+                unset($query['collection']);
+            }
+
+            $location = site_url('/');
+
+            if (is_array($query) && $query !== []) {
+                $location .= '?' . http_build_query($query);
+            }
+
+            return redirect()->to($location);
+        }
+
         $this->cachePage(config('Lincotic')->cache['duration']);
 
         $service = new LibraryQueryService();
@@ -69,12 +90,10 @@ class Home extends BaseController {
             ? (int) $collection
             : null;
         $unassignedOnly = $collection === 'unassigned';
-        $featuredOnly   = ! $unassignedOnly && ($collection === '' || $collection === 'featured');
+        $featuredOnly   = ! $unassignedOnly && $collectionId === null;
         $collection     = $unassignedOnly
             ? 'unassigned'
-            : ($featuredOnly
-                ? 'featured'
-                : ($collectionId !== null ? (string) $collectionId : 'all'));
+            : ($collectionId !== null ? (string) $collectionId : 'featured');
 
         if (! in_array($flag, ['all', 'favorite', 'pending_review', 'unflagged'], true)) {
             $flag = 'all';
@@ -101,9 +120,9 @@ class Home extends BaseController {
 
     private function defaultFilters(): array {
         return [
-            'collection'        => 'all',
+            'collection'        => 'featured',
             'collectionId'      => null,
-            'featuredOnly'      => false,
+            'featuredOnly'      => true,
             'unassignedOnly'    => false,
             'flag'              => 'all',
             'importance'        => 'all',

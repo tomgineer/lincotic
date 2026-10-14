@@ -18,10 +18,10 @@
                 </div>
 
                 <div class="flex items-center">
-                    <ul class="text-base-content/55 uppercase flex flex-col font-ui text-[10px]">
+                    <ul class="text-base-content/55 uppercase flex flex-col gap-1 font-ui text-[10px]">
                         <li class="tracking-[0.5em]">Links • Chaotic • Lincotic</li>
                         <li class="tracking-[0.1em]">
-                            <span class="text-acid">1,230</span> links collected • <span class="text-acid">234</span> times hammered
+                            <span class="text-acid font-semibold"><?= number_format((int) ($totalLinkCount ?? 0)) ?></span> links collected • <span class="text-acid font-semibold"><?= number_format((int) ($totalClickCount ?? 0)) ?></span> times hammered
                         </li>
                     </ul>
                 </div>
@@ -42,7 +42,9 @@
         <div data-component="nav-right">
             <div class="grid grid-cols-[1fr_auto] auto-rows-12">
                 <div class="flex items-center justify-end">
-                    <?= $this->include('site/partials/navbar/admin_toolbar') ?>
+                    <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
+                        <?= $this->include('site/partials/navbar/admin_toolbar') ?>
+                    <?php endif ?>
                 </div>
                 <div class="row-span-2 flex items-center px-4">
                     <?= $this->include('site/partials/navbar/login_logout') ?>

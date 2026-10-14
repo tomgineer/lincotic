@@ -1,7 +1,6 @@
 <?= $this->extend('site/layouts/default') ?>
 
 <?= $this->section('header') ?>
-    <!--</?= $this->include('site/partials/header/header') ?>-->
     <?= $this->include('site/partials/navbar/navbar') ?>
 <?= $this->endSection() ?>
 

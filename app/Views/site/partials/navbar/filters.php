@@ -1,12 +1,18 @@
+<form
+    action="<?= esc(site_url('/')) ?>"
+    method="get"
+    aria-label="Link filters"
+    data-link-filters>
 <ul class="flex gap-2">
     <li>
         <fieldset class="fieldset min-w-0">
-            <select name="collection" class="select w-full bg-base-50" aria-label="Filter links by collection">
+            <select name="collection" class="collection-select select w-full bg-base-50" aria-label="Filter links by collection">
                 <optgroup>
                     <legend>Views</legend>
-                    <option value="all" <?= $filters['collection'] === 'all' ? 'selected' : '' ?>>All Collections</option>
                     <option value="featured" <?= $filters['collection'] === 'featured' ? 'selected' : '' ?>>Featured</option>
-                    <option value="unassigned" <?= $filters['collection'] === 'unassigned' ? 'selected' : '' ?>>Unassigned</option>
+                    <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
+                        <option value="unassigned" <?= $filters['collection'] === 'unassigned' ? 'selected' : '' ?>>Unassigned</option>
+                    <?php endif ?>
                 </optgroup>
                 <optgroup>
                     <legend>Collections</legend>
@@ -57,3 +63,4 @@
         </fieldset>
     </li>
 </ul>
+</form>
