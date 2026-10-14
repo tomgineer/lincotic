@@ -1,11 +1,39 @@
 .collection-select {
     optgroup > legend {
-        @apply font-ui font-bold text-base-content/55 border-b border-base-content/15 pt-1 pb-2 mb-2;
+        @apply border-b border-base-content/15 pt-1 pb-2 mb-2
+               font-ui text-acid;
     }
 
     @supports (appearance: base-select) {
+        &,
         &::picker(select) {
-            max-height: min(40rem, 80svh) !important;
+            appearance: base-select;
+        }
+
+        &:open::picker(select) {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.25rem;
+            min-width: min(32rem, calc(100vw - 2rem));
+            max-height: 80svh !important;
+            overflow-y: auto;
+        }
+
+        optgroup {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-column: 1 / -1;
+            gap: 0.25rem;
+            min-width: 0;
+        }
+
+        optgroup > legend {
+            grid-column: 1 / -1;
+        }
+
+        option {
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
     }
 }
