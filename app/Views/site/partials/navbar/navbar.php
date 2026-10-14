@@ -1,10 +1,10 @@
-<nav class="sticky top-0">
-    <div class="grid grid-cols-[1fr_auto_1fr] h-24 border-b border-base-content/15 relative isolate overflow-hidden">
+<nav class="sticky top-0 bg-base-100">
+    <div class="grid grid-cols-[1fr_auto_1fr] h-28 py-2 border-b border-base-content/15 relative isolate overflow-hidden">
 
         <div data-component="nav-left">
             <div class="grid grid-cols-[auto_1fr] auto-rows-12">
 
-                <div class="row-span-2 flex items-center px-8 border border-red-400">
+                <div class="row-span-2 flex items-center px-8">
                     <a href="<?= esc(site_url('/')) ?>" class="group block" aria-label="Lincotic home">
                         <img
                             src="<?= esc(base_url('assets/images/logo.svg')) ?>?v=<?= APP_VERSION ?>"
@@ -13,11 +13,11 @@
                     </a>
                 </div>
 
-                <div class="flex items-center border border-red-400">
+                <div class="flex items-center">
                     <?= $this->include('site/partials/navbar/utilities') ?>
                 </div>
 
-                <div class="flex items-center border border-red-400">
+                <div class="flex items-center">
                     <ul class="text-base-content/55 uppercase flex flex-col font-ui text-[10px]">
                         <li class="tracking-[0.5em]">Links • Chaotic • Lincotic</li>
                         <li class="tracking-[0.1em]">
@@ -29,33 +29,25 @@
         </div>
 
         <div data-component="nav-center">
-            <div class="grid grid-cols-4 auto-rows-12">
-                <span class="col-span-4 border border-red-400"></span>
-
-                <div class="flex items-center border border-red-400">
-                    test
+            <div class="grid grid-cols-1 auto-rows-12">
+                <div class="flex items-center">
+                    <?= $this->include('site/partials/navbar/filters') ?>
                 </div>
-                <div class="flex items-center border border-red-400">
-                    test
-                </div>
-                <div class="flex items-center border border-red-400">
-                    test
-                </div>
-                <div class="flex items-center border border-red-400">
-                    test
+                <div class="flex items-center">
+                    Middle Bottom
                 </div>
             </div>
         </div>
 
         <div data-component="nav-right">
             <div class="grid grid-cols-[1fr_auto] auto-rows-12">
-                <div class="flex items-center justify-end border border-red-400">
+                <div class="flex items-center justify-end">
                     <?= $this->include('site/partials/navbar/admin_toolbar') ?>
                 </div>
-                <div class="row-span-2 flex items-center px-4 border border-red-400">
+                <div class="row-span-2 flex items-center px-4">
                     <?= $this->include('site/partials/navbar/login_logout') ?>
                 </div>
-                <div class="flex items-center justify-end border border-red-400">
+                <div class="flex items-center justify-end">
                     <?= $this->include('site/partials/navbar/search') ?>
                 </div>
             </div>
