@@ -90,7 +90,9 @@
                 <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
                     <span class="flex min-w-0 items-start gap-3">
                         <span class="mt-0.5 text-primary" aria-hidden="true">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path d="M3 3l18 18" /><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" /><path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c5 0 8.3 4 9 6-.3.9-1.1 2.2-2.3 3.4" /><path d="M6.6 6.6C4.6 7.8 3.4 9.5 3 10c.7 2 4 6 9 6 1 0 1.9-.2 2.7-.5" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                            </svg>
                         </span>
                         <span>
                             <span class="block font-heading text-sm font-semibold">Hidden collection</span>

@@ -15,7 +15,15 @@ $urlFormatter = service('urlFormatter');
         <span><?= esc($collection['name']) ?></span>
 
         <?php if ($canManageCollection): ?>
-            <span class="badge badge-sm font-mono text-secondary">id:<?= esc((string) $collection['id']) ?></span>
+            <span class="badge badge-sm px-1 font-mono text-secondary">id:<?= esc((string) $collection['id']) ?></span>
+
+            <?php if ((int) ($collection['is_hidden'] ?? 0) === 1): ?>
+                <span class="badge badge-sm text-blue-400 px-1" title="Hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-3" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+                </span>
+            <?php endif ?>
 
             <div class="flex gap-1 ml-1">
                 <button
@@ -87,7 +95,9 @@ $urlFormatter = service('urlFormatter');
 
                     <?php if ((int) ($link['is_hidden'] ?? 0) === 1): ?>
                         <span class="text-blue-400" title="Hidden">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6" /><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0" /><path d="M8 11v-4a4 4 0 1 1 8 0v4" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                            </svg>
                         </span>
                     <?php endif ?>
 
