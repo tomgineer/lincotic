@@ -61,4 +61,4 @@
     </li>
 </ul>
 
-<?= $this->include('site/partials/header/users_popover') ?>
+<?= $this->include('site/partials/navbar/users_popover') ?>

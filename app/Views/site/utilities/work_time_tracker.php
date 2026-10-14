@@ -3,7 +3,7 @@
 <?= $this->section('title') ?>Work Time Tracker | Lincotic<?= $this->endSection() ?>
 
 <?= $this->section('header') ?>
-<?= view('site/partials/utilities/header', [
+<?= view('site/partials/navbar/navbar_utilities', [
     'eyebrow'     => 'Productivity utility',
     'description' => 'A private, local tracker for your working day.',
 ]) ?>

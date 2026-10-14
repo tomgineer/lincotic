@@ -3,7 +3,7 @@
 <?= $this->section('title') ?>Hash Generator | Lincotic<?= $this->endSection() ?>
 
 <?= $this->section('header') ?>
-<?= view('site/partials/utilities/header', [
+<?= view('site/partials/navbar/navbar_utilities', [
     'eyebrow'     => 'Developer utility',
     'description' => 'Create common message digests from any text.',
 ]) ?>

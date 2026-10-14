@@ -3,7 +3,7 @@
 <?= $this->section('title') ?>Password Generator | Lincotic<?= $this->endSection() ?>
 
 <?= $this->section('header') ?>
-<?= view('site/partials/utilities/header', [
+<?= view('site/partials/navbar/navbar_utilities', [
     'eyebrow'     => 'Security utility',
     'description' => 'Fresh credentials, generated on demand.',
 ]) ?>

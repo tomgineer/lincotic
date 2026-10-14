@@ -73,7 +73,7 @@ $groups = [
 <?= $this->section('title') ?>Date & Time Calculator | Lincotic<?= $this->endSection() ?>
 
 <?= $this->section('header') ?>
-<?= view('site/partials/utilities/header', [
+<?= view('site/partials/navbar/navbar_utilities', [
     'eyebrow'     => 'Time utility',
     'description' => 'Live clocks, milestones, and calendar counters.',
 ]) ?>

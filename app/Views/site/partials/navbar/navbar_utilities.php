@@ -1,62 +1,27 @@
-<nav class="sticky top-0 bg-base-100">
-    <div class="grid grid-cols-[1fr_auto_1fr] h-28 py-2 border-b border-base-content/15 relative isolate overflow-hidden">
+<nav
+    id="site-header"
+    class="sticky top-0 z-20 border-b border-base-content/15 bg-base-100"
+    aria-label="Utility navigation">
+    <div class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-y-4 px-6 py-5 md:grid-cols-[auto_minmax(0,1fr)] md:items-center md:gap-x-6 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-x-8 lg:py-6">
+        <div class="flex items-center">
+            <a href="<?= esc(site_url('/')) ?>" class="group block w-full max-w-42" aria-label="Lincotic home">
+                <img
+                    src="<?= esc(base_url('assets/images/logo.svg')) ?>?v=<?= APP_VERSION ?>"
+                    alt="Lincotic"
+                    class="h-auto w-full duration-300 ease-out motion-safe:transition-transform motion-safe:group-hover:scale-105">
+            </a>
+        </div>
 
-        <div data-component="nav-left">
-            <div class="grid grid-cols-[auto_1fr] auto-rows-12">
-
-                <div class="row-span-2 flex items-center px-8">
-                    <a href="<?= esc(site_url('/')) ?>" class="group block" aria-label="Lincotic home">
-                        <img
-                            src="<?= esc(base_url('assets/images/logo.svg')) ?>?v=<?= APP_VERSION ?>"
-                            alt="Lincotic"
-                            class="h-10 w-auto duration-300 ease-out motion-safe:transition-transform motion-safe:group-hover:scale-105">
-                    </a>
-                </div>
-
-                <div class="flex items-center">
-                    <?= $this->include('site/partials/navbar/utilities') ?>
-                </div>
-
-                <div class="flex items-center">
-                    <ul class="text-base-content/55 uppercase flex flex-col font-ui text-[10px]">
-                        <li class="tracking-[0.5em]">Links • Chaotic • Lincotic</li>
-                        <li class="tracking-[0.1em]">
-                            <span class="text-acid font-semibold"><?= number_format((int) ($totalLinkCount ?? 0)) ?></span> links collected • <span class="text-acid font-semibold"><?= number_format((int) ($totalClickCount ?? 0)) ?></span> times hammered
-                        </li>
-                    </ul>
-                </div>
+        <div class="flex min-w-0 items-center">
+            <div class="min-w-0">
+                <p class="font-mono text-xs font-bold uppercase tracking-[0.2em] text-acid"><?= esc($eyebrow) ?></p>
+                <p class="mt-1 text-sm text-base-content/60"><?= esc($description) ?></p>
             </div>
         </div>
 
-        <div data-component="nav-center">
-            <div class="grid grid-cols-1 auto-rows-12">
-                <div class="flex items-center">
-                    <?= $this->include('site/partials/navbar/filters') ?>
-                </div>
-                <div class="flex items-center">
-
-                </div>
-            </div>
-        </div>
-
-        <div data-component="nav-right">
-            <div class="grid grid-cols-[1fr_auto] auto-rows-12">
-                <div class="flex items-center justify-end">
-                    <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
-                        <?= $this->include('site/partials/navbar/admin_toolbar') ?>
-                    <?php endif ?>
-                </div>
-                <div class="row-span-2 flex items-center px-4">
-                    <?= $this->include('site/partials/navbar/login_logout') ?>
-                </div>
-                <div class="flex items-center justify-end">
-                    <?= $this->include('site/partials/navbar/search') ?>
-                </div>
-            </div>
-        </div>
-
-        <div class="absolute -z-1 -top-[45px] right-8 opacity-10 pointer-events-none">
-            <img class="size-[250px]" src="<?= esc(base_url('assets/images/icon.svg')) ?>?v=<?= APP_VERSION ?>" loading="lazy">
+        <div class="flex items-center justify-start gap-1 md:col-span-2 md:justify-end lg:col-span-1">
+            <?= $this->include('site/partials/navbar/utilities') ?>
+            <?= $this->include('site/partials/navbar/login_logout') ?>
         </div>
     </div>
 </nav>
