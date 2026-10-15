@@ -1,3 +1,21 @@
+.navbar-popover-trigger {
+    position: relative;
+}
+
+.navbar-popover-trigger::after {
+    content: "";
+    position: absolute;
+    right: 1rem;
+    bottom: 0;
+    left: 1rem;
+    height: 0.1875rem;
+    border-radius: 9999px 9999px 0 0;
+    background: var(--color-acid);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 150ms ease;
+}
+
 .navbar-popover {
     position: fixed;
     inset: 4rem 0 auto;
@@ -48,13 +66,23 @@
 .navbar-new:has(#navbar-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-collections-popover"],
 .navbar-new:has(#navbar-filters-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-filters-popover"],
 .navbar-new:has(#navbar-sort-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-sort-popover"],
-.navbar-new:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"] {
+.navbar-new:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"],
+.navbar-new:has(#users-popover:popover-open) .navbar-popover-trigger[popovertarget="users-popover"] {
     background: var(--color-base-200);
+}
+
+.navbar-new:has(#navbar-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-collections-popover"]::after,
+.navbar-new:has(#navbar-filters-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-filters-popover"]::after,
+.navbar-new:has(#navbar-sort-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-sort-popover"]::after,
+.navbar-new:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"]::after,
+.navbar-new:has(#users-popover:popover-open) .navbar-popover-trigger[popovertarget="users-popover"]::after {
+    transform: scaleX(1);
 }
 
 .navbar-new:has(#navbar-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-collections-popover"] .navbar-popover-chevron,
 .navbar-new:has(#navbar-filters-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-filters-popover"] .navbar-popover-chevron,
 .navbar-new:has(#navbar-sort-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-sort-popover"] .navbar-popover-chevron,
-.navbar-new:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"] .navbar-popover-chevron {
+.navbar-new:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"] .navbar-popover-chevron,
+.navbar-new:has(#users-popover:popover-open) .navbar-popover-trigger[popovertarget="users-popover"] .navbar-popover-chevron {
     transform: rotate(180deg);
 }

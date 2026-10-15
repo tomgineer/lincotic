@@ -6,7 +6,7 @@
     position: fixed;
     position-anchor: --users-popover-trigger;
     inset: auto;
-    top: calc(anchor(bottom) + 0.5rem);
+    top: anchor(bottom);
     left: anchor(right);
     max-height: calc(100dvh - 2rem);
     margin: 0;

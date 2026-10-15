@@ -1,6 +1,6 @@
 <nav class="navbar-new sticky top-0 z-99 bg-base-100">
     <div class="h-16 border-b border-base-content/15 relative isolate overflow-hidden
-                grid grid-cols-[auto_1fr_auto_auto_auto]">
+                grid grid-cols-[auto_1fr_auto_auto_auto_auto]">
 
         <div class="flex items-center px-4 lg:px-8 border border-red-400" data-component="logo">
             <a href="<?= esc(site_url('/')) ?>" aria-label="Lincotic home">
@@ -47,6 +47,10 @@
             </button>
         </div>
 
+        <div class="border border-red-400" data-component="search">
+            <?= $this->include('site/partials/navbar/components/search') ?>
+        </div>
+
         <div class="border border-red-400" data-component="utilities">
             <button
                 class="navbar-popover-trigger flex h-full items-center gap-2 px-4 cursor-pointer
@@ -62,11 +66,11 @@
         </div>
 
         <div class="flex items-center border border-red-400" data-component="admin">
-            Admin
+            <?= $this->include('site/partials/navbar/components/admin') ?>
         </div>
 
         <div class="flex items-center px-2 border border-red-400" data-component="login">
-            <?= $this->include('site/partials/navbar/login_logout') ?>
+            <?= $this->include('site/partials/navbar/components/login_logout') ?>
         </div>
 
     </div>
