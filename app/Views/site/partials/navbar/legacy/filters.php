@@ -57,7 +57,7 @@
                 <option value="title_desc" <?= $filters['sort'] === 'title_desc' ? 'selected' : '' ?>>Title (Z–A)</option>
                 <option value="recent" <?= $filters['sort'] === 'recent' ? 'selected' : '' ?>>Most Recent</option>
                 <option value="updated" <?= $filters['sort'] === 'updated' ? 'selected' : '' ?>>Recently Updated</option>
-                <option value="popular" <?= $filters['sort'] === 'popular' ? 'selected' : '' ?>>Most Visited</option>
+                <option value="popular" <?= $filters['sort'] === 'popular' ? 'selected' : '' ?>>Most Popular</option>
                 <option value="visited" <?= $filters['sort'] === 'visited' ? 'selected' : '' ?>>Last Visited</option>
                 <option value="oldest" <?= $filters['sort'] === 'oldest' ? 'selected' : '' ?>>Oldest</option>
             </select>

@@ -2,7 +2,7 @@
 
 <nav class="navbar-new sticky top-0 z-99 bg-base-100">
     <div class="h-16 border-b border-base-content/15 relative isolate overflow-hidden
-                grid <?= $isAdmin ? 'grid-cols-[auto_1fr_auto_auto_auto_auto]' : 'grid-cols-[auto_1fr_auto_auto_auto]' ?> gap-2">
+                flex gap-2">
 
         <div class="flex items-center px-4 lg:px-6" data-component="logo">
             <a href="<?= esc(site_url('/')) ?>" aria-label="Lincotic home">
@@ -13,7 +13,7 @@
             </a>
         </div>
 
-        <div class="flex" data-component="main">
+        <div class="flex-1 flex" data-component="main">
             <button
                 class="navbar-popover-trigger flex h-full items-center gap-2 px-4 cursor-pointer
                     hover:bg-base-200 transition-colors"
@@ -37,7 +37,7 @@
                 </svg>
             </button>
             <button
-                class="navbar-popover-trigger flex h-full items-center gap-2 px-4 cursor-pointer
+                class="navbar-sort-popover-trigger navbar-popover-trigger flex h-full items-center gap-2 px-4 cursor-pointer
                     hover:bg-base-200 transition-colors"
                 type="button"
                 aria-controls="navbar-sort-popover"
