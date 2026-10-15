@@ -24,7 +24,7 @@ final class UserQueryServiceTest extends CIUnitTestCase
         $this->assertSame([], (new UserQueryService($users))->all());
     }
 
-    public function testFindByUsernameReturnsTheHubOwner(): void
+    public function testFindActiveByUsernameReturnsTheHubOwner(): void
     {
         $user = new User([
             'id'       => 2,
@@ -42,11 +42,11 @@ final class UserQueryServiceTest extends CIUnitTestCase
 
         $this->assertSame(
             ['id' => 2, 'username' => 'civic'],
-            (new UserQueryService($users))->findByUsername('civic'),
+            (new UserQueryService($users))->findActiveByUsername('civic'),
         );
     }
 
-    public function testFindByUsernameReturnsNullForAnUnknownUser(): void
+    public function testFindActiveByUsernameReturnsNullForAnUnknownUser(): void
     {
         $users = $this->getMockBuilder(UserModel::class)
             ->onlyMethods(['first'])
@@ -55,6 +55,38 @@ final class UserQueryServiceTest extends CIUnitTestCase
         $users->expects($this->once())->method('where')->willReturnSelf();
         $users->expects($this->once())->method('first')->willReturn(null);
 
-        $this->assertNull((new UserQueryService($users))->findByUsername('missing-user'));
+        $this->assertNull((new UserQueryService($users))->findActiveByUsername('missing-user'));
+    }
+
+    public function testFindActiveByUsernameRejectsABannedUser(): void
+    {
+        $user = new User([
+            'id'       => 2,
+            'username' => 'tom',
+            'status'   => 'banned',
+        ]);
+        $users = $this->getMockBuilder(UserModel::class)
+            ->onlyMethods(['first'])
+            ->addMethods(['where'])
+            ->getMock();
+        $users->expects($this->once())->method('where')->with('username', 'tom')->willReturnSelf();
+        $users->expects($this->once())->method('first')->willReturn($user);
+
+        $this->assertNull((new UserQueryService($users))->findActiveByUsername('tom'));
+    }
+
+    public function testFindByIdReturnsTheCacheOwnerUsername(): void
+    {
+        $user = new User([
+            'id'       => 7,
+            'username' => 'tom',
+        ]);
+        $users = $this->createMock(UserModel::class);
+        $users->expects($this->once())->method('find')->with(7)->willReturn($user);
+
+        $this->assertSame(
+            ['id' => 7, 'username' => 'tom'],
+            (new UserQueryService($users))->findById(7),
+        );
     }
 }

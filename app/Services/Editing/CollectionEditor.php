@@ -40,9 +40,9 @@ final class CollectionEditor
     /**
      * Returns the fields exposed by the collection editor.
      */
-    public function get(int $id): ?array
+    public function get(int $id, int $userId): ?array
     {
-        $collection = $this->collections->find($id);
+        $collection = $this->findOwnedCollection($id, $userId);
 
         return is_array($collection) ? $this->present($collection) : null;
     }
@@ -90,13 +90,13 @@ final class CollectionEditor
     }
 
     /**
-     * Validates and updates the display order of every collection.
+     * Validates and updates the display order of the current user's collections.
      *
      * @param list<mixed> $collectionIds
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    public function reorder(array $collectionIds): array
+    public function reorder(array $collectionIds, int $userId): array
     {
         $normalizedIds = [];
 
@@ -118,7 +118,12 @@ final class CollectionEditor
             ]);
         }
 
-        $storedIds    = array_map('intval', $this->collections->findColumn('id') ?? []);
+        $storedIds = array_map(
+            'intval',
+            $this->collections
+                ->where('user_id', $userId)
+                ->findColumn('id') ?? [],
+        );
         $requestedIds = $normalizedIds;
         sort($storedIds, SORT_NUMERIC);
         sort($requestedIds, SORT_NUMERIC);
@@ -154,9 +159,9 @@ final class CollectionEditor
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    public function update(int $id, array $input): array
+    public function update(int $id, array $input, int $userId): array
     {
-        if ($this->get($id) === null) {
+        if ($this->findOwnedCollection($id, $userId) === null) {
             return $this->result(EditStatus::NOT_FOUND);
         }
 
@@ -189,9 +194,9 @@ final class CollectionEditor
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    public function delete(int $id): array
+    public function delete(int $id, int $userId): array
     {
-        if ($this->get($id) === null) {
+        if ($this->findOwnedCollection($id, $userId) === null) {
             return $this->result(EditStatus::NOT_FOUND);
         }
 
@@ -200,6 +205,15 @@ final class CollectionEditor
         }
 
         return $this->result(EditStatus::DELETED);
+    }
+
+    private function findOwnedCollection(int $id, int $userId): ?array
+    {
+        $collection = $this->collections->find($id);
+
+        return is_array($collection) && (int) ($collection['user_id'] ?? 0) === $userId
+            ? $collection
+            : null;
     }
 
     private function normalizeInput(array $input): array

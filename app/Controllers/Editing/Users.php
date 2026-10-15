@@ -4,6 +4,7 @@ namespace App\Controllers\Editing;
 
 use App\Services\Editing\EditStatus;
 use App\Services\Editing\UserEditor;
+use App\Services\UserQueryService;
 use CodeIgniter\HTTP\ResponseInterface;
 use Throwable;
 
@@ -37,8 +38,6 @@ final class Users extends EditingController {
             return $this->validationError($result['errors']);
         }
 
-        $this->invalidateGuestPageCache();
-
         return $this->response
             ->setStatusCode(201)
             ->setJSON([
@@ -62,6 +61,7 @@ final class Users extends EditingController {
         }
 
         try {
+            $cachedOwner = (new UserQueryService())->findById($id);
             $result = (new UserEditor())->update($id, $payload, (int) (auth()->user()->id ?? 0));
         } catch (Throwable $exception) {
             log_message('error', 'Unable to update user {id}: {message}', [
@@ -80,7 +80,9 @@ final class Users extends EditingController {
             return $this->validationError($result['errors']);
         }
 
-        $this->invalidateGuestPageCache();
+        if ($cachedOwner !== null) {
+            $this->invalidateGuestPageCache($cachedOwner['username']);
+        }
 
         return $this->response->setJSON([
             'message' => 'User updated.',

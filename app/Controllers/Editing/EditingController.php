@@ -4,6 +4,7 @@ namespace App\Controllers\Editing;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Shield\Entities\User;
 use Throwable;
 
 abstract class EditingController extends BaseController {
@@ -14,9 +15,23 @@ abstract class EditingController extends BaseController {
     protected function guardAjax(): ?ResponseInterface {
         $this->response->noCache();
 
-        return $this->request->isAJAX()
+        if (! $this->request->isAJAX()) {
+            return $this->jsonError('AJAX requests only.', 403);
+        }
+
+        $user = auth()->user();
+
+        return $user instanceof User && ! $user->isBanned()
             ? null
-            : $this->jsonError('AJAX requests only.', 403);
+            : $this->jsonError('Authenticated user not found.', 401);
+    }
+
+    protected function authenticatedUserId(): int {
+        $user = auth()->user();
+
+        return $user instanceof User && ! $user->isBanned()
+            ? (int) ($user->id ?? 0)
+            : 0;
     }
 
     /**
@@ -50,19 +65,30 @@ abstract class EditingController extends BaseController {
     /**
      * Invalidates cached guest pages after a successful editing operation.
      */
-    protected function invalidateGuestPageCache(): void {
+    protected function invalidateGuestPageCache(?string $username = null): void {
         if (ENVIRONMENT !== 'production' || ! config('Lincotic')->cache['enabled']) {
             return;
         }
 
+        $username ??= (string) (auth()->user()->username ?? '');
+
+        if (preg_match('/\A[a-z0-9]+\z/', $username) !== 1) {
+            log_message('warning', 'Unable to clear guest page cache for an invalid username.');
+
+            return;
+        }
+
         try {
-            if (! cache()->clean()) {
-                log_message('warning', 'Unable to clear cached guest pages after an editing operation.');
-            }
+            service('hubPageCache')->invalidate($username);
         } catch (Throwable $exception) {
-            log_message('warning', 'Unable to clear cached guest pages after an editing operation: {message}', [
-                'message' => $exception->getMessage(),
-            ]);
+            log_message(
+                'warning',
+                'Unable to clear cached guest pages for {username}: {message}',
+                [
+                    'username' => $username,
+                    'message'  => $exception->getMessage(),
+                ],
+            );
         }
     }
 

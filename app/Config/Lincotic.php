@@ -6,6 +6,8 @@ use CodeIgniter\Config\BaseConfig;
 
 class Lincotic extends BaseConfig
 {
+    public string $rootUsername = 'civic';
+
     /**
      * @var array{enabled: bool, duration: int}
      */

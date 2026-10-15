@@ -2,17 +2,18 @@
 
 namespace App\Controllers;
 
+use App\Services\HubAccessPolicy;
+use App\Services\HubOwnerResolver;
 use App\Services\LibraryQueryService;
 use App\Services\UserQueryService;
 use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
+use CodeIgniter\Shield\Entities\User;
 
 class Hub extends BaseController {
 
-    private const string ROOT_USERNAME = 'civic';
-
     public function index(): string|RedirectResponse {
-        $owner = $this->owner(self::ROOT_USERNAME);
+        $owner = $this->rootOwner();
 
         return $this->renderHub($owner, site_url('/'), site_url('search'));
     }
@@ -29,7 +30,7 @@ class Hub extends BaseController {
     }
 
     public function search(): string|RedirectResponse {
-        $owner = $this->owner(self::ROOT_USERNAME);
+        $owner = $this->rootOwner();
 
         return $this->renderSearch($owner, site_url('/'), site_url('search'));
     }
@@ -72,11 +73,13 @@ class Hub extends BaseController {
             return redirect()->to($location);
         }
 
-        $this->cachePage(config('Lincotic')->cache['duration']);
-
         $service = new LibraryQueryService(service('urlFormatter'), $owner['id']);
         $filters = $this->filters();
-        $includeHidden = $this->canSeeHiddenContent($owner['id']);
+        $viewer = $this->viewer();
+        $policy = $this->accessPolicy();
+        $includeHidden = $policy->canViewHidden($viewer, $owner['id']);
+        $canEditContent = $policy->canEditLibrary($viewer, $owner['id']);
+        $canManageUsers = $policy->canManageUsers($viewer);
 
         return view('site/pages/hub', [
             'collections'       => $service->filter($filters, $includeHidden),
@@ -88,7 +91,9 @@ class Hub extends BaseController {
             'owner'             => $owner,
             'hubUrl'            => $hubUrl,
             'searchUrl'         => $searchUrl,
-            'adminUsers'        => $this->adminUsers(),
+            'adminUsers'        => $this->adminUsers($viewer),
+            'canEditContent'    => $canEditContent,
+            'canManageUsers'    => $canManageUsers,
         ]);
     }
 
@@ -106,7 +111,11 @@ class Hub extends BaseController {
         }
 
         $service = new LibraryQueryService(service('urlFormatter'), $owner['id']);
-        $includeHidden = $this->canSeeHiddenContent($owner['id']);
+        $viewer = $this->viewer();
+        $policy = $this->accessPolicy();
+        $includeHidden = $policy->canViewHidden($viewer, $owner['id']);
+        $canEditContent = $policy->canEditLibrary($viewer, $owner['id']);
+        $canManageUsers = $policy->canManageUsers($viewer);
 
         return view('site/pages/hub', [
             'collections'       => $service->search($search, $includeHidden),
@@ -118,7 +127,9 @@ class Hub extends BaseController {
             'owner'             => $owner,
             'hubUrl'            => $hubUrl,
             'searchUrl'         => $searchUrl,
-            'adminUsers'        => $this->adminUsers(),
+            'adminUsers'        => $this->adminUsers($viewer),
+            'canEditContent'    => $canEditContent,
+            'canManageUsers'    => $canManageUsers,
         ]);
     }
 
@@ -126,7 +137,7 @@ class Hub extends BaseController {
      * @return array{id: int, username: string}
      */
     private function owner(string $username): array {
-        $owner = (new UserQueryService())->findByUsername($username);
+        $owner = $this->ownerResolver()->resolve($username);
 
         if ($owner === null) {
             throw PageNotFoundException::forPageNotFound();
@@ -135,14 +146,17 @@ class Hub extends BaseController {
         return $owner;
     }
 
-    private function canSeeHiddenContent(int $ownerId): bool {
-        if (! auth()->loggedIn()) {
-            return false;
+    /**
+     * @return array{id: int, username: string}
+     */
+    private function rootOwner(): array {
+        $owner = $this->ownerResolver()->root();
+
+        if ($owner === null) {
+            throw PageNotFoundException::forPageNotFound();
         }
 
-        $user = auth()->user();
-
-        return (int) ($user->id ?? 0) === $ownerId || $user->inGroup('admin');
+        return $owner;
     }
 
     /**
@@ -203,11 +217,23 @@ class Hub extends BaseController {
         ];
     }
 
-    private function adminUsers(): array {
-        if (! auth()->loggedIn() || ! auth()->user()->inGroup('admin')) {
+    private function adminUsers(?User $viewer): array {
+        if (! $this->accessPolicy()->canManageUsers($viewer)) {
             return [];
         }
 
         return (new UserQueryService())->all();
+    }
+
+    private function viewer(): ?User {
+        return auth()->loggedIn() ? auth()->user() : null;
+    }
+
+    private function ownerResolver(): HubOwnerResolver {
+        return service('hubOwnerResolver');
+    }
+
+    private function accessPolicy(): HubAccessPolicy {
+        return service('hubAccessPolicy');
     }
 }

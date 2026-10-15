@@ -15,7 +15,10 @@
         </div>
     <?php else: ?>
         <?php foreach ($collections as $collection): ?>
-            <?= view('site/partials/list', ['collection' => $collection]) ?>
+            <?= view('site/partials/list', [
+                'collection'     => $collection,
+                'canEditContent' => $canEditContent,
+            ]) ?>
         <?php endforeach ?>
     <?php endif ?>
 
@@ -31,11 +34,17 @@
 
 </main>
 
-<?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
+<?php if ($canEditContent): ?>
     <?= view('site/modals/edit_link', ['collectionOptions' => $collectionOptions]) ?>
     <?= view('site/modals/edit_collection') ?>
-    <?= view('site/modals/edit_user') ?>
     <?= view('site/modals/sort_collections', ['collectionOptions' => $collectionOptions]) ?>
+<?php endif ?>
+
+<?php if ($canManageUsers): ?>
+    <?= view('site/modals/edit_user') ?>
+<?php endif ?>
+
+<?php if ($canEditContent || $canManageUsers): ?>
     <?= view('site/modals/confirmation') ?>
 <?php endif ?>
 

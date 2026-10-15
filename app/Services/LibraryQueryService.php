@@ -166,23 +166,35 @@ final class LibraryQueryService {
      */
     public function search(string $term, bool $includeHidden = false): array {
         $collections = $this->findCollections([], $includeHidden);
+        $result = [];
 
-        if ($collections === []) {
-            return [];
+        if ($collections !== []) {
+            $linkModel = $this->linksIn($collections);
+
+            $this->applyVisibilityFilter($linkModel, $includeHidden);
+            $this->applySearchTerm($linkModel, $term);
+
+            $result = $this->attachLinks($collections, $linkModel->findAll());
         }
 
-        $linkModel = $this->linksIn($collections);
+        $unassignedLinks = (new LinkModel())
+            ->where('user_id', $this->userId)
+            ->where('collection_id', null);
 
-        $this->applyVisibilityFilter($linkModel, $includeHidden);
-        $linkModel
-            ->groupStart()
-            ->like('title', $term)
-            ->orLike('url', $term)
-            ->orLike('description', $term)
-            ->groupEnd()
-            ->orderBy('title', 'ASC');
+        $this->applyVisibilityFilter($unassignedLinks, $includeHidden);
+        $this->applySearchTerm($unassignedLinks, $term);
+        $unassigned = $unassignedLinks->findAll();
 
-        return $this->attachLinks($collections, $linkModel->findAll());
+        if ($unassigned !== []) {
+            $result[] = [
+                'id'         => null,
+                'name'       => 'Unassigned Links',
+                'is_virtual' => true,
+                'links'      => $this->prepareLinksForDisplay($unassigned),
+            ];
+        }
+
+        return $result;
     }
 
     /**
@@ -246,6 +258,16 @@ final class LibraryQueryService {
         if (! $includeHidden) {
             $linkModel->where('is_hidden', 0);
         }
+    }
+
+    private function applySearchTerm(LinkModel $linkModel, string $term): void {
+        $linkModel
+            ->groupStart()
+            ->like('title', $term)
+            ->orLike('url', $term)
+            ->orLike('description', $term)
+            ->groupEnd()
+            ->orderBy('title', 'ASC');
     }
 
     /**

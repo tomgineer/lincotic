@@ -35,11 +35,30 @@ final class UserQueryService
      *
      * @return array{id: int, username: string}|null
      */
-    public function findByUsername(string $username): ?array
+    public function findActiveByUsername(string $username): ?array
     {
         $user = $this->userModel()
             ->where('username', $username)
             ->first();
+
+        if (! $user instanceof User || $user->isBanned()) {
+            return null;
+        }
+
+        return [
+            'id'       => (int) $user->id,
+            'username' => (string) $user->username,
+        ];
+    }
+
+    /**
+     * Resolves the current username used by the user's page-cache namespace.
+     *
+     * @return array{id: int, username: string}|null
+     */
+    public function findById(int $id): ?array
+    {
+        $user = $this->userModel()->find($id);
 
         if (! $user instanceof User) {
             return null;

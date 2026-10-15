@@ -2,30 +2,109 @@
 
 namespace App\Filters;
 
-use CodeIgniter\Filters\PageCache as BasePageCache;
+use App\Services\HubPageCache;
+use App\Services\HubOwnerResolver;
+use CodeIgniter\Filters\FilterInterface;
+use CodeIgniter\HTTP\DownloadResponse;
+use CodeIgniter\HTTP\Header;
+use CodeIgniter\HTTP\IncomingRequest;
+use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 
 /**
- * Enables page caching only for guests in production when it is enabled in
- * the Lincotic configuration.
+ * Caches public hub pages under a username-specific key namespace.
  */
-class PageCache extends BasePageCache {
+final class PageCache implements FilterInterface {
 
-    public function before(RequestInterface $request, $arguments = null) {
-        if (! $this->isEnabled()) {
-            return null;
-        }
+    private readonly HubPageCache $cache;
+    private readonly HubOwnerResolver $owners;
 
-        return parent::before($request, $arguments);
+    public function __construct(
+        ?HubPageCache $cache = null,
+        ?HubOwnerResolver $owners = null,
+    ) {
+        $this->cache = $cache ?? service('hubPageCache');
+        $this->owners = $owners ?? service('hubOwnerResolver');
     }
 
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null) {
-        if (! $this->isEnabled()) {
+    public function before(RequestInterface $request, $arguments = null): ?ResponseInterface {
+        $username = $this->cache->usernameFor($request);
+
+        if (! $this->isEnabled()
+            || $username === null
+            || ! $request instanceof IncomingRequest
+            || $this->owners->resolve($username) === null) {
             return null;
         }
 
-        return parent::after($request, $response, $arguments);
+        $cachedResponse = $this->cache->get($request, $username);
+
+        if ($cachedResponse === null) {
+            return null;
+        }
+
+        $response = service('response');
+
+        foreach (array_keys($response->headers()) as $name) {
+            $response->removeHeader($name);
+        }
+
+        foreach ($cachedResponse['headers'] as $name => $value) {
+            $response->setHeader($name, $value);
+        }
+
+        $response->setBody($cachedResponse['output']);
+        $response->setStatusCode(
+            $cachedResponse['status'] ?? 200,
+            $cachedResponse['reason'] ?? '',
+        );
+
+        return $response;
+    }
+
+    public function after(
+        RequestInterface $request,
+        ResponseInterface $response,
+        $arguments = null,
+    ): ?ResponseInterface {
+        $username = $this->cache->usernameFor($request);
+
+        if (! $this->isEnabled()
+            || $username === null
+            || ! $request instanceof IncomingRequest
+            || $response instanceof DownloadResponse
+            || $response instanceof RedirectResponse
+            || ! in_array($response->getStatusCode(), config('Cache')->cacheStatusCodes, true)) {
+            return null;
+        }
+
+        $headers = [];
+
+        foreach ($response->headers() as $name => $value) {
+            if ($value instanceof Header) {
+                $headers[$name] = $value->getValueLine();
+                continue;
+            }
+
+            foreach ($value as $header) {
+                $headers[$name][] = $header->getValueLine();
+            }
+        }
+
+        $this->cache->save(
+            $request,
+            $username,
+            [
+                'headers' => $headers,
+                'output'  => $response->getBody(),
+                'status'  => $response->getStatusCode(),
+                'reason'  => $response->getReasonPhrase(),
+            ],
+            config('Lincotic')->cache['duration'],
+        );
+
+        return $response;
     }
 
     private function isEnabled(): bool {
@@ -35,4 +114,5 @@ class PageCache extends BasePageCache {
             && $cache['enabled']
             && ! auth()->loggedIn();
     }
+
 }

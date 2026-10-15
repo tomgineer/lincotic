@@ -17,6 +17,9 @@ $routes->get('work-time-tracker', 'Utilities::workTimeTracker');
 $routes->group('edit', ['filter' => 'group:admin'], static function (RouteCollection $routes): void {
     $routes->post('users', 'Editing\Users::create');
     $routes->post('users/(:num)', 'Editing\Users::update/$1');
+});
+
+$routes->group('edit', ['filter' => 'session'], static function (RouteCollection $routes): void {
     $routes->post('links', 'Editing\Links::create');
     $routes->get('links/(:num)', 'Editing\Links::show/$1');
     $routes->post('links/(:num)', 'Editing\Links::update/$1');

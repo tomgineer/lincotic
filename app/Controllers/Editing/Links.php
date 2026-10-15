@@ -10,7 +10,7 @@ use Throwable;
 final class Links extends EditingController {
 
     /**
-     * Validates and creates a link for the current user or collection owner.
+     * Validates and creates a link for the current user.
      */
     public function create(): ResponseInterface {
         if (($response = $this->guardAjax()) !== null) {
@@ -23,7 +23,7 @@ final class Links extends EditingController {
             return $payload;
         }
 
-        $userId = (int) (auth()->user()->id ?? 0);
+        $userId = $this->authenticatedUserId();
 
         if ($userId < 1) {
             return $this->jsonError('Authenticated user not found.', 401);
@@ -61,8 +61,14 @@ final class Links extends EditingController {
             return $response;
         }
 
+        $userId = $this->authenticatedUserId();
+
+        if ($userId < 1) {
+            return $this->jsonError('Authenticated user not found.', 401);
+        }
+
         try {
-            $link = (new LinkEditor())->get($id);
+            $link = (new LinkEditor())->get($id, $userId);
         } catch (Throwable $exception) {
             log_message('error', 'Unable to load link {id}: {message}', [
                 'id'      => $id,
@@ -96,8 +102,14 @@ final class Links extends EditingController {
             return $payload;
         }
 
+        $userId = $this->authenticatedUserId();
+
+        if ($userId < 1) {
+            return $this->jsonError('Authenticated user not found.', 401);
+        }
+
         try {
-            $result = (new LinkEditor())->update($id, $payload);
+            $result = (new LinkEditor())->update($id, $payload, $userId);
         } catch (Throwable $exception) {
             log_message('error', 'Unable to update link {id}: {message}', [
                 'id'      => $id,
@@ -131,8 +143,14 @@ final class Links extends EditingController {
             return $response;
         }
 
+        $userId = $this->authenticatedUserId();
+
+        if ($userId < 1) {
+            return $this->jsonError('Authenticated user not found.', 401);
+        }
+
         try {
-            $result = (new LinkEditor())->delete($id);
+            $result = (new LinkEditor())->delete($id, $userId);
         } catch (Throwable $exception) {
             log_message('error', 'Unable to delete link {id}: {message}', [
                 'id'      => $id,

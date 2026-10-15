@@ -42,7 +42,7 @@
             </button>
         </div>
 
-        <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
+        <?php if (($canEditContent ?? false) || ($canManageUsers ?? false)): ?>
             <div class="hidden 2xl:flex 2xl:items-center border-r border-base-content/15 px-4">
                 <?= $this->include('site/partials/navbar/components/admin') ?>
             </div>

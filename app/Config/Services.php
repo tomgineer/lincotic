@@ -6,6 +6,9 @@ use App\Libraries\UrlFormatter;
 use App\Services\CronTasks\CheckRobotsTxt;
 use App\Services\CronTasks\ClearCache;
 use App\Services\CronTasks\RemoveOldSessionFiles;
+use App\Services\HubAccessPolicy;
+use App\Services\HubOwnerResolver;
+use App\Services\HubPageCache;
 use App\Services\PseudoCron;
 use CodeIgniter\Config\BaseService;
 
@@ -34,6 +37,33 @@ class Services extends BaseService
         }
 
         return new UrlFormatter();
+    }
+
+    public static function hubOwnerResolver(bool $getShared = true): HubOwnerResolver
+    {
+        if ($getShared) {
+            return static::getSharedInstance('hubOwnerResolver');
+        }
+
+        return new HubOwnerResolver();
+    }
+
+    public static function hubAccessPolicy(bool $getShared = true): HubAccessPolicy
+    {
+        if ($getShared) {
+            return static::getSharedInstance('hubAccessPolicy');
+        }
+
+        return new HubAccessPolicy();
+    }
+
+    public static function hubPageCache(bool $getShared = true): HubPageCache
+    {
+        if ($getShared) {
+            return static::getSharedInstance('hubPageCache');
+        }
+
+        return new HubPageCache();
     }
 
     /**

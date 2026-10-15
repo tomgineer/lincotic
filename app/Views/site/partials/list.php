@@ -1,5 +1,5 @@
 <?php
-    $canEditLinks = auth()->loggedIn() && auth()->user()->inGroup('admin');
+    $canEditLinks = $canEditContent ?? false;
     $canManageCollection = $canEditLinks && ! ($collection['is_virtual'] ?? false);
 ?>
 

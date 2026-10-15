@@ -51,15 +51,15 @@ final class LinkEditor
     /**
      * Returns the fields exposed by the link editor.
      */
-    public function get(int $id): ?array
+    public function get(int $id, int $userId): ?array
     {
-        $link = $this->links->find($id);
+        $link = $this->findOwnedLink($id, $userId);
 
         return is_array($link) ? $this->present($link) : null;
     }
 
     /**
-     * Validates and creates one link for either a collection owner or the current user.
+     * Validates and creates one link for the current user.
      *
      * @return array{status: string, link: array|null, errors: array<string, string>}
      */
@@ -74,19 +74,18 @@ final class LinkEditor
         $collection = $prepared['collection'];
         $data       = $prepared['data'];
 
-        if ($data['collection_id'] === null) {
-            if ($userId < 1) {
-                return $this->result(EditStatus::INVALID);
-            }
+        if ($userId < 1) {
+            return $this->result(EditStatus::INVALID);
+        }
 
-            $data['user_id'] = $userId;
-        } elseif (! is_array($collection) || (int) ($collection['user_id'] ?? 0) < 1) {
+        if ($data['collection_id'] !== null
+            && (! is_array($collection) || (int) ($collection['user_id'] ?? 0) !== $userId)) {
             return $this->result(EditStatus::INVALID, errors: [
                 'collection_id' => 'The selected collection is not available.',
             ]);
-        } else {
-            $data['user_id'] = (int) $collection['user_id'];
         }
+
+        $data['user_id'] = $userId;
 
         if ($this->links->insert($data) === false) {
             return $this->result(EditStatus::INVALID, errors: $this->links->errors());
@@ -100,9 +99,9 @@ final class LinkEditor
      *
      * @return array{status: string, link: array|null, errors: array<string, string>}
      */
-    public function update(int $id, array $input): array
+    public function update(int $id, array $input, int $userId): array
     {
-        if ($this->get($id) === null) {
+        if ($this->findOwnedLink($id, $userId) === null) {
             return $this->result(EditStatus::NOT_FOUND);
         }
 
@@ -110,6 +109,13 @@ final class LinkEditor
 
         if ($prepared['data'] === null) {
             return $this->result(EditStatus::INVALID, errors: $prepared['errors']);
+        }
+
+        if (! is_array($prepared['collection'])
+            || (int) ($prepared['collection']['user_id'] ?? 0) !== $userId) {
+            return $this->result(EditStatus::INVALID, errors: [
+                'collection_id' => 'The selected collection is not available.',
+            ]);
         }
 
         if (! $this->links->update($id, $prepared['data'])) {
@@ -124,9 +130,9 @@ final class LinkEditor
      *
      * @return array{status: string, link: array|null, errors: array<string, string>}
      */
-    public function delete(int $id): array
+    public function delete(int $id, int $userId): array
     {
-        if ($this->get($id) === null) {
+        if ($this->findOwnedLink($id, $userId) === null) {
             return $this->result(EditStatus::NOT_FOUND);
         }
 
@@ -135,6 +141,15 @@ final class LinkEditor
         }
 
         return $this->result(EditStatus::DELETED);
+    }
+
+    private function findOwnedLink(int $id, int $userId): ?array
+    {
+        $link = $this->links->find($id);
+
+        return is_array($link) && (int) ($link['user_id'] ?? 0) === $userId
+            ? $link
+            : null;
     }
 
     /**

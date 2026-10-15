@@ -22,7 +22,7 @@ final class Collections extends EditingController {
             return $payload;
         }
 
-        $userId = (int) (auth()->user()->id ?? 0);
+        $userId = $this->authenticatedUserId();
 
         if ($userId < 1) {
             return $this->jsonError('Authenticated user not found.', 401);
@@ -54,7 +54,7 @@ final class Collections extends EditingController {
     }
 
     /**
-     * Validates and persists the display order of all collections.
+     * Validates and persists the current user's collection order.
      */
     public function reorder(): ResponseInterface {
         if (($response = $this->guardAjax()) !== null) {
@@ -75,8 +75,14 @@ final class Collections extends EditingController {
             ]);
         }
 
+        $userId = $this->authenticatedUserId();
+
+        if ($userId < 1) {
+            return $this->jsonError('Authenticated user not found.', 401);
+        }
+
         try {
-            $result = (new CollectionEditor())->reorder($collectionIds);
+            $result = (new CollectionEditor())->reorder($collectionIds, $userId);
         } catch (Throwable $exception) {
             log_message('error', 'Unable to reorder collections: {message}', [
                 'message' => $exception->getMessage(),
@@ -105,8 +111,14 @@ final class Collections extends EditingController {
             return $response;
         }
 
+        $userId = $this->authenticatedUserId();
+
+        if ($userId < 1) {
+            return $this->jsonError('Authenticated user not found.', 401);
+        }
+
         try {
-            $collection = (new CollectionEditor())->get($id);
+            $collection = (new CollectionEditor())->get($id, $userId);
         } catch (Throwable $exception) {
             log_message('error', 'Unable to load collection {id}: {message}', [
                 'id'      => $id,
@@ -140,8 +152,14 @@ final class Collections extends EditingController {
             return $payload;
         }
 
+        $userId = $this->authenticatedUserId();
+
+        if ($userId < 1) {
+            return $this->jsonError('Authenticated user not found.', 401);
+        }
+
         try {
-            $result = (new CollectionEditor())->update($id, $payload);
+            $result = (new CollectionEditor())->update($id, $payload, $userId);
         } catch (Throwable $exception) {
             log_message('error', 'Unable to update collection {id}: {message}', [
                 'id'      => $id,
@@ -175,8 +193,14 @@ final class Collections extends EditingController {
             return $response;
         }
 
+        $userId = $this->authenticatedUserId();
+
+        if ($userId < 1) {
+            return $this->jsonError('Authenticated user not found.', 401);
+        }
+
         try {
-            $result = (new CollectionEditor())->delete($id);
+            $result = (new CollectionEditor())->delete($id, $userId);
         } catch (Throwable $exception) {
             log_message('error', 'Unable to delete collection {id}: {message}', [
                 'id'      => $id,
