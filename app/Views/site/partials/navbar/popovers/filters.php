@@ -66,7 +66,7 @@
                 <legend class="sr-only">Filter by importance</legend>
 
                 <div class="flex items-start gap-3">
-                    <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-base-100 text-primary" aria-hidden="true">
+                    <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-base-100 text-acid" aria-hidden="true">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 9v4" /><path d="M12 16v.01" /><path d="M5.07 19h13.86a2 2 0 0 0 1.74 -3l-6.93 -12a2 2 0 0 0 -3.48 0l-6.93 12a2 2 0 0 0 1.74 3" /></svg>
                     </span>
                     <span>

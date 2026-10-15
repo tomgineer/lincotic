@@ -110,6 +110,34 @@
     font-size: 0.875rem;
 }
 
+.collection-popover-button {
+    @apply flex min-w-0 items-center gap-2.5 rounded-xl border border-base-content/10 bg-base-50 px-3 py-2 transition-colors hover:border-primary/50 hover:bg-base-200/60;
+}
+
+.collection-popover-button[aria-current="page"] {
+    @apply border-primary/50 bg-primary/10;
+}
+
+.collection-popover-button-icon {
+    @apply grid size-9 shrink-0 place-items-center rounded-lg bg-base-100 text-primary;
+}
+
+.collection-popover-button-icon > svg {
+    @apply block size-5;
+}
+
+.collection-popover-button-label {
+    @apply min-w-0 flex-1 truncate font-heading text-sm font-semibold transition-colors;
+}
+
+.collection-popover-button:hover .collection-popover-button-label {
+    @apply text-primary;
+}
+
+.collection-popover-button-count {
+    @apply badge badge-sm shrink-0 border-base-content/10 bg-base-100 font-mono text-base-content/60;
+}
+
 .navbar-popover-chevron {
     transition: transform 150ms ease;
 }

@@ -43,11 +43,33 @@ final class LibraryQueryService {
 
         $this->applyCollectionVisibilityFilter($collectionModel, $includeHidden);
 
-        return $collectionModel
-            ->select('id, name')
+        $collections = $collectionModel
+            ->select('id, name, icon')
             ->orderBy('sort_order', 'ASC')
             ->orderBy('name', 'ASC')
             ->findAll();
+
+        if ($collections === []) {
+            return [];
+        }
+
+        $linkModel = (new LinkModel())->whereIn('collection_id', array_column($collections, 'id'));
+
+        $this->applyVisibilityFilter($linkModel, $includeHidden);
+
+        $counts = $linkModel
+            ->select('collection_id, COUNT(id) AS link_count', false)
+            ->groupBy('collection_id')
+            ->findAll();
+        $countsByCollection = array_column($counts, 'link_count', 'collection_id');
+
+        return array_map(
+            static fn(array $collection): array => [
+                ...$collection,
+                'link_count' => (int) ($countsByCollection[$collection['id']] ?? 0),
+            ],
+            $collections,
+        );
     }
 
     /**
