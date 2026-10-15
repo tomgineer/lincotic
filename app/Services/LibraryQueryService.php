@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Libraries\UrlFormatter;
 use App\Models\CollectionModel;
 use App\Models\LinkModel;
 
 final class LibraryQueryService {
+
+    private const int DISPLAY_URL_MAX_LENGTH = 32;
 
     private const array SORTS = [
         'title'      => ['title', 'ASC'],
@@ -16,6 +19,10 @@ final class LibraryQueryService {
         'visited'    => ['last_clicked_at', 'DESC'],
         'oldest'     => ['created_at', 'ASC'],
     ];
+
+    public function __construct(
+        private readonly UrlFormatter $urlFormatter,
+    ) {}
 
     /**
      * Returns the size of the complete library, regardless of visibility.
@@ -116,7 +123,7 @@ final class LibraryQueryService {
             'id'         => null,
             'name'       => 'Unassigned Links',
             'is_virtual' => true,
-            'links'      => $links,
+            'links'      => $this->prepareLinksForDisplay($links),
         ]];
     }
 
@@ -267,7 +274,7 @@ final class LibraryQueryService {
     ): array {
         $linksByCollection = [];
 
-        foreach ($links as $link) {
+        foreach ($this->prepareLinksForDisplay($links) as $link) {
             $linksByCollection[$link['collection_id']][] = $link;
         }
 
@@ -287,6 +294,22 @@ final class LibraryQueryService {
             $collectionsWithLinks,
             static fn(array $collection): bool => $collection['links'] !== [],
         ));
+    }
+
+    /**
+     * Adds the compact URL label consumed by the link-card view.
+     */
+    private function prepareLinksForDisplay(array $links): array {
+        return array_map(
+            fn(array $link): array => [
+                ...$link,
+                'display_url' => $this->urlFormatter->forDisplay(
+                    (string) ($link['url'] ?? ''),
+                    self::DISPLAY_URL_MAX_LENGTH,
+                ),
+            ],
+            $links,
+        );
     }
 
     /**

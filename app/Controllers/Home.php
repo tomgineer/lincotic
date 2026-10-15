@@ -32,7 +32,7 @@ class Home extends BaseController {
 
         $this->cachePage(config('Lincotic')->cache['duration']);
 
-        $service = new LibraryQueryService();
+        $service = new LibraryQueryService(service('urlFormatter'));
         $filters = $this->filters();
         $includeHidden = auth()->loggedIn();
 
@@ -58,7 +58,7 @@ class Home extends BaseController {
             return redirect()->to(site_url('/'));
         }
 
-        $service = new LibraryQueryService();
+        $service = new LibraryQueryService(service('urlFormatter'));
         $includeHidden = auth()->loggedIn();
 
         return view('site/pages/home', [

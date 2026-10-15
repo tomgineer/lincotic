@@ -1,7 +1,6 @@
 <?php
-$canEditLinks = auth()->loggedIn() && auth()->user()->inGroup('admin');
-$canManageCollection = $canEditLinks && ! ($collection['is_virtual'] ?? false);
-$urlFormatter = service('urlFormatter');
+    $canEditLinks = auth()->loggedIn() && auth()->user()->inGroup('admin');
+    $canManageCollection = $canEditLinks && ! ($collection['is_virtual'] ?? false);
 ?>
 
 <section class="mt-8">
@@ -77,7 +76,7 @@ $urlFormatter = service('urlFormatter');
                     </span>
 
                     <span class="text-sm text-base-content/65">
-                        <?= esc($urlFormatter->forDisplay($link['url'], 32)) ?>
+                        <?= esc($link['display_url']) ?>
                     </span>
                 </div>
 
@@ -110,5 +109,15 @@ $urlFormatter = service('urlFormatter');
             </a>
 
         <?php endforeach ?>
+    </div>
+
+    <div class="mt-8 flex justify-center md:hidden">
+        <a
+            href="#<?= esc(body_id(), 'attr') ?>"
+            class="btn btn-circle border border-base-content/15 bg-base-50 text-base-content/60 shadow-sm transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-primary active:scale-95"
+            aria-label="Back to top"
+            title="Back to top">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M18 11l-6 -6" /><path d="M6 11l6 -6" /></svg>
+        </a>
     </div>
 </section>

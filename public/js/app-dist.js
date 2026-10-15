@@ -300,16 +300,6 @@
     updateByteCount();
   }
 
-  // theme/js/components/link-filters.js
-  function initLinkFilters() {
-    const filters = document.querySelector("[data-link-filters]");
-    if (filters instanceof HTMLFormElement) {
-      filters.querySelectorAll("select").forEach((select) => {
-        select.addEventListener("change", () => filters.requestSubmit());
-      });
-    }
-  }
-
   // theme/js/components/link-search.js
   function initLinkSearch() {
     const search = document.querySelector("[data-link-search-form]");
@@ -1749,7 +1739,6 @@
   // theme/js/app.js
   initDateTime();
   initHashing();
-  initLinkFilters();
   initLinkSearch();
   initPasswordGenerator();
   initWorkTime();

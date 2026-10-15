@@ -25,7 +25,7 @@
                 <input type="hidden" name="collection" value="<?= esc($filters['collection'] ?? 'featured', 'attr') ?>">
                 <input type="hidden" name="sort" value="<?= esc($filters['sort'] ?? 'importance', 'attr') ?>">
 
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div class="grid grid-cols-2 gap-4">
             <fieldset class="rounded-xl border border-base-content/10 bg-base-50 p-5">
                 <legend class="sr-only">Filter by flag</legend>
 
@@ -39,7 +39,7 @@
                     </span>
                 </div>
 
-                <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div class="mt-4 grid grid-cols-2 gap-2">
                     <?php foreach ([
                         'all'            => ['All flags', 'Every flag state'],
                         'favorite'       => ['Favorites', 'Saved as a favorite'],
@@ -75,13 +75,13 @@
                     </span>
                 </div>
 
-                <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div class="mt-4 grid grid-cols-2 gap-2">
                     <?php foreach ([
-                        'high'    => ['High', 'Highest-priority links', 'sm:col-start-1 sm:row-start-1'],
-                        'medium'  => ['Medium', 'Medium-priority links', 'sm:col-start-1 sm:row-start-2'],
-                        'low'     => ['Low', 'Lower-priority links', 'sm:col-start-1 sm:row-start-3'],
-                        'all'     => ['All levels', 'Every importance level', 'sm:col-start-2 sm:row-start-1'],
-                        'default' => ['Default', 'No importance assigned', 'sm:col-start-2 sm:row-start-2'],
+                        'high'    => ['High', 'Highest-priority links', 'col-start-1 row-start-1'],
+                        'medium'  => ['Medium', 'Medium-priority links', 'col-start-1 row-start-2'],
+                        'low'     => ['Low', 'Lower-priority links', 'col-start-1 row-start-3'],
+                        'all'     => ['All levels', 'Every importance level', 'col-start-2 row-start-1'],
+                        'default' => ['Default', 'No importance assigned', 'col-start-2 row-start-2'],
                     ] as $value => [$label, $description, $position]): ?>
                         <label class="<?= $position ?> flex cursor-pointer items-start gap-3 rounded-lg border border-base-content/10 bg-base-100 px-4 py-3 transition-colors hover:border-primary/50 hover:bg-base-200/60">
                             <input

@@ -1,62 +1,77 @@
-<nav class="lg:sticky lg:top-0 lg:z-99 bg-base-100">
-    <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] 2xl:grid-cols-[1fr_auto_1fr] h-28
-                py-2 border-b border-base-content/15 relative isolate overflow-hidden">
-
-        <div data-component="nav-left">
-            <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr] auto-rows-12">
-                <div class="lg:row-span-2 flex items-center px-4 lg:px-8 lg:mr-2">
-                    <a href="<?= esc(site_url('/')) ?>" class="group block" aria-label="Lincotic home">
-                        <img
-                            src="<?= esc(base_url('assets/images/logo.svg')) ?>?v=<?= APP_VERSION ?>"
-                            alt="Lincotic"
-                            class="h-8 2xl:h-10 w-auto duration-300 ease-out motion-safe:transition-transform motion-safe:group-hover:scale-105">
-                    </a>
-                </div>
-
-                <div class="flex items-center">
-                    <?= $this->include('site/partials/navbar/utilities') ?>
-                </div>
-
-                <div class="hidden lg:flex lg:items-center">
-                    <ul class="text-base-content/55 uppercase flex flex-col font-ui text-[10px]">
-                        <li class="tracking-[0.5em]">Links • Chaotic • Lincotic</li>
-                        <li class="tracking-[0.1em]">
-                            <span class="text-acid font-semibold"><?= number_format((int) ($totalLinkCount ?? 0)) ?></span> links collected • <span class="text-acid font-semibold"><?= number_format((int) ($totalClickCount ?? 0)) ?></span> times hammered
-                        </li>
-                    </ul>
-                </div>
-            </div>
+<nav class="site-navbar sticky top-0 z-99 bg-base-100" aria-label="Primary navigation">
+    <div class="relative isolate flex h-16 md:gap-2 overflow-hidden border-b border-base-content/15">
+        <div class="flex flex-1 md:flex-initial shrink-0 items-center px-4 lg:px-6">
+            <a href="<?= esc(site_url('/')) ?>" aria-label="Lincotic home">
+                <img
+                    src="<?= esc(base_url('assets/images/logo.svg')) ?>?v=<?= APP_VERSION ?>"
+                    alt="Lincotic"
+                    class="h-5.5 md:h-7 w-auto">
+            </a>
         </div>
 
-        <div data-component="nav-center">
-            <div class="grid grid-cols-1 auto-rows-12">
-                <div class="flex items-center">
-                    <?= $this->include('site/partials/navbar/filters') ?>
-                </div>
-                <div class="flex items-center">
-
-                </div>
-            </div>
+        <div class="flex md:flex-1">
+            <button
+                class="navbar-popover-trigger flex h-full cursor-pointer items-center gap-2 px-4 transition-colors hover:bg-base-200"
+                type="button"
+                aria-controls="navbar-collections-popover"
+                popovertarget="navbar-collections-popover">
+                <span>Collections</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="navbar-popover-chevron size-4" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+            <button
+                class="navbar-popover-trigger hidden lg:flex h-full cursor-pointer items-center gap-2 px-4 transition-colors hover:bg-base-200"
+                type="button"
+                aria-controls="navbar-filters-popover"
+                popovertarget="navbar-filters-popover">
+                <span>Filters</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="navbar-popover-chevron size-4" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+            <button
+                class="navbar-sort-popover-trigger navbar-popover-trigger hidden md:flex h-full cursor-pointer items-center gap-2 px-4 transition-colors hover:bg-base-200"
+                type="button"
+                aria-controls="navbar-sort-popover"
+                popovertarget="navbar-sort-popover">
+                <span>Sort</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="navbar-popover-chevron size-4" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
         </div>
 
-        <div data-component="nav-right">
-            <div class="grid grid-cols-[1fr_auto] auto-rows-12">
-                <div class="hidden 2xl:flex 2xl:items-center 2xl:justify-end">
-                    <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
-                        <?= $this->include('site/partials/navbar/admin_toolbar') ?>
-                    <?php endif ?>
-                </div>
-                <div class="2xl:row-span-2 flex items-center px-4 justify-end">
-                    <?= $this->include('site/partials/navbar/login_logout') ?>
-                </div>
-                <div class="hidden 2xl:flex 2xl:items-center 2xl:justify-end">
-                    <?= $this->include('site/partials/navbar/search') ?>
-                </div>
-            </div>
+        <div class="flex">
+            <button
+                class="navbar-popover-trigger flex h-full cursor-pointer items-center gap-2 px-4 transition-colors hover:bg-base-200"
+                type="button"
+                aria-controls="navbar-utilities-popover"
+                popovertarget="navbar-utilities-popover">
+                <span>Utilities</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="navbar-popover-chevron size-4" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
         </div>
 
-        <div class="absolute -z-1 -top-[45px] right-8 opacity-10 pointer-events-none">
-            <img class="size-[250px]" src="<?= esc(base_url('assets/images/icon.svg')) ?>?v=<?= APP_VERSION ?>" loading="lazy">
+        <div class="hidden lg:flex">
+            <?= $this->include('site/partials/navbar/components/search') ?>
+        </div>
+
+        <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
+            <div class="hidden 2xl:flex 2xl:items-center border-x border-base-content/15 px-4">
+                <?= $this->include('site/partials/navbar/components/admin') ?>
+            </div>
+        <?php endif ?>
+
+        <div class="hidden md:flex md:items-center pr-2">
+            <?= $this->include('site/partials/navbar/components/login_logout') ?>
         </div>
     </div>
+
+    <?= $this->include('site/partials/navbar/popovers/collections') ?>
+    <?= $this->include('site/partials/navbar/popovers/filters') ?>
+    <?= $this->include('site/partials/navbar/popovers/sort') ?>
+    <?= $this->include('site/partials/navbar/popovers/utilities') ?>
 </nav>

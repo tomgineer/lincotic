@@ -42,8 +42,8 @@
         </header>
 
         <div class="navbar-popover-body">
-            <div class="overflow-x-auto rounded-xl border border-base-content/10 bg-base-50">
-                <table class="w-full min-w-[42rem] table-fixed text-sm">
+            <div class="rounded-xl border border-base-content/10 bg-base-50">
+                <table class="w-full table-fixed text-sm">
                     <colgroup>
                         <col>
                         <col class="w-36">
