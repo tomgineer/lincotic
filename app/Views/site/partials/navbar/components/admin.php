@@ -1,65 +1,49 @@
-<ul class="flex h-full items-center gap-1">
-    <li>
-        <label title="Edit mode">
+<ul class="flex h-full items-center">
+    <li class="h-full">
+        <label class="block h-full" title="Edit mode">
             <input
                 type="checkbox"
                 class="peer sr-only"
                 aria-label="Edit mode"
                 data-edit-mode-toggle>
-            <span class="btn btn-square btn-ghost font-ui peer-checked:bg-primary peer-checked:text-primary-content peer-checked:border-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-6" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11" /></svg>
+            <span class="edit-mode-trigger flex h-full cursor-pointer select-none items-center px-4 font-ui transition-colors hover:bg-base-200 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
+                <span>Edit mode</span>
             </span>
         </label>
     </li>
-    <li>
+    <li class="h-full">
         <button
-            class="btn btn-square btn-ghost hover:btn-primary"
-            title="Add User"
+            class="flex h-full cursor-pointer items-center px-4 text-acid transition-colors hover:bg-base-200"
+            title="Add Link"
             type="button"
-            data-add-user>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
+            data-add-link>
+            <span>Add link</span>
         </button>
     </li>
     <li class="h-full">
-        <button class="users-popover-trigger navbar-popover-trigger flex h-full items-center gap-2 px-4 cursor-pointer hover:bg-base-200 transition-colors"
+        <button class="navbar-popover-trigger flex h-full items-center gap-2 px-4 cursor-pointer hover:bg-base-200 transition-colors"
             title="Show Users"
             type="button"
             aria-controls="users-popover"
             popovertarget="users-popover">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5 opacity-50" aria-hidden="true"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 7a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>
             <span>Users</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="navbar-popover-chevron size-4" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
             </svg>
         </button>
     </li>
-    <li>
-        <button
-            class="btn btn-square btn-ghost hover:btn-primary"
-            title="Sort Collection"
+    <li class="h-full">
+        <button class="admin-collections-popover-trigger navbar-popover-trigger flex h-full items-center gap-2 px-4 cursor-pointer hover:bg-base-200 transition-colors"
             type="button"
-            data-sort-collections>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 3h3l2 2h5a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2" /><path d="M17 16v2a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2h2" /></svg>
-        </button>
-    </li>
-    <li>
-        <button
-            class="btn btn-square btn-ghost hover:btn-primary"
-            title="Add Collection"
-            type="button"
-            data-add-collection>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 19h-7a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2h4l3 3h7a2 2 0 0 1 2 2v3.5" /><path d="M16 19h6" /><path d="M19 16v6" /></svg>
-        </button>
-    </li>
-    <li>
-        <button
-            class="btn btn-square btn-ghost hover:btn-primary text-acid hover:text-base-content"
-            title="Add Link"
-            type="button"
-            data-add-link>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M9 15l6 -6" /><path d="M11 6l.463 -.536a5 5 0 0 1 7.072 0a4.993 4.993 0 0 1 -.001 7.072" /><path d="M12.603 18.534a5.07 5.07 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" /><path d="M16 19h6" /><path d="M19 16v6" /></svg>
+            aria-controls="admin-collections-popover"
+            popovertarget="admin-collections-popover">
+            <span>Collections</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="navbar-popover-chevron size-4" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
         </button>
     </li>
 </ul>
 
 <?= $this->include('site/partials/navbar/popovers/users') ?>
+<?= $this->include('site/partials/navbar/popovers/admin_collections') ?>

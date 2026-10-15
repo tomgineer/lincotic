@@ -144,6 +144,7 @@ export function initEditUser() {
     document.querySelectorAll('[data-add-user]').forEach((trigger) => {
         trigger.addEventListener('click', () => {
             prepareCreate();
+            document.getElementById('users-popover')?.hidePopover?.();
 
             if (!dialog.open) {
                 dialog.showModal();

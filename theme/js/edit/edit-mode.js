@@ -30,14 +30,27 @@ function isVisible(element) {
 
 export function initEditMode() {
     const toggle = document.querySelector('[data-edit-mode-toggle]');
+    let transitionResetFrame = 0;
 
     if (!(toggle instanceof HTMLInputElement)) {
         return;
     }
 
     const syncEditableLinks = () => {
-        document.querySelectorAll(editableLinkSelector).forEach((link) => {
-            link.classList.toggle('edit-mode', toggle.checked && isVisible(link));
+        const links = [...document.querySelectorAll(editableLinkSelector)];
+        const editableLinks = toggle.checked
+            ? new Set(links.filter(isVisible))
+            : new Set();
+
+        document.documentElement.classList.add('edit-mode-syncing');
+
+        links.forEach((link) => {
+            link.classList.toggle('edit-mode', editableLinks.has(link));
+        });
+
+        cancelAnimationFrame(transitionResetFrame);
+        transitionResetFrame = requestAnimationFrame(() => {
+            document.documentElement.classList.remove('edit-mode-syncing');
         });
     };
 

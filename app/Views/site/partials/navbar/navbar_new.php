@@ -1,8 +1,8 @@
 <nav class="navbar-new sticky top-0 z-99 bg-base-100">
     <div class="h-16 border-b border-base-content/15 relative isolate overflow-hidden
-                grid grid-cols-[auto_1fr_auto_auto_auto_auto]">
+                grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-2">
 
-        <div class="flex items-center px-4 lg:px-8 border border-red-400" data-component="logo">
+        <div class="flex items-center px-4 lg:px-6" data-component="logo">
             <a href="<?= esc(site_url('/')) ?>" aria-label="Lincotic home">
                 <img
                     src="<?= esc(base_url('assets/images/logo.svg')) ?>?v=<?= APP_VERSION ?>"
@@ -11,7 +11,7 @@
             </a>
         </div>
 
-        <div class="flex border border-red-400" data-component="main">
+        <div class="flex" data-component="main">
             <button
                 class="navbar-popover-trigger flex h-full items-center gap-2 px-4 cursor-pointer
                     hover:bg-base-200 transition-colors"
@@ -47,11 +47,11 @@
             </button>
         </div>
 
-        <div class="border border-red-400" data-component="search">
+        <div class="flex" data-component="search">
             <?= $this->include('site/partials/navbar/components/search') ?>
         </div>
 
-        <div class="border border-red-400" data-component="utilities">
+        <div class="flex" data-component="utilities">
             <button
                 class="navbar-popover-trigger flex h-full items-center gap-2 px-4 cursor-pointer
                     hover:bg-base-200 transition-colors"
@@ -65,11 +65,11 @@
             </button>
         </div>
 
-        <div class="flex items-center border border-red-400" data-component="admin">
+        <div class="flex items-center px-4 border-x border-base-content/15" data-component="admin">
             <?= $this->include('site/partials/navbar/components/admin') ?>
         </div>
 
-        <div class="flex items-center px-2 border border-red-400" data-component="login">
+        <div class="flex items-center px-2" data-component="login">
             <?= $this->include('site/partials/navbar/components/login_logout') ?>
         </div>
 

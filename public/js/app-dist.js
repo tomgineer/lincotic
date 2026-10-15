@@ -746,7 +746,10 @@
       trigger.addEventListener("click", () => void openEditor(trigger));
     });
     document.querySelectorAll("[data-add-collection]").forEach((trigger) => {
-      trigger.addEventListener("click", () => openCreator(trigger));
+      trigger.addEventListener("click", () => {
+        document.getElementById("admin-collections-popover")?.hidePopover?.();
+        openCreator(trigger);
+      });
     });
     form.addEventListener("input", () => clearValidation(form));
     if (deleteButton instanceof HTMLButtonElement) {
@@ -889,12 +892,20 @@
   }
   function initEditMode() {
     const toggle = document.querySelector("[data-edit-mode-toggle]");
+    let transitionResetFrame = 0;
     if (!(toggle instanceof HTMLInputElement)) {
       return;
     }
     const syncEditableLinks = () => {
-      document.querySelectorAll(editableLinkSelector).forEach((link) => {
-        link.classList.toggle("edit-mode", toggle.checked && isVisible(link));
+      const links = [...document.querySelectorAll(editableLinkSelector)];
+      const editableLinks = toggle.checked ? new Set(links.filter(isVisible)) : /* @__PURE__ */ new Set();
+      document.documentElement.classList.add("edit-mode-syncing");
+      links.forEach((link) => {
+        link.classList.toggle("edit-mode", editableLinks.has(link));
+      });
+      cancelAnimationFrame(transitionResetFrame);
+      transitionResetFrame = requestAnimationFrame(() => {
+        document.documentElement.classList.remove("edit-mode-syncing");
       });
     };
     toggle.checked = restoreEditMode();
@@ -1400,6 +1411,7 @@
     document.querySelectorAll("[data-add-user]").forEach((trigger) => {
       trigger.addEventListener("click", () => {
         prepareCreate();
+        document.getElementById("users-popover")?.hidePopover?.();
         if (!dialog.open) {
           dialog.showModal();
         }
@@ -1616,6 +1628,7 @@
     };
     document.querySelectorAll("[data-sort-collections]").forEach((trigger) => {
       trigger.addEventListener("click", () => {
+        document.getElementById("admin-collections-popover")?.hidePopover?.();
         restoreInitialOrder();
         if (search instanceof HTMLInputElement) search.value = "";
         setStatus("");

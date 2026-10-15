@@ -10,6 +10,10 @@
     }
 }
 
+.edit-mode-syncing .link-card {
+    transition: none;
+}
+
 .link-card {
     @apply grid grid-cols-[minmax(0,1fr)_auto] gap-1
            rounded-xl border-2 border-transparent;

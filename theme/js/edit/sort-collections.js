@@ -192,6 +192,7 @@ export function initSortCollections() {
 
     document.querySelectorAll('[data-sort-collections]').forEach((trigger) => {
         trigger.addEventListener('click', () => {
+            document.getElementById('admin-collections-popover')?.hidePopover?.();
             restoreInitialOrder();
             if (search instanceof HTMLInputElement) search.value = '';
             setStatus('');

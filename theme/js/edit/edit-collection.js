@@ -215,7 +215,10 @@ export function initEditCollection() {
     });
 
     document.querySelectorAll('[data-add-collection]').forEach((trigger) => {
-        trigger.addEventListener('click', () => openCreator(trigger));
+        trigger.addEventListener('click', () => {
+            document.getElementById('admin-collections-popover')?.hidePopover?.();
+            openCreator(trigger);
+        });
     });
 
     form.addEventListener('input', () => clearValidation(form));
