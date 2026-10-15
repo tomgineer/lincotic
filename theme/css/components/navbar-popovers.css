@@ -72,7 +72,7 @@
     inset: 4rem 0 auto;
     width: 100%;
     max-width: none;
-    max-height: calc(100dvh - 4rem);
+    max-height: min(80svh, calc(100dvh - 4rem));
     margin: 0;
     padding: 0;
     overflow: auto;
