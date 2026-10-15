@@ -19,11 +19,15 @@
 }
 
 .edit-mode-trigger::after {
-    background: var(--color-primary);
+    background: linear-gradient(
+        90deg,
+        var(--color-brand-secondary),
+        color-mix(in srgb, var(--color-brand-secondary) 72%, var(--color-acid) 28%)
+    );
 }
 
 [data-edit-mode-toggle]:checked + .edit-mode-trigger {
-    color: var(--color-coral-light);
+    color: var(--color-brand-secondary);
 }
 
 [data-edit-mode-toggle]:checked + .edit-mode-trigger::after {

@@ -1,6 +1,8 @@
+<?php $isAdmin = auth()->loggedIn() && auth()->user()->inGroup('admin'); ?>
+
 <nav class="navbar-new sticky top-0 z-99 bg-base-100">
     <div class="h-16 border-b border-base-content/15 relative isolate overflow-hidden
-                grid grid-cols-[auto_1fr_auto_auto_auto_auto] gap-2">
+                grid <?= $isAdmin ? 'grid-cols-[auto_1fr_auto_auto_auto_auto]' : 'grid-cols-[auto_1fr_auto_auto_auto]' ?> gap-2">
 
         <div class="flex items-center px-4 lg:px-6" data-component="logo">
             <a href="<?= esc(site_url('/')) ?>" aria-label="Lincotic home">
@@ -65,9 +67,11 @@
             </button>
         </div>
 
-        <div class="flex items-center px-4 border-x border-base-content/15" data-component="admin">
-            <?= $this->include('site/partials/navbar/components/admin') ?>
-        </div>
+        <?php if ($isAdmin): ?>
+            <div class="flex items-center px-4 border-x border-base-content/15" data-component="admin">
+                <?= $this->include('site/partials/navbar/components/admin') ?>
+            </div>
+        <?php endif ?>
 
         <div class="flex items-center px-2" data-component="login">
             <?= $this->include('site/partials/navbar/components/login_logout') ?>
