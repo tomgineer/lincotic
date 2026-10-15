@@ -42,6 +42,10 @@
     anchor-name: --navbar-sort-popover-trigger;
 }
 
+.site-navbar {
+    anchor-name: --site-navbar;
+}
+
 .admin-collections-popover {
     position: fixed;
     position-anchor: --admin-collections-popover-trigger;
@@ -69,10 +73,12 @@
 
 .navbar-popover {
     position: fixed;
-    inset: 4rem 0 auto;
+    position-anchor: --site-navbar;
+    inset: auto 0;
+    top: anchor(bottom);
     width: 100%;
     max-width: none;
-    max-height: min(80svh, calc(100dvh - 4rem));
+    max-height: min(80svh, calc(100dvh - anchor-size(height)));
     margin: 0;
     padding: 0;
     overflow: auto;

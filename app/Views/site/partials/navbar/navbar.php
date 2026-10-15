@@ -42,6 +42,12 @@
             </button>
         </div>
 
+        <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
+            <div class="hidden 2xl:flex 2xl:items-center border-r border-base-content/15 px-4">
+                <?= $this->include('site/partials/navbar/components/admin') ?>
+            </div>
+        <?php endif ?>
+
         <div class="flex">
             <button
                 class="navbar-popover-trigger flex h-full cursor-pointer items-center gap-2 px-4 transition-colors hover:bg-base-200"
@@ -58,12 +64,6 @@
         <div class="hidden lg:flex">
             <?= $this->include('site/partials/navbar/components/search') ?>
         </div>
-
-        <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
-            <div class="hidden 2xl:flex 2xl:items-center border-x border-base-content/15 px-4">
-                <?= $this->include('site/partials/navbar/components/admin') ?>
-            </div>
-        <?php endif ?>
 
         <div class="hidden md:flex md:items-center pr-2">
             <?= $this->include('site/partials/navbar/components/login_logout') ?>

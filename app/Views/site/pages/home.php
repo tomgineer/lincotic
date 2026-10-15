@@ -6,6 +6,8 @@
 
 <?= $this->section('content') ?>
 <main class="mx-auto max-w-7xl px-6 pt-4 lg:pt-8 pb-16">
+    <?= $this->include('site/partials/slogan') ?>
+
     <?php if ($collections === []): ?>
         <div class="rounded-box border border-base-content/10 bg-base-200 px-6 py-12 text-center">
             <h2 class="text-lg font-semibold">No links found</h2>
@@ -16,6 +18,7 @@
             <?= view('site/partials/list', ['collection' => $collection]) ?>
         <?php endforeach ?>
     <?php endif ?>
+
 </main>
 
 <?php if (auth()->loggedIn() && auth()->user()->inGroup('admin')): ?>
