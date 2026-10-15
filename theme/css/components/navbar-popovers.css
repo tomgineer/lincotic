@@ -1,0 +1,60 @@
+.navbar-popover {
+    position: fixed;
+    inset: 4rem 0 auto;
+    width: 100%;
+    max-width: none;
+    max-height: calc(100dvh - 4rem);
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    color: inherit;
+    border: 0;
+    border-bottom: 1px solid color-mix(in oklab, currentColor 15%, transparent);
+    background: var(--color-base-100);
+    box-shadow: 0 1.25rem 2.5rem rgb(0 0 0 / 0.3);
+}
+
+.navbar-popover-content {
+    width: min(80rem, 100%);
+    margin-inline: auto;
+    padding: 1rem 1.5rem 1.5rem;
+}
+
+.navbar-popover-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.navbar-popover-body {
+    padding-top: 1rem;
+}
+
+.navbar-popover-placeholder {
+    display: grid;
+    min-height: 6rem;
+    place-items: center;
+    border: 1px dashed color-mix(in oklab, currentColor 20%, transparent);
+    border-radius: var(--radius-box);
+    color: color-mix(in oklab, currentColor 55%, transparent);
+    font-size: 0.875rem;
+}
+
+.navbar-popover-chevron {
+    transition: transform 150ms ease;
+}
+
+.navbar-new:has(#navbar-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-collections-popover"],
+.navbar-new:has(#navbar-filters-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-filters-popover"],
+.navbar-new:has(#navbar-sort-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-sort-popover"],
+.navbar-new:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"] {
+    background: var(--color-base-200);
+}
+
+.navbar-new:has(#navbar-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-collections-popover"] .navbar-popover-chevron,
+.navbar-new:has(#navbar-filters-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-filters-popover"] .navbar-popover-chevron,
+.navbar-new:has(#navbar-sort-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-sort-popover"] .navbar-popover-chevron,
+.navbar-new:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"] .navbar-popover-chevron {
+    transform: rotate(180deg);
+}
