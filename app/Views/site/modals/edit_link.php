@@ -8,7 +8,7 @@
     data-endpoint-template="<?= esc(site_url('edit/links/__LINK_ID__'), 'attr') ?>"
     data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"
     data-csrf-token="<?= esc(csrf_hash(), 'attr') ?>">
-    <form class="modal-box -translate-y-[5vh] w-[calc(100%-2rem)] max-w-3xl overflow-hidden p-0" data-edit-link-form>
+    <form class="modal-box relative sm:-top-[5vh] w-[calc(100%-2rem)] max-w-3xl overflow-hidden p-0" data-edit-link-form>
         <input type="hidden" name="id">
 
         <header class="flex items-start justify-between gap-6 border-b border-base-content/10 px-6 py-5 sm:px-8">
@@ -45,6 +45,7 @@
                         class="input w-full bg-base-100"
                         placeholder="Link title"
                         autocomplete="off"
+                        autofocus
                         maxlength="255"
                         required
                         data-edit-link-control>

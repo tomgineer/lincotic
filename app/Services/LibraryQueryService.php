@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Libraries\UrlFormatter;
 use App\Models\CollectionModel;
 use App\Models\LinkModel;
+use CodeIgniter\Database\BaseBuilder;
 
 final class LibraryQueryService {
 
@@ -22,24 +23,52 @@ final class LibraryQueryService {
 
     public function __construct(
         private readonly UrlFormatter $urlFormatter,
+        private readonly int $userId,
     ) {}
 
     /**
-     * Returns the size of the complete library, regardless of visibility.
+     * Returns the size of the user's library visible to the current viewer.
      */
-    public function countAllLinks(): int {
-        return (new LinkModel())->countAllResults();
+    public function countAllLinks(bool $includeHidden = false): int {
+        return $this->linkTotalsQuery($includeHidden)->countAllResults();
     }
 
     /**
-     * Returns the accumulated visits across the complete library.
+     * Returns the accumulated visits visible to the current viewer.
      */
-    public function countAllClicks(): int {
-        $result = (new LinkModel())
-            ->selectSum('click_count', 'total_clicks')
-            ->first();
+    public function countAllClicks(bool $includeHidden = false): int {
+        $result = $this->linkTotalsQuery($includeHidden)
+            ->selectSum('links.click_count', 'total_clicks')
+            ->get()
+            ->getRowArray();
 
         return (int) ($result['total_clicks'] ?? 0);
+    }
+
+    /**
+     * Builds the shared totals query and prevents hidden collection contents
+     * from leaking through the public link and click counters.
+     */
+    private function linkTotalsQuery(bool $includeHidden): BaseBuilder {
+        $builder = db_connect()
+            ->table('links')
+            ->where('links.user_id', $this->userId)
+            ->where('links.deleted_at', null);
+
+        if ($includeHidden) {
+            return $builder;
+        }
+
+        return $builder
+            ->join('collections', 'collections.id = links.collection_id', 'left')
+            ->where('links.is_hidden', 0)
+            ->groupStart()
+                ->where('links.collection_id', null)
+                ->orGroupStart()
+                    ->where('collections.user_id', $this->userId)
+                    ->where('collections.is_hidden', 0)
+                ->groupEnd()
+            ->groupEnd();
     }
 
     /**
@@ -48,6 +77,7 @@ final class LibraryQueryService {
     public function getFilterOptions(bool $includeHidden = false): array {
         $collectionModel = new CollectionModel();
 
+        $collectionModel->where('user_id', $this->userId);
         $this->applyCollectionVisibilityFilter($collectionModel, $includeHidden);
 
         $collections = $collectionModel
@@ -60,7 +90,9 @@ final class LibraryQueryService {
             return [];
         }
 
-        $linkModel = (new LinkModel())->whereIn('collection_id', array_column($collections, 'id'));
+        $linkModel = (new LinkModel())
+            ->where('user_id', $this->userId)
+            ->whereIn('collection_id', array_column($collections, 'id'));
 
         $this->applyVisibilityFilter($linkModel, $includeHidden);
 
@@ -80,7 +112,7 @@ final class LibraryQueryService {
     }
 
     /**
-     * Retrieves collections and links matching the selected home filters.
+     * Retrieves the user's collections and links matching the selected hub filters.
      */
     public function filter(array $filters, bool $includeHidden = false): array {
         if ($filters['unassignedOnly'] ?? false) {
@@ -106,7 +138,9 @@ final class LibraryQueryService {
      * Returns links that are no longer assigned to a collection as a virtual group.
      */
     private function findUnassignedLinks(array $filters, bool $includeHidden): array {
-        $linkModel = (new LinkModel())->where('collection_id', null);
+        $linkModel = (new LinkModel())
+            ->where('user_id', $this->userId)
+            ->where('collection_id', null);
 
         $this->applyVisibilityFilter($linkModel, $includeHidden);
         $this->applyFlagFilter($linkModel, $filters['flag'] ?? 'all');
@@ -128,7 +162,7 @@ final class LibraryQueryService {
     }
 
     /**
-     * Searches all links without applying any of the home filters.
+     * Searches the user's links without applying any of the hub filters.
      */
     public function search(string $term, bool $includeHidden = false): array {
         $collections = $this->findCollections([], $includeHidden);
@@ -157,6 +191,7 @@ final class LibraryQueryService {
     private function findCollections(array $filters = [], bool $includeHidden = false): array {
         $collectionModel = new CollectionModel();
 
+        $collectionModel->where('user_id', $this->userId);
         $this->applyCollectionVisibilityFilter($collectionModel, $includeHidden);
 
         if ($filters['featuredOnly'] ?? false) {
@@ -173,7 +208,7 @@ final class LibraryQueryService {
     }
 
     /**
-     * Hidden collections are available to authenticated users only.
+     * Excludes hidden collections unless the caller may view them.
      */
     private function applyCollectionVisibilityFilter(
         CollectionModel $collectionModel,
@@ -199,14 +234,13 @@ final class LibraryQueryService {
     }
 
     private function linksIn(array $collections): LinkModel {
-        return (new LinkModel())->whereIn(
-            'collection_id',
-            array_column($collections, 'id')
-        );
+        return (new LinkModel())
+            ->where('user_id', $this->userId)
+            ->whereIn('collection_id', array_column($collections, 'id'));
     }
 
     /**
-     * Hidden links are available to authenticated users only.
+     * Excludes hidden links unless the caller may view them.
      */
     private function applyVisibilityFilter(LinkModel $linkModel, bool $includeHidden): void {
         if (! $includeHidden) {

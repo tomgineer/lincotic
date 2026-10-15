@@ -9,7 +9,7 @@
     data-endpoint="<?= esc(site_url('edit/collections/order'), 'attr') ?>"
     data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"
     data-csrf-token="<?= esc(csrf_hash(), 'attr') ?>">
-    <div class="modal-box -translate-y-[5vh] flex h-[48rem] max-h-[calc(90dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden p-0">
+    <div class="modal-box relative sm:-top-[5vh] flex h-[48rem] max-h-[calc(90dvh-2rem)] w-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden p-0">
         <header class="flex shrink-0 items-start justify-between gap-6 border-b border-base-content/10 px-6 py-4 sm:px-8">
             <div class="flex min-w-0 items-start gap-4">
                 <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary" aria-hidden="true">
@@ -39,7 +39,7 @@
                 <div class="mb-3 flex items-center gap-2">
                     <label class="input input-sm flex min-w-0 flex-1 items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="size-4 shrink-0 text-base-content/50" aria-hidden="true"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-                        <input type="search" class="min-w-0 grow" placeholder="Find a collection…" aria-label="Find a collection" aria-controls="sort-collections-list" data-sort-collections-search>
+                        <input type="search" class="min-w-0 grow" placeholder="Find a collection…" aria-label="Find a collection" aria-controls="sort-collections-list" autofocus data-sort-collections-search>
                     </label>
                     <button type="button" class="btn btn-ghost btn-sm" data-sort-collections-clear disabled>Clear</button>
                 </div>

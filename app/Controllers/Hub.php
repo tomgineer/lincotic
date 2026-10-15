@@ -4,11 +4,53 @@ namespace App\Controllers;
 
 use App\Services\LibraryQueryService;
 use App\Services\UserQueryService;
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\HTTP\RedirectResponse;
 
-class Home extends BaseController {
+class Hub extends BaseController {
+
+    private const string ROOT_USERNAME = 'civic';
 
     public function index(): string|RedirectResponse {
+        $owner = $this->owner(self::ROOT_USERNAME);
+
+        return $this->renderHub($owner, site_url('/'), site_url('search'));
+    }
+
+    public function show(string $username): string|RedirectResponse {
+        $owner   = $this->owner($username);
+        $hubPath = '@' . rawurlencode($owner['username']);
+
+        return $this->renderHub(
+            $owner,
+            site_url($hubPath),
+            site_url($hubPath . '/search'),
+        );
+    }
+
+    public function search(): string|RedirectResponse {
+        $owner = $this->owner(self::ROOT_USERNAME);
+
+        return $this->renderSearch($owner, site_url('/'), site_url('search'));
+    }
+
+    public function searchUser(string $username): string|RedirectResponse {
+        $owner   = $this->owner($username);
+        $hubPath = '@' . rawurlencode($owner['username']);
+
+        return $this->renderSearch(
+            $owner,
+            site_url($hubPath),
+            site_url($hubPath . '/search'),
+        );
+    }
+
+    /**
+     * Renders the selected user's filtered hub.
+     *
+     * @param array{id: int, username: string} $owner
+     */
+    private function renderHub(array $owner, string $hubUrl, string $searchUrl): string|RedirectResponse {
         $collectionInput = $this->request->getGet('collection');
         $collection      = is_string($collectionInput) ? trim($collectionInput) : '';
         $isCollectionId  = ctype_digit($collection) && (int) $collection > 0;
@@ -21,7 +63,7 @@ class Home extends BaseController {
                 unset($query['collection']);
             }
 
-            $location = site_url('/');
+            $location = $hubUrl;
 
             if (is_array($query) && $query !== []) {
                 $location .= '?' . http_build_query($query);
@@ -32,48 +74,79 @@ class Home extends BaseController {
 
         $this->cachePage(config('Lincotic')->cache['duration']);
 
-        $service = new LibraryQueryService(service('urlFormatter'));
+        $service = new LibraryQueryService(service('urlFormatter'), $owner['id']);
         $filters = $this->filters();
-        $includeHidden = auth()->loggedIn();
+        $includeHidden = $this->canSeeHiddenContent($owner['id']);
 
-        return view('site/pages/home', [
+        return view('site/pages/hub', [
             'collections'       => $service->filter($filters, $includeHidden),
             'collectionOptions' => $service->getFilterOptions($includeHidden),
-            'totalLinkCount'    => $service->countAllLinks(),
-            'totalClickCount'   => $service->countAllClicks(),
+            'totalLinkCount'    => $service->countAllLinks($includeHidden),
+            'totalClickCount'   => $service->countAllClicks($includeHidden),
             'filters'           => $filters,
             'search'            => '',
+            'owner'             => $owner,
+            'hubUrl'            => $hubUrl,
+            'searchUrl'         => $searchUrl,
             'adminUsers'        => $this->adminUsers(),
         ]);
     }
 
     /**
-     * Runs an uncached global link search, independently from home filters.
+     * Runs an uncached user-scoped link search independently from hub filters.
+     *
+     * @param array{id: int, username: string} $owner
      */
-    public function search(): string|RedirectResponse {
+    private function renderSearch(array $owner, string $hubUrl, string $searchUrl): string|RedirectResponse {
         $searchInput = $this->request->getGet('q');
         $search      = is_string($searchInput) ? trim($searchInput) : '';
 
         if ($search === '') {
-            return redirect()->to(site_url('/'));
+            return redirect()->to($hubUrl);
         }
 
-        $service = new LibraryQueryService(service('urlFormatter'));
-        $includeHidden = auth()->loggedIn();
+        $service = new LibraryQueryService(service('urlFormatter'), $owner['id']);
+        $includeHidden = $this->canSeeHiddenContent($owner['id']);
 
-        return view('site/pages/home', [
+        return view('site/pages/hub', [
             'collections'       => $service->search($search, $includeHidden),
             'collectionOptions' => $service->getFilterOptions($includeHidden),
-            'totalLinkCount'    => $service->countAllLinks(),
-            'totalClickCount'   => $service->countAllClicks(),
+            'totalLinkCount'    => $service->countAllLinks($includeHidden),
+            'totalClickCount'   => $service->countAllClicks($includeHidden),
             'filters'           => $this->defaultFilters(),
             'search'            => $search,
+            'owner'             => $owner,
+            'hubUrl'            => $hubUrl,
+            'searchUrl'         => $searchUrl,
             'adminUsers'        => $this->adminUsers(),
         ]);
     }
 
     /**
-     * Normalizes the home filter query independently from search input.
+     * @return array{id: int, username: string}
+     */
+    private function owner(string $username): array {
+        $owner = (new UserQueryService())->findByUsername($username);
+
+        if ($owner === null) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        return $owner;
+    }
+
+    private function canSeeHiddenContent(int $ownerId): bool {
+        if (! auth()->loggedIn()) {
+            return false;
+        }
+
+        $user = auth()->user();
+
+        return (int) ($user->id ?? 0) === $ownerId || $user->inGroup('admin');
+    }
+
+    /**
+     * Normalizes the hub filter query independently from search input.
      */
     private function filters(): array {
         $collectionInput = $this->request->getGet('collection');

@@ -155,10 +155,6 @@ export function initEditCollection() {
         setStatus('Loading collection…');
         setBusy(true, 'Loading…');
 
-        if (!dialog.open) {
-            dialog.showModal();
-        }
-
         try {
             const response = await fetch(endpointFor(id), {
                 headers: {
@@ -178,12 +174,19 @@ export function initEditCollection() {
             populateForm(result.collection);
             setStatus('');
             setBusy(false);
-            formControl(form, 'name')?.focus();
+
+            if (!dialog.open) {
+                dialog.showModal();
+            }
         } catch (error) {
             if (error.name === 'AbortError' || sequence !== loadSequence) return;
 
             setStatus(error.message || 'Unable to load this collection.', true);
             setBusy(false);
+
+            if (!dialog.open) {
+                dialog.showModal();
+            }
         }
     };
 
@@ -207,7 +210,6 @@ export function initEditCollection() {
             dialog.showModal();
         }
 
-        formControl(form, 'name')?.focus();
     };
 
     document.querySelectorAll('[data-edit-collection]').forEach((trigger) => {

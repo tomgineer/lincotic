@@ -30,6 +30,27 @@ final class UserQueryService
         return array_map(fn (User $user): array => $this->present($user), $users);
     }
 
+    /**
+     * Resolves the owner of a public hub by their exact username.
+     *
+     * @return array{id: int, username: string}|null
+     */
+    public function findByUsername(string $username): ?array
+    {
+        $user = $this->userModel()
+            ->where('username', $username)
+            ->first();
+
+        if (! $user instanceof User) {
+            return null;
+        }
+
+        return [
+            'id'       => (int) $user->id,
+            'username' => (string) $user->username,
+        ];
+    }
+
     private function userModel(): UserModel
     {
         if ($this->users === null) {

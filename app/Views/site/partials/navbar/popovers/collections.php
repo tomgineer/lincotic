@@ -31,7 +31,7 @@
                         <?php
                         $collectionId = (string) $collectionOption['id'];
                         $isActive = ($filters['collection'] ?? 'featured') === $collectionId;
-                        $collectionUrl = site_url('/') . '?' . http_build_query([
+                        $collectionUrl = $hubUrl . '?' . http_build_query([
                             'collection' => $collectionId,
                             'flag'       => $filters['flag'] ?? 'all',
                             'importance' => $filters['importance'] ?? 'all',

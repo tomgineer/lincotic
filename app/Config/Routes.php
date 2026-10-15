@@ -3,8 +3,10 @@
 use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
-$routes->get('/', 'Home::index');
-$routes->get('search', 'Home::search');
+$routes->get('/', 'Hub::index');
+$routes->get('search', 'Hub::search');
+$routes->get('@(:segment)/search', 'Hub::searchUser/$1');
+$routes->get('@(:segment)', 'Hub::show/$1');
 $routes->get('go/(:num)', 'Links::follow/$1');
 $routes->get('password-generator', 'Utilities::passwordGenerator');
 $routes->get('date-time-calculator', 'Utilities::dateTimeCalculator');

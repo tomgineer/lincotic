@@ -150,7 +150,6 @@ export function initEditUser() {
                 dialog.showModal();
             }
 
-            formControl(form, 'username')?.focus();
         });
     });
 
@@ -163,7 +162,6 @@ export function initEditUser() {
                 dialog.showModal();
             }
 
-            formControl(form, 'username')?.focus();
         });
     });
 

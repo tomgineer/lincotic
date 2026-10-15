@@ -56,7 +56,5 @@ export function confirmDialog({
         dialog.addEventListener('cancel', cancel);
 
         dialog.showModal();
-
-        confirmButton.focus();
     });
 }

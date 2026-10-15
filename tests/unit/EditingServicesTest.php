@@ -35,6 +35,24 @@ final class EditingServicesTest extends CIUnitTestCase
         $this->assertArrayHasKey('role', $result['errors']);
     }
 
+    public function testUsernameRuleRejectsCharactersOutsideLowercaseLettersAndNumbers(): void
+    {
+        $validation = service('validation');
+
+        foreach (['Civic', 'civic.user', 'civic_user', 'civic-user', 'civic user'] as $username) {
+            $validation->reset();
+            $validation->setRules([
+                'username' => config('Auth')->usernameValidationRules,
+            ]);
+
+            $this->assertFalse($validation->run(['username' => $username]));
+            $this->assertSame(
+                'Username may contain only lowercase letters and numbers.',
+                $validation->getError('username'),
+            );
+        }
+    }
+
     public function testGetLinkReturnsOnlyNormalizedEditorFields(): void
     {
         $links = $this->createMock(LinkModel::class);

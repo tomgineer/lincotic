@@ -192,10 +192,6 @@ export function initEditLink() {
         setStatus('Loading link…');
         setBusy(true, 'Loading…');
 
-        if (!dialog.open) {
-            dialog.showModal();
-        }
-
         try {
             const response = await fetch(endpointFor(id), {
                 headers: {
@@ -217,7 +213,10 @@ export function initEditLink() {
             populateForm(result.link);
             setStatus('');
             setBusy(false);
-            formControl(form, 'title')?.focus();
+
+            if (!dialog.open) {
+                dialog.showModal();
+            }
         } catch (error) {
             if (error.name === 'AbortError' || sequence !== loadSequence) {
                 return;
@@ -225,6 +224,10 @@ export function initEditLink() {
 
             setStatus(error.message || 'Unable to load this link.', true);
             setBusy(false);
+
+            if (!dialog.open) {
+                dialog.showModal();
+            }
         }
     };
 
@@ -255,7 +258,6 @@ export function initEditLink() {
             dialog.showModal();
         }
 
-        formControl(form, 'title')?.focus();
     };
 
     document.addEventListener(editLinkRequestEvent, (event) => {

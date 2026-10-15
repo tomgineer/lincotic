@@ -17,7 +17,7 @@ $activeSort = $filters['sort'] ?? 'importance';
     class="navbar-sort-popover w-64 rounded-box border border-base-content/20 bg-base-100 p-2 shadow-2xl"
     aria-label="Sort links"
     popover="auto">
-    <form action="<?= esc(site_url('/')) ?>" method="get">
+    <form action="<?= esc($hubUrl) ?>" method="get">
         <input type="hidden" name="collection" value="<?= esc($filters['collection'] ?? 'featured', 'attr') ?>">
         <input type="hidden" name="flag" value="<?= esc($filters['flag'] ?? 'all', 'attr') ?>">
         <input type="hidden" name="importance" value="<?= esc($filters['importance'] ?? 'all', 'attr') ?>">

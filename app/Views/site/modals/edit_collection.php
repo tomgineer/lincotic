@@ -4,12 +4,12 @@
     aria-labelledby="edit-collection-modal-title"
     aria-describedby="edit-collection-modal-description"
     data-edit-collection-modal
-    data-library-url="<?= esc(site_url('/'), 'attr') ?>"
+    data-library-url="<?= esc($hubUrl, 'attr') ?>"
     data-create-endpoint="<?= esc(site_url('edit/collections'), 'attr') ?>"
     data-endpoint-template="<?= esc(site_url('edit/collections/__COLLECTION_ID__'), 'attr') ?>"
     data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"
     data-csrf-token="<?= esc(csrf_hash(), 'attr') ?>">
-    <form class="modal-box -translate-y-[5vh] w-[calc(100%-2rem)] max-w-2xl overflow-hidden p-0" data-edit-collection-form>
+    <form class="modal-box relative sm:-top-[5vh] w-[calc(100%-2rem)] max-w-2xl overflow-hidden p-0" data-edit-collection-form>
         <input type="hidden" name="id">
 
         <header class="flex items-start justify-between gap-6 border-b border-base-content/10 px-6 py-5 sm:px-8">
@@ -46,6 +46,7 @@
                         class="input w-full bg-base-100"
                         placeholder="Collection name"
                         autocomplete="off"
+                        autofocus
                         maxlength="120"
                         required
                         data-edit-collection-control>

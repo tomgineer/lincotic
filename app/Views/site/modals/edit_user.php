@@ -8,7 +8,7 @@
     data-update-endpoint-template="<?= esc(site_url('edit/users/__USER_ID__'), 'attr') ?>"
     data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"
     data-csrf-token="<?= esc(csrf_hash(), 'attr') ?>">
-    <form class="modal-box -translate-y-[5vh] w-[calc(100%-2rem)] max-w-2xl overflow-hidden p-0" data-edit-user-form>
+    <form class="modal-box relative sm:-top-[5vh] w-[calc(100%-2rem)] max-w-2xl overflow-hidden p-0" data-edit-user-form>
         <input type="hidden" name="id" data-edit-user-id>
 
         <header class="flex items-start justify-between gap-6 border-b border-base-content/10 px-6 py-5 sm:px-8">
@@ -46,13 +46,18 @@
                             name="username"
                             placeholder="username"
                             autocomplete="username"
+                            autofocus
+                            autocapitalize="none"
                             spellcheck="false"
                             minlength="3"
                             maxlength="30"
-                            pattern="[A-Za-z0-9.]+"
+                            pattern="[a-z0-9]+"
+                            title="Use only lowercase letters and numbers."
+                            aria-describedby="edit-user-username-hint"
                             required
                             data-edit-user-control>
                     </label>
+                    <p id="edit-user-username-hint" class="label text-xs text-base-content/50">Lowercase letters and numbers only.</p>
                 </fieldset>
 
                 <fieldset class="fieldset">

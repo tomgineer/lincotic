@@ -10,7 +10,7 @@ class Lincotic extends BaseConfig
      * @var array{enabled: bool, duration: int}
      */
     public array $cache = [
-        'enabled'  => false,
+        'enabled'  => true,
         'duration' => 3600,
     ];
 }

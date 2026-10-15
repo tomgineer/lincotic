@@ -21,7 +21,7 @@
         </header>
 
         <div class="navbar-popover-body">
-            <form action="<?= esc(site_url('/')) ?>" method="get" aria-label="Link filters">
+            <form action="<?= esc($hubUrl) ?>" method="get" aria-label="Link filters">
                 <input type="hidden" name="collection" value="<?= esc($filters['collection'] ?? 'featured', 'attr') ?>">
                 <input type="hidden" name="sort" value="<?= esc($filters['sort'] ?? 'importance', 'attr') ?>">
 
@@ -102,7 +102,7 @@
 
             <div class="mt-4 flex justify-end gap-2">
                 <a
-                    href="<?= esc(site_url('/') . '?' . http_build_query([
+                    href="<?= esc($hubUrl . '?' . http_build_query([
                         'collection' => $filters['collection'] ?? 'featured',
                         'sort'       => $filters['sort'] ?? 'importance',
                     ]), 'attr') ?>"

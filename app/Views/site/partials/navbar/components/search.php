@@ -1,5 +1,5 @@
 <form
-    action="<?= esc(site_url('search')) ?>"
+    action="<?= esc($searchUrl) ?>"
     class="h-full w-[clamp(10rem,20vw,24rem)] min-w-0 max-w-full p-2"
     method="get"
     aria-label="Search links"

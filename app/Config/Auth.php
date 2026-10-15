@@ -229,7 +229,10 @@ class Auth extends ShieldAuth
             'required',
             'max_length[30]',
             'min_length[3]',
-            'regex_match[/\A[a-zA-Z0-9\.]+\z/]',
+            'regex_match[/\A[a-z0-9]+\z/]',
+        ],
+        'errors' => [
+            'regex_match' => 'Username may contain only lowercase letters and numbers.',
         ],
     ];
 

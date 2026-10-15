@@ -113,9 +113,15 @@ export function initSortCollections() {
     };
 
     const restoreInitialOrder = () => {
-        const itemsById = new Map(
-            collectionItems(list).map((item) => [item.dataset.collectionId, item]),
-        );
+        const items = collectionItems(list);
+        const currentOrder = items.map((item) => item.dataset.collectionId);
+        const orderChanged = initialOrder.some((id, index) => currentOrder[index] !== id);
+
+        if (!orderChanged) {
+            return;
+        }
+
+        const itemsById = new Map(items.map((item) => [item.dataset.collectionId, item]));
 
         initialOrder.forEach((id) => {
             const item = itemsById.get(id);
@@ -193,10 +199,6 @@ export function initSortCollections() {
     document.querySelectorAll('[data-sort-collections]').forEach((trigger) => {
         trigger.addEventListener('click', () => {
             document.getElementById('admin-collections-popover')?.hidePopover?.();
-            restoreInitialOrder();
-            if (search instanceof HTMLInputElement) search.value = '';
-            setStatus('');
-            setBusy(false);
             if (scrollArea instanceof HTMLElement) scrollArea.scrollTop = 0;
 
             if (!dialog.open) {
