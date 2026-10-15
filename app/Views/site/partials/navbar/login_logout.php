@@ -1,4 +1,4 @@
-<ul class="flex">
+<ul>
     <li>
         <?php if (auth()->loggedIn()): ?>
             <a
