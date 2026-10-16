@@ -1,3 +1,9 @@
+/* ===========================================================================
+   Copy controls
+   Shared copy buttons and read-only output fields for the password, hash,
+   and date/time utility screens.
+   ========================================================================== */
+
 .password-copy,
 .utility-copy {
     @apply flex size-11 shrink-0 cursor-pointer items-center justify-center border-l border-base-content/15 text-base-content/50 transition-colors;
@@ -11,7 +17,7 @@
     }
 
     &[data-copied="true"] {
-        color: var(--color-acid);
+        @apply text-acid;
     }
 
     &:disabled {

@@ -1,3 +1,8 @@
+/* ===========================================================================
+   Component manifest
+   Loads every reusable component stylesheet into the components layer.
+   ========================================================================== */
+
 @import "./navbar-popovers.css";
 @import "./utility-layout.css";
 @import "./password-generator.css";

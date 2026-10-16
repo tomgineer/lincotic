@@ -1,3 +1,8 @@
+/* ===========================================================================
+   Work-time tracker
+   Live clock presentation and summary stats on the work-time utility screen.
+   ========================================================================== */
+
 .worktime-clock {
     @apply flex min-h-72 flex-col items-center justify-center px-6 py-10 text-center sm:px-8;
 

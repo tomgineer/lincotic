@@ -1,37 +1,38 @@
+/* ===========================================================================
+   Navbar popovers
+   Anchored navigation menus, active-trigger feedback, and collection choices
+   shared by the main, utility, and admin navbars.
+   ========================================================================== */
+
 .navbar-popover-trigger,
 .edit-mode-trigger {
-    position: relative;
+    @apply relative;
+
+    &::after {
+        @apply absolute inset-x-4 bottom-0 origin-center scale-x-0 rounded-t-full bg-acid;
+
+        content: "";
+        height: 0.1875rem;
+        transition: scale 150ms ease;
+    }
 }
 
-.navbar-popover-trigger::after,
-.edit-mode-trigger::after {
-    content: "";
-    position: absolute;
-    right: 1rem;
-    bottom: 0;
-    left: 1rem;
-    height: 0.1875rem;
-    border-radius: 9999px 9999px 0 0;
-    background: var(--color-acid);
-    transform: scaleX(0);
-    transform-origin: center;
-    transition: transform 150ms ease;
-}
-
-.edit-mode-trigger::after {
-    background: linear-gradient(
-        90deg,
-        var(--color-brand-secondary),
-        color-mix(in srgb, var(--color-brand-secondary) 72%, var(--color-acid) 28%)
-    );
+.edit-mode-trigger {
+    &::after {
+        background: linear-gradient(
+            90deg,
+            var(--color-brand-secondary),
+            color-mix(in srgb, var(--color-brand-secondary) 72%, var(--color-acid) 28%)
+        );
+    }
 }
 
 [data-edit-mode-toggle]:checked + .edit-mode-trigger {
-    color: var(--color-brand-secondary);
-}
+    @apply text-brand-secondary;
 
-[data-edit-mode-toggle]:checked + .edit-mode-trigger::after {
-    transform: scaleX(1);
+    &::after {
+        @apply scale-x-100;
+    }
 }
 
 .admin-collections-popover-trigger {
@@ -44,133 +45,118 @@
 
 .site-navbar {
     anchor-name: --site-navbar;
+
+    &:has(#navbar-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-collections-popover"],
+    &:has(#navbar-filters-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-filters-popover"],
+    &:has(#navbar-sort-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-sort-popover"],
+    &:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"],
+    &:has(#users-popover:popover-open) .navbar-popover-trigger[popovertarget="users-popover"],
+    &:has(#admin-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="admin-collections-popover"] {
+        @apply bg-base-200;
+
+        &::after {
+            @apply scale-x-100;
+        }
+
+        .navbar-popover-chevron {
+            @apply rotate-180;
+        }
+    }
 }
 
 .admin-collections-popover {
-    position: fixed;
+    @apply fixed inset-auto m-0 mt-2 -translate-x-full overflow-hidden text-inherit;
+
     position-anchor: --admin-collections-popover-trigger;
-    inset: auto;
     top: anchor(bottom);
     left: anchor(right);
     max-height: calc(100dvh - 4.5rem);
-    margin: 0.5rem 0 0;
-    overflow: hidden;
-    color: inherit;
-    transform: translateX(-100%);
 }
 
 .navbar-sort-popover {
-    position: fixed;
+    @apply fixed inset-auto m-0 mt-2 overflow-auto text-inherit;
+
     position-anchor: --navbar-sort-popover-trigger;
-    inset: auto;
     top: anchor(bottom);
     left: anchor(left);
     max-height: calc(100dvh - 4.5rem);
-    margin: 0.5rem 0 0;
-    overflow: auto;
-    color: inherit;
 }
 
 .navbar-popover {
-    position: fixed;
+    @apply fixed inset-x-0 m-0 w-full max-w-none overflow-auto border-0 bg-base-100 p-0 text-inherit;
+
     position-anchor: --site-navbar;
-    inset: auto 0;
     top: anchor(bottom);
-    width: 100%;
-    max-width: none;
     max-height: min(80svh, calc(100dvh - anchor-size(height)));
-    margin: 0;
-    padding: 0;
-    overflow: auto;
-    color: inherit;
-    border: 0;
     border-bottom: 1px solid color-mix(in oklab, currentColor 15%, transparent);
-    background: var(--color-base-100);
     box-shadow: 0 1.25rem 2.5rem rgb(0 0 0 / 0.3);
 }
 
 .navbar-popover-content {
+    @apply mx-auto px-6 pt-4 pb-6;
+
     width: min(80rem, 100%);
-    margin-inline: auto;
-    padding: 1rem 1.5rem 1.5rem;
 }
 
 .navbar-popover-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1.5rem;
+    @apply flex items-start justify-between gap-6;
 }
 
 .navbar-popover-body {
-    padding-top: 1rem;
+    @apply pt-4;
 }
 
 .navbar-popover-placeholder {
-    display: grid;
-    min-height: 6rem;
-    place-items: center;
+    @apply grid min-h-24 place-items-center rounded-box text-sm;
+
     border: 1px dashed color-mix(in oklab, currentColor 20%, transparent);
-    border-radius: var(--radius-box);
     color: color-mix(in oklab, currentColor 55%, transparent);
-    font-size: 0.875rem;
+}
+
+.navbar-utilities-footer {
+    @apply mt-3 flex flex-col gap-2 px-4 text-xs leading-5 text-base-content/45 sm:flex-row sm:items-center sm:justify-between;
+
+    p {
+        @apply max-w-3xl;
+    }
+
+    a {
+        @apply inline-flex w-fit shrink-0 items-center gap-1.5 rounded-md px-2 py-1 font-medium text-base-content/60 transition-colors hover:bg-base-200 hover:text-acid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acid;
+
+        svg {
+            @apply size-4 shrink-0;
+        }
+    }
 }
 
 .collection-popover-button {
     @apply flex min-w-0 items-center gap-2.5 rounded-xl border border-base-content/10 bg-base-50 px-3 py-2 transition-colors hover:border-primary/50 hover:bg-base-200/60;
-}
 
-.collection-popover-button[aria-current="page"] {
-    @apply border-primary/50 bg-primary/10;
-}
+    &[aria-current="page"] {
+        @apply border-primary/50 bg-primary/10;
+    }
 
-.collection-popover-button-icon {
-    @apply grid size-9 shrink-0 place-items-center rounded-lg bg-base-100 text-primary;
-}
+    .collection-popover-button-icon {
+        @apply grid size-9 shrink-0 place-items-center rounded-lg bg-base-100 text-primary;
 
-.collection-popover-button-icon > svg {
-    @apply block size-5;
-}
+        > svg {
+            @apply block size-5;
+        }
+    }
 
-.collection-popover-button-label {
-    @apply min-w-0 flex-1 truncate font-heading text-sm font-semibold transition-colors;
-}
+    .collection-popover-button-label {
+        @apply min-w-0 flex-1 truncate font-heading text-sm font-semibold transition-colors;
+    }
 
-.collection-popover-button:hover .collection-popover-button-label {
-    @apply text-primary;
-}
+    &:hover .collection-popover-button-label {
+        @apply text-primary;
+    }
 
-.collection-popover-button-count {
-    @apply badge badge-sm shrink-0 border-base-content/10 bg-base-100 font-mono text-base-content/60;
+    .collection-popover-button-count {
+        @apply badge badge-sm shrink-0 border-base-content/10 bg-base-100 font-mono text-base-content/60;
+    }
 }
 
 .navbar-popover-chevron {
-    transition: transform 150ms ease;
-}
-
-.site-navbar:has(#navbar-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-collections-popover"],
-.site-navbar:has(#navbar-filters-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-filters-popover"],
-.site-navbar:has(#navbar-sort-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-sort-popover"],
-.site-navbar:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"],
-.site-navbar:has(#users-popover:popover-open) .navbar-popover-trigger[popovertarget="users-popover"],
-.site-navbar:has(#admin-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="admin-collections-popover"] {
-    background: var(--color-base-200);
-}
-
-.site-navbar:has(#navbar-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-collections-popover"]::after,
-.site-navbar:has(#navbar-filters-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-filters-popover"]::after,
-.site-navbar:has(#navbar-sort-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-sort-popover"]::after,
-.site-navbar:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"]::after,
-.site-navbar:has(#users-popover:popover-open) .navbar-popover-trigger[popovertarget="users-popover"]::after,
-.site-navbar:has(#admin-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="admin-collections-popover"]::after {
-    transform: scaleX(1);
-}
-
-.site-navbar:has(#navbar-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-collections-popover"] .navbar-popover-chevron,
-.site-navbar:has(#navbar-filters-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-filters-popover"] .navbar-popover-chevron,
-.site-navbar:has(#navbar-sort-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-sort-popover"] .navbar-popover-chevron,
-.site-navbar:has(#navbar-utilities-popover:popover-open) .navbar-popover-trigger[popovertarget="navbar-utilities-popover"] .navbar-popover-chevron,
-.site-navbar:has(#users-popover:popover-open) .navbar-popover-trigger[popovertarget="users-popover"] .navbar-popover-chevron,
-.site-navbar:has(#admin-collections-popover:popover-open) .navbar-popover-trigger[popovertarget="admin-collections-popover"] .navbar-popover-chevron {
-    transform: rotate(180deg);
+    transition: rotate 150ms ease;
 }

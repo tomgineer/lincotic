@@ -1,3 +1,9 @@
+/* ===========================================================================
+   Link cards
+   Interactive bookmark cards in collection grids, including importance and
+   inline edit-mode states.
+   ========================================================================== */
+
 @property --border-angle {
     syntax: "<angle>";
     initial-value: 45deg;
@@ -8,10 +14,6 @@
     to {
         --border-angle: 405deg;
     }
-}
-
-.edit-mode-syncing .link-card {
-    transition: none;
 }
 
 .link-card {
@@ -31,6 +33,10 @@
         ) border-box;
 
     transition: transform 250ms ease, box-shadow 300ms ease;
+
+    .edit-mode-syncing & {
+        @apply transition-none;
+    }
 
     &.importance-low {
         --border-start: var(--color-blue-500);
@@ -65,15 +71,15 @@
     }
 
     &.edit-mode {
+        @apply relative outline-offset-4;
+
         --edit-teal: var(--color-brand-secondary);
         --edit-acid: var(--color-acid);
         --border-start: var(--edit-teal);
         --border-end: color-mix(in srgb, var(--edit-teal) 72%, var(--edit-acid) 28%);
         --card-bg: color-mix(in srgb, var(--color-base-100) 92%, var(--edit-teal) 8%);
 
-        position: relative;
         outline: 2px solid color-mix(in srgb, var(--edit-teal) 72%, transparent);
-        outline-offset: 4px;
 
         background:
             linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
@@ -84,19 +90,18 @@
             0 12px 30px color-mix(in srgb, var(--edit-teal) 18%, transparent);
 
         &::after {
+            @apply pointer-events-none absolute inset-1 z-1;
+
             content: "";
-            position: absolute;
-            z-index: 1;
-            inset: 4px;
             border: 1px dashed color-mix(in srgb, var(--edit-acid) 26%, transparent);
             border-radius: calc(var(--radius-xl) - 0.25rem);
-            pointer-events: none;
         }
 
         &:hover {
+            @apply animate-none;
+
             --card-bg: color-mix(in srgb, var(--color-base-100) 86%, var(--edit-teal) 14%);
 
-            animation: none;
             transform: translateY(-2px) scale(1.01);
 
             box-shadow:
@@ -107,12 +112,11 @@
 
     @media (prefers-reduced-motion: reduce) {
         &:hover {
-            animation: none;
-            transform: none;
+            @apply animate-none transform-none;
         }
 
         &.edit-mode:hover {
-            transform: none;
+            @apply transform-none;
         }
     }
 }
