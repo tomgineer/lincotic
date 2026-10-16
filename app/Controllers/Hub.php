@@ -80,9 +80,13 @@ class Hub extends BaseController {
         $includeHidden = $policy->canViewHidden($viewer, $owner['id']);
         $canEditContent = $policy->canEditLibrary($viewer, $owner['id']);
         $canManageUsers = $policy->canManageUsers($viewer);
+        $collections = $service->filter($filters, $includeHidden);
+        $selectedCollection = $filters['collectionId'] !== null
+            ? ($collections[0] ?? null)
+            : null;
 
         return view('site/pages/hub', [
-            'collections'       => $service->filter($filters, $includeHidden),
+            'collections'       => $collections,
             'collectionOptions' => $service->getFilterOptions($includeHidden),
             'totalLinkCount'    => $service->countAllLinks($includeHidden),
             'totalClickCount'   => $service->countAllClicks($includeHidden),
@@ -94,6 +98,12 @@ class Hub extends BaseController {
             'adminUsers'        => $this->adminUsers($viewer),
             'canEditContent'    => $canEditContent,
             'canManageUsers'    => $canManageUsers,
+            'meta'              => service('pageMeta')->forHub(
+                $owner['username'],
+                $hubUrl,
+                $selectedCollection,
+                $filters['unassignedOnly'],
+            ),
         ]);
     }
 
@@ -130,6 +140,11 @@ class Hub extends BaseController {
             'adminUsers'        => $this->adminUsers($viewer),
             'canEditContent'    => $canEditContent,
             'canManageUsers'    => $canManageUsers,
+            'meta'              => service('pageMeta')->forSearch(
+                $owner['username'],
+                $searchUrl,
+                $search,
+            ),
         ]);
     }
 

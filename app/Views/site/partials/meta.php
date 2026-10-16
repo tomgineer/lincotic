@@ -1,7 +1,9 @@
 <?php
-    $pageTitle = trim($this->renderSection('title')) ?: 'Lincotic - Turn link chaos into order';
-    $pageDescription = 'A clean, lightweight bookmark manager for organizing, searching, and accessing your favorite links.';
-    $pageUrl = current_url();
+    $meta = is_array($meta ?? null) ? $meta : [];
+    $pageTitle = trim((string) ($meta['title'] ?? '')) ?: (trim($this->renderSection('title')) ?: 'Lincotic - Turn link chaos into order');
+    $pageDescription = trim((string) ($meta['description'] ?? '')) ?: 'A clean, lightweight bookmark manager for organizing, searching, and accessing your favorite links.';
+    $pageUrl = trim((string) ($meta['canonical'] ?? '')) ?: current_url();
+    $robots = trim((string) ($meta['robots'] ?? ''));
     $shareImageUrl = base_url('assets/images/share.jpg');
     $shareImageAlt = 'Lincotic logo and the words Links Chaotic Lincotic in a mountain landscape.';
 ?>
@@ -11,6 +13,9 @@
 <meta name="base-url" content="<?= esc(base_url()) ?>">
 <meta name="theme-color" content="#1d232a">
 <meta name="description" content="<?= esc($pageDescription) ?>">
+<?php if ($robots !== ''): ?>
+<meta name="robots" content="<?= esc($robots) ?>">
+<?php endif ?>
 
 <title><?= esc($pageTitle) ?></title>
 

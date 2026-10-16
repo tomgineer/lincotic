@@ -124,6 +124,32 @@ final class MultiUserHubTest extends CIUnitTestCase
         $response->assertSee('Tom Inbox Match');
     }
 
+    public function testSelectedCollectionMetadataIsRenderedInTheLayout(): void
+    {
+        $response = $this->get('/@tom?collection=2&sort=title');
+
+        $response->assertStatus(200);
+        $body = (string) $response->getBody();
+
+        $this->assertStringContainsString('<title>Tom by Tom | Lincotic</title>', $body);
+        $this->assertStringContainsString(
+            '<meta name="description" content="A public collection from Tom.">',
+            $body,
+        );
+        $this->assertStringContainsString(
+            '<link rel="canonical" href="' . site_url('@tom') . '?collection=2">',
+            $body,
+        );
+        $this->assertStringNotContainsString('sort=title', $this->canonicalTag($body));
+    }
+
+    private function canonicalTag(string $body): string
+    {
+        preg_match('/<link rel="canonical"[^>]*>/', $body, $matches);
+
+        return $matches[0] ?? '';
+    }
+
     private function createSchema(): void
     {
         $forge = Database::forge($this->db);
@@ -228,10 +254,10 @@ final class MultiUserHubTest extends CIUnitTestCase
             ['user_id' => 2, 'group' => 'user'],
         ]);
         $this->db->table('collections')->insertBatch([
-            ['id' => 1, 'user_id' => 1, 'name' => 'Civic', 'is_featured' => 1, 'is_hidden' => 0, 'sort_order' => 10],
-            ['id' => 2, 'user_id' => 2, 'name' => 'Tom', 'is_featured' => 1, 'is_hidden' => 0, 'sort_order' => 10],
-            ['id' => 3, 'user_id' => 2, 'name' => 'Tom Private', 'is_featured' => 1, 'is_hidden' => 1, 'sort_order' => 20],
-            ['id' => 4, 'user_id' => 3, 'name' => 'Blocked', 'is_featured' => 1, 'is_hidden' => 0, 'sort_order' => 10],
+            ['id' => 1, 'user_id' => 1, 'name' => 'Civic', 'description' => null, 'is_featured' => 1, 'is_hidden' => 0, 'sort_order' => 10],
+            ['id' => 2, 'user_id' => 2, 'name' => 'Tom', 'description' => 'A public collection from Tom.', 'is_featured' => 1, 'is_hidden' => 0, 'sort_order' => 10],
+            ['id' => 3, 'user_id' => 2, 'name' => 'Tom Private', 'description' => null, 'is_featured' => 1, 'is_hidden' => 1, 'sort_order' => 20],
+            ['id' => 4, 'user_id' => 3, 'name' => 'Blocked', 'description' => null, 'is_featured' => 1, 'is_hidden' => 0, 'sort_order' => 10],
         ]);
         $this->db->table('links')->insertBatch([
             ['id' => 1, 'user_id' => 1, 'collection_id' => 1, 'title' => 'Civic Public', 'url' => 'https://civic.example', 'is_hidden' => 0],

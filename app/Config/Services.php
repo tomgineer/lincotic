@@ -9,6 +9,7 @@ use App\Services\CronTasks\RemoveOldSessionFiles;
 use App\Services\HubAccessPolicy;
 use App\Services\HubOwnerResolver;
 use App\Services\HubPageCache;
+use App\Services\PageMetaService;
 use App\Services\PseudoCron;
 use CodeIgniter\Config\BaseService;
 
@@ -64,6 +65,15 @@ class Services extends BaseService
         }
 
         return new HubPageCache();
+    }
+
+    public static function pageMeta(bool $getShared = true): PageMetaService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('pageMeta');
+        }
+
+        return new PageMetaService();
     }
 
     /**
