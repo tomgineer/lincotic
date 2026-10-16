@@ -10,8 +10,7 @@ class LinkModel extends Model
     protected $primaryKey     = 'id';
     protected $returnType     = 'array';
     protected $useTimestamps  = true;
-    protected $useSoftDeletes = true;
-    protected $deletedField   = 'deleted_at';
+    protected $useSoftDeletes = false;
     protected $allowedFields  = [
         'user_id',
         'collection_id',
@@ -36,7 +35,6 @@ class LinkModel extends Model
     {
         return $this->builder()
             ->where($this->primaryKey, $id)
-            ->where($this->deletedField, null)
             ->set('click_count', 'click_count + 1', false)
             ->set('last_clicked_at', 'CURRENT_TIMESTAMP()', false)
             ->update();

@@ -44,6 +44,10 @@ final class MultiUserHubTest extends CIUnitTestCase
         $root->assertStatus(200);
         $root->assertSee('Civic Public');
         $root->assertDontSee('Tom Public');
+        $this->assertStringContainsString(
+            'data-learn-mode-toggle',
+            (string) $root->getBody(),
+        );
 
         Services::resetSingle('auth');
         $tom = $this->get('/@tom');
@@ -250,7 +254,6 @@ final class MultiUserHubTest extends CIUnitTestCase
             'last_clicked_at'   => ['type' => 'DATETIME', 'null' => true],
             'created_at'        => ['type' => 'DATETIME', 'null' => true],
             'updated_at'        => ['type' => 'DATETIME', 'null' => true],
-            'deleted_at'        => ['type' => 'DATETIME', 'null' => true],
         ]);
         $forge->addKey('id', true);
         $forge->createTable('links');

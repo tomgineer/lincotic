@@ -574,7 +574,7 @@ final class EditingServicesTest extends CIUnitTestCase
         $this->assertSame([], $result['errors']);
     }
 
-    public function testDeleteUsesTheSoftDeletingLinkModel(): void
+    public function testDeleteUsesTheHardDeletingLinkModel(): void
     {
         $links = $this->createMock(LinkModel::class);
         $links->expects($this->once())->method('find')->with(3)->willReturn($this->storedLink());

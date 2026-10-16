@@ -45,7 +45,7 @@ export function initEditMode() {
         document.documentElement.classList.add('edit-mode-syncing');
 
         links.forEach((link) => {
-            link.classList.toggle('edit-mode', editableLinks.has(link));
+            link.classList.toggle('mode-edit', editableLinks.has(link));
         });
 
         cancelAnimationFrame(transitionResetFrame);
@@ -57,6 +57,15 @@ export function initEditMode() {
     toggle.checked = restoreEditMode();
 
     toggle.addEventListener('change', () => {
+        if (toggle.checked) {
+            const learnModeToggle = document.querySelector('[data-learn-mode-toggle]');
+
+            if (learnModeToggle instanceof HTMLInputElement && learnModeToggle.checked) {
+                learnModeToggle.checked = false;
+                learnModeToggle.dispatchEvent(new Event('change'));
+            }
+        }
+
         persistEditMode(toggle.checked);
         syncEditableLinks();
     });
@@ -68,7 +77,7 @@ export function initEditMode() {
 
         const link = event.target.closest(editableLinkSelector);
 
-        if (!(link instanceof HTMLAnchorElement) || !link.classList.contains('edit-mode')) {
+        if (!(link instanceof HTMLAnchorElement) || !link.classList.contains('mode-edit')) {
             return;
         }
 

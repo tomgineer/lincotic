@@ -14,5 +14,10 @@
         "daisyui": "^5.7.47",
         "esbuild": "^0.28.2",
         "tailwindcss": "^4.3.3"
+    },
+    "dependencies": {
+        "@tiptap/core": "^3.32.0",
+        "@tiptap/pm": "^3.32.0",
+        "@tiptap/starter-kit": "^3.32.0"
     }
 }

@@ -136,7 +136,7 @@ final class Links extends EditingController {
     }
 
     /**
-     * Soft deletes an existing link.
+     * Permanently deletes an existing link.
      */
     public function delete(int $id): ResponseInterface {
         if (($response = $this->guardAjax()) !== null) {

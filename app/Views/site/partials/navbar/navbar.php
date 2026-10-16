@@ -49,6 +49,16 @@
         <?php endif ?>
 
         <div class="flex">
+            <label class="block h-full" title="Learn mode">
+                <input
+                    type="checkbox"
+                    class="peer sr-only"
+                    aria-label="Learn mode"
+                    data-learn-mode-toggle>
+                <span class="learn-mode-trigger flex h-full cursor-pointer select-none items-center px-4 font-ui transition-colors hover:bg-base-200 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2">
+                    <span>Learn mode</span>
+                </span>
+            </label>
             <button
                 class="navbar-popover-trigger flex h-full cursor-pointer items-center gap-2 px-4 transition-colors hover:bg-base-200"
                 type="button"

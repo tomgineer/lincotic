@@ -52,8 +52,7 @@ final class LibraryQueryService {
     private function linkTotalsQuery(bool $includeHidden): BaseBuilder {
         $builder = db_connect()
             ->table('links')
-            ->where('links.user_id', $this->userId)
-            ->where('links.deleted_at', null);
+            ->where('links.user_id', $this->userId);
 
         if ($includeHidden) {
             return $builder;

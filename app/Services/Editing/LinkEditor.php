@@ -126,7 +126,7 @@ final class LinkEditor
     }
 
     /**
-     * Soft deletes one link through the model's soft-delete configuration.
+     * Permanently deletes one link.
      *
      * @return array{status: string, link: array|null, errors: array<string, string>}
      */

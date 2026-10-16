@@ -1,6 +1,7 @@
 import { initDateTime } from './components/datetime.js';
 import { initHashing } from './components/hashing.js';
 import { initLinkSearch } from './components/link-search.js';
+import { initLearnMode } from './components/learn-mode.js';
 import { initPasswordGenerator } from './components/password-generator.js';
 import { initWorkTime } from './components/worktime.js';
 import { initEditCollection } from './edit/edit-collection.js';
@@ -17,5 +18,6 @@ initWorkTime();
 initEditCollection();
 initEditLink();
 initEditMode();
+initLearnMode();
 initEditUser();
 initSortCollections();

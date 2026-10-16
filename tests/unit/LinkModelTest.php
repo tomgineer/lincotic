@@ -8,22 +8,16 @@ use CodeIgniter\Test\CIUnitTestCase;
  */
 final class LinkModelTest extends CIUnitTestCase
 {
-    public function testSoftDeletesAreEnabled(): void
+    public function testDeletesArePermanent(): void
     {
         $model = new class extends LinkModel {
             public function usesSoftDeletes(): bool
             {
                 return $this->useSoftDeletes;
             }
-
-            public function deletedField(): string
-            {
-                return $this->deletedField;
-            }
         };
 
-        $this->assertTrue($model->usesSoftDeletes());
-        $this->assertSame('deleted_at', $model->deletedField());
+        $this->assertFalse($model->usesSoftDeletes());
     }
 
     public function testImportanceAcceptsSupportedValuesAndNull(): void

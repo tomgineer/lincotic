@@ -5,7 +5,8 @@
    ========================================================================== */
 
 .navbar-popover-trigger,
-.edit-mode-trigger {
+.edit-mode-trigger,
+.learn-mode-trigger {
     @apply relative;
 
     &::after {
@@ -14,6 +15,25 @@
         content: "";
         height: 0.1875rem;
         transition: scale 150ms ease;
+    }
+}
+
+.learn-mode-trigger {
+    &::after {
+        background: linear-gradient(
+            90deg,
+            var(--color-blue-400),
+            var(--color-yellow-400)
+        );
+    }
+}
+
+[data-learn-mode-toggle]:checked + .learn-mode-trigger {
+    color: var(--color-blue-400);
+    background: color-mix(in srgb, var(--color-blue-400) 8%, transparent);
+
+    &::after {
+        @apply scale-x-100;
     }
 }
 

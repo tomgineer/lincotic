@@ -1,7 +1,7 @@
 /* ===========================================================================
    Link cards
    Interactive bookmark cards in collection grids, including importance and
-   inline edit-mode states.
+   inline editing states.
    ========================================================================== */
 
 @property --border-angle {
@@ -34,7 +34,8 @@
 
     transition: transform 250ms ease, box-shadow 300ms ease;
 
-    .edit-mode-syncing & {
+    .edit-mode-syncing &,
+    .learn-mode-syncing & {
         @apply transition-none;
     }
 
@@ -70,7 +71,7 @@
             0 8px 24px rgb(0 0 0 / 15%);
     }
 
-    &.edit-mode {
+    &.mode-edit {
         @apply relative outline-offset-4;
 
         --edit-teal: var(--color-brand-secondary);
@@ -110,12 +111,54 @@
         }
     }
 
+    &.mode-learn {
+        @apply relative outline-offset-4;
+
+        --learn-blue: var(--color-blue-400);
+        --learn-gold: var(--color-yellow-400);
+        --border-start: var(--learn-blue);
+        --border-end: var(--learn-gold);
+        --card-bg: color-mix(in srgb, var(--color-base-100) 91%, var(--learn-blue) 9%);
+
+        cursor: help;
+        outline: 2px solid color-mix(in srgb, var(--learn-blue) 68%, transparent);
+
+        background:
+            linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+            linear-gradient(110deg, var(--learn-blue), var(--learn-gold)) border-box;
+
+        box-shadow:
+            inset 0 0 0 1px color-mix(in srgb, var(--learn-gold) 12%, transparent),
+            0 12px 30px color-mix(in srgb, var(--learn-blue) 18%, transparent);
+
+        &::after {
+            @apply pointer-events-none absolute top-3 bottom-3 left-2 w-1 rounded-full;
+
+            content: "";
+            background: linear-gradient(to bottom, var(--learn-blue), var(--learn-gold));
+            box-shadow: 0 0 12px color-mix(in srgb, var(--learn-gold) 38%, transparent);
+        }
+
+        &:hover {
+            @apply animate-none;
+
+            --card-bg: color-mix(in srgb, var(--color-base-100) 84%, var(--learn-blue) 16%);
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                inset 0 0 0 1px color-mix(in srgb, var(--learn-gold) 22%, transparent),
+                0 16px 36px color-mix(in srgb, var(--learn-blue) 28%, transparent);
+        }
+    }
+
     @media (prefers-reduced-motion: reduce) {
         &:hover {
             @apply animate-none transform-none;
         }
 
-        &.edit-mode:hover {
+        &.mode-edit:hover,
+        &.mode-learn:hover {
             @apply transform-none;
         }
     }
