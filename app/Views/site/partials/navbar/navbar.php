@@ -49,7 +49,7 @@
         <?php endif ?>
 
         <div class="flex">
-            <label class="block h-full" title="Learn mode">
+            <label class="hidden md:block h-full" title="Learn mode">
                 <input
                     type="checkbox"
                     class="peer sr-only"
