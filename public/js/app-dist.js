@@ -1,1 +1,1749 @@
-(()=>{var K=new WeakMap;async function O(e){if(navigator.clipboard?.writeText)try{await navigator.clipboard.writeText(e.value);return}catch{}if(e.focus({preventScroll:!0}),e.select(),e.setSelectionRange(0,e.value.length),!document.execCommand("copy"))throw new Error("Copy failed");e.setSelectionRange(0,0)}function N(e,t,r,a){e.querySelectorAll('[data-copied="true"]').forEach(p=>{p.removeAttribute("data-copied")}),t.dataset.copied="true",r instanceof HTMLElement&&(r.textContent=a);let i=K.get(t);window.clearTimeout(i),K.set(t,window.setTimeout(()=>{t.removeAttribute("data-copied"),K.delete(t)},1600))}var V=1e3,re=60*V,se=60*re,G=24*se,ae={"debt-us":{date:new Date("2025-10-23T00:00:00Z"),amount:38e12,perSecond:63e3,currency:"USD"},"debt-de":{date:new Date("2025-03-31T00:00:00Z"),amount:252e10,perSecond:1800,currency:"EUR"},"debt-gr":{date:new Date("2025-06-30T00:00:00Z"),amount:403e9,perSecond:160,currency:"EUR"}},q=new Intl.NumberFormat("en-US",{maximumFractionDigits:0});function ge(e){let t=new Date(Date.UTC(e.getFullYear(),e.getMonth(),e.getDate())),r=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-r);let a=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-a)/G+1)/7)}function Le(e){let t=Date.UTC(e.getFullYear(),e.getMonth(),e.getDate()),r=Date.UTC(e.getFullYear(),0,1);return Math.floor((t-r)/G)+1}function P(e,t){let r=Math.max(0,t-e);return{years:Math.floor(r/(365.25*G)),days:Math.floor(r/G),hours:Math.floor(r/se),minutes:Math.floor(r/re),seconds:Math.floor(r/V)}}function Te(e,t){let r=(t-e.date)/V,a=e.amount+e.perSecond*r;return new Intl.NumberFormat("en-US",{style:"currency",currency:e.currency,maximumFractionDigits:0}).format(a)}function Se(e,t){let r=new Date(t.getFullYear(),0,1),a=new Date(t.getFullYear(),t.getMonth()+1,1),i=new Date(t.getFullYear()+1,0,1),p=P(t,new Date("2030-01-01T00:00:00Z")),h=P(new Date("2018-06-11T10:30:00Z"),t),E=P(t,a),L=P(t,i),v=P(r,t),w={"current-time":t.toLocaleTimeString("en-GB"),"current-date":t.toLocaleDateString("en-GB",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}),"current-week":`Week ${ge(t)}`,"current-timestamp":String(Math.floor(t.getTime()/V)),"day-of-year":q.format(Le(t)),"minute-of-year":q.format(v.minutes),"second-of-year":q.format(v.seconds),"reset-days":q.format(p.days),"reset-hours":q.format(p.hours),"reset-seconds":q.format(p.seconds),"month-days":q.format(E.days),"month-hours":q.format(E.hours),"month-seconds":q.format(E.seconds),"year-days":q.format(L.days),"year-hours":q.format(L.hours),"year-seconds":q.format(L.seconds),"event-years":q.format(h.years),"event-days":q.format(h.days),"event-seconds":q.format(h.seconds),"unix-seconds":String(Math.floor(t.getTime()/V))};return ae[e]?Te(ae[e],t):w[e]??"\u2014"}function ie(){let e=document.querySelector("[data-datetime-utility]");if(!(e instanceof HTMLElement))return;let t=e.querySelector("[data-datetime-hero-time]"),r=e.querySelector("[data-datetime-timezone]"),a=e.querySelector("[data-datetime-status]"),i=e.querySelectorAll("[data-datetime-value]");r instanceof HTMLElement&&(r.textContent=Intl.DateTimeFormat().resolvedOptions().timeZone||"Local timezone");let p=()=>{let h=new Date;t instanceof HTMLTimeElement&&(t.dateTime=h.toISOString(),t.textContent=h.toLocaleTimeString("en-GB")),i.forEach(E=>{E instanceof HTMLInputElement&&(E.value=Se(E.dataset.datetimeValue,h))})};e.addEventListener("click",async h=>{let E=h.target.closest("[data-copy-datetime]");if(!(E instanceof HTMLButtonElement))return;let L=E.closest("[data-copy-entry]")?.querySelector("[data-datetime-value]");if(L instanceof HTMLInputElement)try{await O(L),N(e,E,a,`${L.value} copied.`)}catch{a instanceof HTMLElement&&(a.textContent="Unable to copy this value. Select it and copy manually.")}}),p(),window.setInterval(p,V)}function ce(){let e=document.querySelector("[data-hashing-utility]");if(!(e instanceof HTMLElement))return;let t=e.querySelector("[data-hash-input]"),r=e.querySelector("[data-hash-trim]"),a=e.querySelector("[data-hash-status]"),i=e.querySelector("[data-hash-byte-count]"),p=e.querySelectorAll("[data-hash-output]"),h=e.dataset.hashUrl,E=e.dataset.csrfHeader,L=e.dataset.csrfToken,v,w;if(!(t instanceof HTMLTextAreaElement)||!h||!E||!L)return;let T=()=>{p.forEach(l=>{l instanceof HTMLInputElement&&(l.value="",l.closest("[data-copy-entry]")?.querySelector("[data-copy-hash]")?.setAttribute("disabled",""))})},g=()=>{if(i instanceof HTMLElement){let l=new TextEncoder().encode(t.value).length;i.textContent=`${l.toLocaleString("en-US")} ${l===1?"byte":"bytes"}`}},S=async()=>{let l=r instanceof HTMLInputElement&&r.checked?t.value.trim():t.value;if(g(),l===""){w?.abort(),T(),a instanceof HTMLElement&&(a.textContent="Waiting for input.");return}w?.abort(),w=new AbortController,a instanceof HTMLElement&&(a.textContent="Generating hashes\u2026");try{let c=await fetch(h,{method:"POST",headers:{"Content-Type":"application/json","X-Requested-With":"XMLHttpRequest",[E]:L},body:JSON.stringify({value:l}),signal:w.signal}),y=await c.json();if(!c.ok||!y.hashes)throw new Error(y.error||"Unable to generate hashes.");typeof y.csrf=="string"&&y.csrf!==""&&(L=y.csrf,e.dataset.csrfToken=y.csrf),p.forEach(d=>{if(!(d instanceof HTMLInputElement))return;d.value=y.hashes[d.dataset.hashOutput]??"";let M=d.closest("[data-copy-entry]")?.querySelector("[data-copy-hash]");M instanceof HTMLButtonElement&&(M.disabled=d.value==="")}),a instanceof HTMLElement&&(a.textContent="All five hashes are ready.")}catch(c){if(c.name==="AbortError")return;T(),a instanceof HTMLElement&&(a.textContent=c.message||"Unable to generate hashes.")}},f=(l=220)=>{window.clearTimeout(v),v=window.setTimeout(S,l)};t.addEventListener("input",()=>{g(),f()}),r instanceof HTMLInputElement&&r.addEventListener("change",()=>f(0)),e.addEventListener("click",async l=>{let c=l.target.closest("[data-copy-hash]");if(!(c instanceof HTMLButtonElement))return;let y=c.closest("[data-copy-entry]")?.querySelector("[data-hash-output]");if(!(!(y instanceof HTMLInputElement)||y.value===""))try{await O(y),N(e,c,a,`${c.dataset.copyHash.toUpperCase()} copied.`)}catch{a instanceof HTMLElement&&(a.textContent="Unable to copy this hash. Select it and copy manually.")}}),g()}function le(){let e=document.querySelector("[data-link-search-form]");if(!(e instanceof HTMLFormElement))return;let t=e.elements.namedItem("q"),r=e.querySelector("[data-clear-search]");t instanceof HTMLInputElement&&(r instanceof HTMLButtonElement&&(t.addEventListener("input",()=>{r.disabled=t.value===""}),r.addEventListener("click",()=>{t.value="",e.requestSubmit()})),t.autofocus&&requestAnimationFrame(()=>{t.focus({preventScroll:!0}),t.setSelectionRange(t.value.length,t.value.length)}))}function de(){let e=document.querySelector("[data-password-generator]");if(!(e instanceof HTMLElement))return;let t=e.querySelector("[data-copy-status]");e.querySelectorAll("[data-copy-password]").forEach(r=>{r instanceof HTMLButtonElement&&r.addEventListener("click",async()=>{let i=r.closest("[data-password-entry]")?.querySelector("[data-password-value]");if(i instanceof HTMLInputElement)try{await O(i),N(e,r,t,`${i.value.length} character password copied.`)}catch{t instanceof HTMLElement&&(t.textContent="Unable to copy the password. Select it and copy manually.")}})})}var Q="lincotic.workTimeStartAt";var j=e=>String(e).padStart(2,"0");function ve(e){let t=Math.floor(Math.max(0,e)/1e3),r=Math.floor(t/3600),a=Math.floor(t%3600/60),i=t%60;return`${j(r)}:${j(a)}:${j(i)}`}function Z(e){return`${j(e.getHours())}:${j(e.getMinutes())}`}function we(e){let t=0;return e>=6*36e5&&(t+=30),e>=9*36e5&&(t+=15),t*6e4}function Me(e){if(!/^\d{2}:\d{2}$/.test(e))return null;let[t,r]=e.split(":").map(Number);if(t>23||r>59)return null;let a=new Date,i=new Date(a);if(i.setHours(t,r,0,0),i-a>12*36e5)i.setDate(i.getDate()-1);else if(i>a)return null;return i}function He(){try{let e=localStorage.getItem(Q),t=e?new Date(e):null;return t&&!Number.isNaN(t.getTime())?t:null}catch{return null}}function ue(){let e=document.querySelector("[data-worktime-utility]");if(!(e instanceof HTMLElement))return;let t=e.querySelector("[data-worktime-start]"),r=e.querySelector("[data-worktime-save]"),a=e.querySelector("[data-worktime-reset]"),i=e.querySelector("[data-worktime-display]"),p=e.querySelector("[data-worktime-progress]"),h=e.querySelector("[data-worktime-progress-text]"),E=e.querySelector("[data-worktime-percent]"),L=e.querySelector("[data-worktime-end]"),v=e.querySelector("[data-worktime-break]"),w=e.querySelector("[data-worktime-state]"),T=He(),g=T!==null,S;if(!(t instanceof HTMLInputElement)||!(r instanceof HTMLButtonElement))return;let f=(d,M)=>{d instanceof HTMLElement&&(d.textContent=M)},l=()=>{f(i,"00:00:00"),f(h,"Set a start time to begin tracking."),f(E,"0%"),f(L,"--:--"),f(v,"0 min"),f(w,"No start time saved."),p instanceof HTMLProgressElement&&(p.value=0)},c=()=>{if(!T){l();return}let d=Math.max(0,Date.now()-T.getTime()),M=we(d),k=Math.max(0,d-M),b=8*36e5,I=Math.min(100,k/b*100),C=Math.round(I),x=new Date(T.getTime()+8*36e5+30*6e4);f(i,ve(k)),f(E,`${C}%`),f(L,Z(x)),f(v,`${M/6e4} min`),f(w,g?`Started at ${Z(T)} \xB7 saved in this browser.`:`Started at ${Z(T)} \xB7 active in this tab only.`),p instanceof HTMLProgressElement&&(p.value=I),C>=100?f(h,"Workday complete. Eight net hours reached."):C>=75?f(h,`Almost there\u2014${C}% of your workday is complete.`):C>=50?f(h,`Good progress\u2014${C}% of your workday is complete.`):f(h,`${C}% of your eight-hour workday is complete.`)},y=()=>{window.clearInterval(S),c(),S=window.setInterval(c,1e3)};r.addEventListener("click",()=>{let d=Me(t.value);if(!d){f(w,"Enter a valid start time.");return}T=d;try{localStorage.setItem(Q,T.toISOString()),g=!0}catch{g=!1}y()}),a instanceof HTMLButtonElement&&a.addEventListener("click",()=>{T=null,g=!1,window.clearInterval(S);try{localStorage.removeItem(Q)}catch{}l()}),T?(t.value=Z(T),y()):l()}function z({title:e="Are you sure?",message:t="Please confirm that you want to continue.",confirmLabel:r="Confirm"}={}){let a=document.querySelector("[data-confirmation-modal]"),i=a?.querySelector("[data-confirmation-title]"),p=a?.querySelector("[data-confirmation-message]"),h=a?.querySelector("[data-confirmation-confirm]"),E=a?.querySelectorAll("[data-confirmation-cancel]");return!(a instanceof HTMLDialogElement)||!(i instanceof HTMLElement)||!(p instanceof HTMLElement)||!(h instanceof HTMLButtonElement)||!E?.length||a.open?Promise.resolve(!1):(i.textContent=e,p.textContent=t,h.textContent=r,new Promise(L=>{let v=!1,w=S=>{v||(v=!0,h.removeEventListener("click",T),E.forEach(f=>f.removeEventListener("click",g)),a.removeEventListener("close",g),a.removeEventListener("cancel",g),a.open&&a.close(),L(S))},T=()=>w(!0),g=S=>{S?.preventDefault(),w(!1)};h.addEventListener("click",T),E.forEach(S=>S.addEventListener("click",g)),a.addEventListener("close",g),a.addEventListener("cancel",g),a.showModal()}))}var be="[data-edit-collection-control]";function $(e,t){return e.elements.namedItem(t)}function X(e,t,r){let a=$(e,t);(a instanceof HTMLInputElement||a instanceof HTMLTextAreaElement)&&(a.value=r)}function W(e){e.querySelectorAll("[name]").forEach(t=>{t.setCustomValidity?.("")})}function ke(e,t){Object.entries(t).forEach(([r,a])=>{$(e,r)?.setCustomValidity?.(a)})}function fe(){let e=document.querySelector("[data-edit-collection-modal]");if(!(e instanceof HTMLDialogElement))return;let t=e.querySelector("[data-edit-collection-form]"),r=e.querySelector("[data-edit-collection-title]"),a=e.querySelector("[data-edit-collection-description]"),i=e.querySelector("[data-edit-collection-status]"),p=e.querySelector("[data-edit-collection-save]"),h=e.querySelector("[data-edit-collection-delete]"),E=e.dataset.libraryUrl,L=e.dataset.createEndpoint,v=e.dataset.endpointTemplate,w=e.dataset.csrfHeader,T=e.dataset.csrfToken,g=null,S=0,f="edit";if(!(t instanceof HTMLFormElement)||!(r instanceof HTMLElement)||!(a instanceof HTMLElement)||!(p instanceof HTMLButtonElement)||!E||!L||!v||!w||!T)return;let l=o=>v.replace("__COLLECTION_ID__",encodeURIComponent(o)),c=(o,n=!1)=>{i instanceof HTMLElement&&(i.textContent=o,i.classList.toggle("text-error",n),i.classList.toggle("text-base-content/60",!n))},y=()=>f==="create"?"Add collection":"Save changes",d=(o,n=y())=>{t.setAttribute("aria-busy",String(o)),t.querySelectorAll(be).forEach(s=>{s.disabled=o}),p.disabled=o,p.textContent=n},M=o=>{f=o;let n=f==="create";r.textContent=n?"Add collection":"Edit collection",a.textContent=n?"Create a new collection for organizing links.":"Update how this collection is named and presented.",h instanceof HTMLButtonElement&&(h.hidden=n),p.textContent=y()},k=o=>{typeof o.csrf=="string"&&o.csrf!==""&&(T=o.csrf,e.dataset.csrfToken=o.csrf)},b=async o=>{let n={};try{n=await o.json()}catch{}return k(n),n},I=o=>{X(t,"id",String(o.id)),X(t,"name",o.name??""),X(t,"description",o.description??""),X(t,"icon",o.icon??"");let n=$(t,"is_featured"),s=$(t,"is_hidden");n instanceof HTMLInputElement&&(n.checked=!!o.is_featured),s instanceof HTMLInputElement&&(s.checked=!!o.is_hidden)},C=async o=>{if(!(o instanceof HTMLButtonElement)||!/^[1-9]\d*$/.test(o.dataset.collectionId??""))return;g?.abort(),g=new AbortController;let n=++S,s=o.dataset.collectionId;t.reset(),W(t),M("edit"),c("Loading collection\u2026"),d(!0,"Loading\u2026");try{let u=await fetch(l(s),{headers:{Accept:"application/json","X-Requested-With":"XMLHttpRequest"},signal:g.signal}),m=await b(u);if(n!==S)return;if(!u.ok||!m.collection)throw new Error(m.error||"Unable to load this collection.");I(m.collection),c(""),d(!1),e.open||e.showModal()}catch(u){if(u.name==="AbortError"||n!==S)return;c(u.message||"Unable to load this collection.",!0),d(!1),e.open||e.showModal()}},x=o=>{o instanceof HTMLButtonElement&&(S++,g?.abort(),g=null,t.reset(),W(t),M("create"),X(t,"id",""),c(""),d(!1),e.open||e.showModal())};document.querySelectorAll("[data-edit-collection]").forEach(o=>{o.addEventListener("click",()=>{C(o)})}),document.querySelectorAll("[data-add-collection]").forEach(o=>{o.addEventListener("click",()=>{document.getElementById("admin-collections-popover")?.hidePopover?.(),x(o)})}),t.addEventListener("input",()=>W(t)),h instanceof HTMLButtonElement&&h.addEventListener("click",async()=>{if(f!=="edit")return;let o=$(t,"id"),n=$(t,"name");if(!(o instanceof HTMLInputElement)||o.value===""){c("No collection is selected.",!0);return}let s=n instanceof HTMLInputElement?n.value.trim():"";if(await z({title:"Delete collection?",message:s?`The collection \u201C${s}\u201D will be removed. Do you want to continue?`:"This collection will be removed. Do you want to continue?",confirmLabel:"Delete collection"})){c("Deleting collection\u2026"),d(!0);try{let m=await fetch(l(o.value),{method:"DELETE",headers:{Accept:"application/json","X-Requested-With":"XMLHttpRequest",[w]:T}}),H=await b(m);if(!m.ok)throw new Error(H.error||"Unable to delete this collection.");e.hidden=!0,e.close(),window.location.reload()}catch(m){c(m.message||"Unable to delete this collection.",!0),d(!1)}}}),t.addEventListener("submit",async o=>{o.preventDefault(),W(t);let n=new FormData(t),s=n.get("id"),u=f==="create";if(!u&&(typeof s!="string"||s==="")){c("No collection is selected.",!0);return}let m={name:n.get("name"),description:n.get("description"),icon:n.get("icon"),is_featured:n.get("is_featured")==="1",is_hidden:n.get("is_hidden")==="1"};c(u?"Adding collection\u2026":"Saving changes\u2026"),d(!0,u?"Adding\u2026":"Saving\u2026");try{let H=await fetch(u?L:l(s),{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json","X-Requested-With":"XMLHttpRequest",[w]:T},body:JSON.stringify(m)}),D=await b(H);if(!H.ok)throw d(!1),D.errors&&typeof D.errors=="object"&&(ke(t,D.errors),t.reportValidity()),new Error(D.error||(u?"Unable to add this collection.":"Unable to save this collection."));if(u){let U=D.collection?.id;if(!Number.isInteger(U)||U<1)throw new Error("The collection was added, but it could not be opened automatically.");let oe=new URL(E,window.location.href);oe.searchParams.set("collection",String(U)),window.location.assign(oe);return}e.hidden=!0,e.close(),window.location.reload()}catch(H){c(H.message||(u?"Unable to add this collection.":"Unable to save this collection."),!0),d(!1)}}),e.addEventListener("close",()=>{S++,g?.abort(),g=null,t.reset(),W(t),c(""),M("edit"),d(!1)})}var me=".link-card",ee="lincotic.editMode",te="lincotic:edit-link";function Ce(){try{return sessionStorage.getItem(ee)==="1"}catch{return!1}}function qe(e){try{e?sessionStorage.setItem(ee,"1"):sessionStorage.removeItem(ee)}catch{}}function Ie(e){return!e.hidden&&e.getClientRects().length>0&&window.getComputedStyle(e).visibility!=="hidden"}function pe(){let e=document.querySelector("[data-edit-mode-toggle]"),t=0;if(!(e instanceof HTMLInputElement))return;let r=()=>{let a=[...document.querySelectorAll(me)],i=e.checked?new Set(a.filter(Ie)):new Set;document.documentElement.classList.add("edit-mode-syncing"),a.forEach(p=>{p.classList.toggle("edit-mode",i.has(p))}),cancelAnimationFrame(t),t=requestAnimationFrame(()=>{document.documentElement.classList.remove("edit-mode-syncing")})};e.checked=Ce(),e.addEventListener("change",()=>{qe(e.checked),r()}),document.addEventListener("click",a=>{if(!e.checked||!(a.target instanceof Element))return;let i=a.target.closest(me);!(i instanceof HTMLAnchorElement)||!i.classList.contains("edit-mode")||(a.preventDefault(),i.dispatchEvent(new CustomEvent(te,{bubbles:!0,detail:{link:i}})))}),r()}var De="[data-edit-link-control]";function R(e,t){return e.elements.namedItem(t)}function _(e,t,r){let a=R(e,t);(a instanceof RadioNodeList||a instanceof HTMLInputElement||a instanceof HTMLSelectElement||a instanceof HTMLTextAreaElement)&&(a.value=r)}function ne(e,t,r){let a=R(e,t);a instanceof HTMLInputElement&&(a.checked=r)}function Y(e){e.querySelectorAll("[name]").forEach(t=>{typeof t.setCustomValidity=="function"&&t.setCustomValidity("")})}function xe(e,t){Object.entries(t).forEach(([r,a])=>{let i=R(e,r);i instanceof RadioNodeList?i[0]?.setCustomValidity?.(a):i?.setCustomValidity?.(a)})}function he(){let e=document.querySelector("[data-edit-link-modal]");if(!(e instanceof HTMLDialogElement))return;let t=e.querySelector("[data-edit-link-form]"),r=e.querySelector("[data-edit-link-title]"),a=e.querySelector("[data-edit-link-description]"),i=e.querySelector("[data-edit-link-status]"),p=e.querySelector("[data-edit-link-save]"),h=e.querySelector("[data-edit-link-delete]"),E=e.querySelector("[data-edit-link-paste-url]"),L=e.querySelector("[data-edit-link-open-url]"),v=e.dataset.createEndpoint,w=e.dataset.endpointTemplate,T=e.dataset.csrfHeader,g=e.dataset.csrfToken,S=null,f=0,l="edit";if(!(t instanceof HTMLFormElement)||!(r instanceof HTMLElement)||!(a instanceof HTMLElement)||!(p instanceof HTMLButtonElement)||!v||!w||!T||!g)return;let c=(n,s=!1)=>{i instanceof HTMLElement&&(i.textContent=n,i.classList.toggle("text-error",s),i.classList.toggle("text-base-content/60",!s))},y=()=>l==="create"?"Add link":"Save changes",d=(n,s=y())=>{t.setAttribute("aria-busy",String(n)),t.querySelectorAll(De).forEach(u=>{u.disabled=n}),p.disabled=n,p.textContent=s},M=n=>{l=n;let s=l==="create";r.textContent=s?"Add link":"Edit link",a.textContent=s?"Add a new destination.":"Update the destination, organization, and status of this link.";let u=R(t,"collection_id");if(u instanceof HTMLSelectElement){let m=u.querySelector("[data-edit-link-unassigned-option]");if(s){let H=m??new Option("[Unassigned]","",!0,!0);H.dataset.editLinkUnassignedOption="",m||u.prepend(H),H.selected=!0,u.required=!1}else m?.remove(),u.required=!0}h instanceof HTMLButtonElement&&(h.hidden=s),p.textContent=y()},k=n=>{typeof n.csrf=="string"&&n.csrf!==""&&(g=n.csrf,e.dataset.csrfToken=n.csrf)},b=n=>w.replace("__LINK_ID__",encodeURIComponent(n)),I=async n=>{let s={};try{s=await n.json()}catch{}return k(s),s},C=n=>{_(t,"id",String(n.id)),_(t,"title",n.title??""),_(t,"url",n.url??""),_(t,"collection_id",String(n.collection_id??"")),_(t,"importance",n.importance??""),_(t,"description",n.description??""),ne(t,"is_favorite",!!n.is_favorite),ne(t,"is_pending_review",!!n.is_pending_review),ne(t,"is_hidden",!!n.is_hidden)},x=async n=>{if(!(n instanceof HTMLAnchorElement)||!n.dataset.linkId)return;S?.abort(),S=new AbortController;let s=++f,u=n.dataset.linkId;t.reset(),Y(t),M("edit"),c("Loading link\u2026"),d(!0,"Loading\u2026");try{let m=await fetch(b(u),{headers:{Accept:"application/json","X-Requested-With":"XMLHttpRequest"},signal:S.signal}),H=await I(m);if(s!==f)return;if(!m.ok||!H.link)throw new Error(H.error||"Unable to load this link.");C(H.link),c(""),d(!1),e.open||e.showModal()}catch(m){if(m.name==="AbortError"||s!==f)return;c(m.message||"Unable to load this link.",!0),d(!1),e.open||e.showModal()}},o=n=>{if(!(n instanceof HTMLButtonElement))return;f++,S?.abort(),S=null,t.reset(),Y(t),M("create"),_(t,"id","");let s=n.dataset.collectionId??"";/^[1-9]\d*$/.test(s)&&_(t,"collection_id",s),c(""),d(!1),e.open||e.showModal()};document.addEventListener(te,n=>{n instanceof CustomEvent&&x(n.detail?.link)}),document.querySelectorAll("[data-add-link]").forEach(n=>{n.addEventListener("click",()=>o(n))}),t.addEventListener("input",()=>Y(t)),E instanceof HTMLButtonElement&&E.addEventListener("click",async()=>{let n=R(t,"url");if(n instanceof HTMLInputElement){if(!navigator.clipboard?.readText){c("Clipboard access is not available in this browser.",!0);return}try{let s=(await navigator.clipboard.readText()).trim();if(s===""){c("The clipboard is empty.",!0);return}n.value=s,n.dispatchEvent(new Event("input",{bubbles:!0})),c(""),n.focus()}catch{c("Clipboard access was denied.",!0),n.focus()}}}),L instanceof HTMLButtonElement&&L.addEventListener("click",()=>{let n=R(t,"url");if(!(n instanceof HTMLInputElement))return;let s;try{if(s=new URL(n.value.trim()),!["http:","https:"].includes(s.protocol))throw new TypeError("Unsupported URL protocol.")}catch{n.setCustomValidity("Enter a valid HTTP or HTTPS URL."),n.reportValidity(),n.focus();return}n.setCustomValidity(""),window.open(s.href,"_blank","noopener,noreferrer")}),h instanceof HTMLButtonElement&&h.addEventListener("click",async()=>{if(l!=="edit")return;let n=R(t,"id"),s=R(t,"title");if(!(n instanceof HTMLInputElement)||n.value===""){c("No link is selected.",!0);return}let u=s instanceof HTMLInputElement?s.value.trim():"";if(await z({title:"Delete link?",message:u?`The link \u201C${u}\u201D will be removed. Do you want to continue?`:"This link will be removed. Do you want to continue?",confirmLabel:"Delete link"})){c("Deleting link\u2026"),d(!0);try{let H=await fetch(b(n.value),{method:"DELETE",headers:{Accept:"application/json","X-Requested-With":"XMLHttpRequest",[T]:g}}),D=await I(H);if(!H.ok)throw new Error(D.error||"Unable to delete this link.");e.hidden=!0,e.close(),window.location.reload()}catch(H){c(H.message||"Unable to delete this link.",!0),d(!1)}}}),t.addEventListener("submit",async n=>{n.preventDefault(),Y(t);let s=new FormData(t),u=s.get("id"),m=l==="create";if(!m&&(typeof u!="string"||u==="")){c("No link is selected.",!0);return}let H={title:s.get("title"),url:s.get("url"),collection_id:s.get("collection_id"),importance:s.get("importance"),description:s.get("description"),is_favorite:s.get("is_favorite")==="1",is_pending_review:s.get("is_pending_review")==="1",is_hidden:s.get("is_hidden")==="1"};c(m?"Adding link\u2026":"Saving changes\u2026"),d(!0,m?"Adding\u2026":"Saving\u2026");try{let D=await fetch(m?v:b(u),{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json","X-Requested-With":"XMLHttpRequest",[T]:g},body:JSON.stringify(H)}),U=await I(D);if(!D.ok)throw d(!1),U.errors&&typeof U.errors=="object"&&(xe(t,U.errors),t.reportValidity()),new Error(U.error||(m?"Unable to add this link.":"Unable to save this link."));e.hidden=!0,e.close(),window.location.reload()}catch(D){c(D.message||(m?"Unable to add this link.":"Unable to save this link."),!0),d(!1)}}),e.addEventListener("close",()=>{f++,S?.abort(),S=null,t.reset(),Y(t),c(""),M("edit"),d(!1)})}var Ae="[data-edit-user-control]";function A(e,t){return e.elements.namedItem(t)}function J(e){e.querySelectorAll("[name]").forEach(t=>{t.setCustomValidity?.("")})}function Ue(e,t){Object.entries(t).forEach(([r,a])=>{let i=A(e,r);i instanceof RadioNodeList?i[0]?.setCustomValidity?.(a):i?.setCustomValidity?.(a)})}function ye(){let e=document.querySelector("[data-edit-user-modal]");if(!(e instanceof HTMLDialogElement))return;let t=e.querySelector("[data-edit-user-form]"),r=e.querySelector("[data-edit-user-status]"),a=e.querySelector("[data-edit-user-save]"),i=e.dataset.createEndpoint,p=e.dataset.updateEndpointTemplate,h=e.dataset.csrfHeader,E=e.dataset.csrfToken,L="";if(!(t instanceof HTMLFormElement)||!(a instanceof HTMLButtonElement)||!i||!p||!h||!E)return;let v=(l,c=!1)=>{r instanceof HTMLElement&&(r.textContent=l,r.classList.toggle("text-error",c),r.classList.toggle("text-base-content/60",!c))},w=(l,c=L===""?"Add user":"Save changes")=>{t.setAttribute("aria-busy",String(l)),t.querySelectorAll(Ae).forEach(y=>{y.disabled=l}),a.disabled=l,a.textContent=c},T=()=>{L="",t.reset(),J(t),v("");let l=A(t,"id"),c=A(t,"password"),y=e.querySelector("[data-edit-user-title]"),d=e.querySelector("[data-edit-user-description]"),M=e.querySelector("[data-edit-user-password-hint]");l instanceof HTMLInputElement&&(l.value=""),c instanceof HTMLInputElement&&(c.required=!0),y instanceof HTMLElement&&(y.textContent="Add user"),d instanceof HTMLElement&&(d.textContent="Create a new account and choose its access level."),M instanceof HTMLElement&&(M.textContent=`Use at least ${c?.minLength||8} characters.`),w(!1)},g=l=>{L=l.dataset.userId||"",t.reset(),J(t),v("");let c=A(t,"id"),y=A(t,"username"),d=A(t,"email"),M=A(t,"password"),k=A(t,"role"),b=A(t,"active"),I=e.querySelector("[data-edit-user-title]"),C=e.querySelector("[data-edit-user-description]"),x=e.querySelector("[data-edit-user-password-hint]");c instanceof HTMLInputElement&&(c.value=L),y instanceof HTMLInputElement&&(y.value=l.dataset.userUsername||""),d instanceof HTMLInputElement&&(d.value=l.dataset.userEmail||""),M instanceof HTMLInputElement&&(M.value="",M.required=!1),k instanceof RadioNodeList&&(k.value=l.dataset.userRole||"user"),b instanceof HTMLInputElement&&(b.checked=l.dataset.userActive==="1"),I instanceof HTMLElement&&(I.textContent="Edit user"),C instanceof HTMLElement&&(C.textContent="Update this account and its access level."),x instanceof HTMLElement&&(x.textContent="Leave blank to keep the current password."),w(!1)},S=l=>{typeof l.csrf=="string"&&l.csrf!==""&&(E=l.csrf,e.dataset.csrfToken=l.csrf)},f=async l=>{let c={};try{c=await l.json()}catch{}return S(c),c};document.querySelectorAll("[data-add-user]").forEach(l=>{l.addEventListener("click",()=>{T(),document.getElementById("users-popover")?.hidePopover?.(),e.open||e.showModal()})}),document.querySelectorAll("[data-edit-user]").forEach(l=>{l.addEventListener("click",()=>{g(l),document.getElementById("users-popover")?.hidePopover?.(),e.open||e.showModal()})}),t.addEventListener("input",()=>J(t)),t.addEventListener("submit",async l=>{if(l.preventDefault(),J(t),!t.reportValidity())return;let c=new FormData(t),y={username:c.get("username"),email:c.get("email"),password:c.get("password"),role:c.get("role"),active:c.get("active")==="1"},d=L===""?i:p.replace("__USER_ID__",encodeURIComponent(L)),M=L===""?"Adding":"Saving";v(`${M} user\u2026`),w(!0,`${M}\u2026`);try{let k=await fetch(d,{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json","X-Requested-With":"XMLHttpRequest",[h]:E},body:JSON.stringify(y)}),b=await f(k);if(!k.ok)throw w(!1),b.errors&&typeof b.errors=="object"&&(Ue(t,b.errors),t.reportValidity()),new Error(b.error||"Unable to add this user.");e.hidden=!0,e.close(),window.location.reload()}catch(k){v(k.message||"Unable to add this user.",!0),w(!1)}}),e.addEventListener("close",()=>{T()}),T()}function B(e){return[...e.querySelectorAll("[data-sort-collection]")]}function F(e){B(e).forEach((t,r)=>{let a=t.querySelector("[data-sort-collection-position]");a instanceof HTMLElement&&(a.textContent=String(r+1));let i=t.querySelector("[data-sort-collection-destination]");i instanceof HTMLInputElement&&(i.value=String(r+1)),t.setAttribute("aria-label",`${t.dataset.collectionName}, position ${r+1}`)})}function Ee(){let e=document.querySelector("[data-sort-collections-modal]");if(!(e instanceof HTMLDialogElement))return;let t=e.querySelector("[data-sort-collections-list]"),r=e.querySelector("[data-sort-collections-save]"),a=e.querySelector("[data-sort-collections-status]"),i=e.querySelector("[data-sort-collections-search]"),p=e.querySelector("[data-sort-collections-clear]"),h=e.querySelector("[data-sort-collections-count]"),E=e.querySelector("[data-sort-collections-empty]"),L=e.querySelector("[data-sort-collections-hint]"),v=e.querySelector("[data-sort-collections-scroll]"),w=e.dataset.endpoint,T=e.dataset.csrfHeader,g=e.dataset.csrfToken;if(!(t instanceof HTMLOListElement)||!(r instanceof HTMLButtonElement)||!w||!T||!g)return;let S=B(t).map(o=>o.dataset.collectionId),f=null,l=!1,c=()=>i instanceof HTMLInputElement?i.value.trim().toLocaleLowerCase():"",y=()=>{let o=c(),n=B(t),s=0;n.forEach(u=>{u.hidden=!(u.dataset.collectionName??"").toLocaleLowerCase().includes(o),u.draggable=!l&&!o,u.classList.toggle("cursor-grab",!o),u.hidden||(s+=1)}),h instanceof HTMLElement&&(h.textContent=o?`${s} of ${n.length} collections`:`${n.length} ${n.length===1?"collection":"collections"}`),E instanceof HTMLElement&&(E.hidden=s!==0),p instanceof HTMLButtonElement&&(p.disabled=l||!(i instanceof HTMLInputElement)||!i.value),L instanceof HTMLElement&&(L.textContent=o?"Positions refer to the full list. Enter a position and press Move; clear search to drag.":"Enter a position and press Move. Drag or use \u2191 / \u2193 on a row; Home / End moves it first / last.")},d=(o,n=!1)=>{a instanceof HTMLElement&&(a.textContent=o,a.classList.toggle("text-error",n),a.classList.toggle("text-base-content/60",!n))},M=o=>{let n=B(t);l=o,e.setAttribute("aria-busy",String(o)),r.disabled=o||n.length<2,r.textContent=o?"Saving\u2026":"Save order",n.forEach(s=>{s.toggleAttribute("aria-disabled",o),s.querySelectorAll("input, button").forEach(u=>{u.disabled=o})}),i instanceof HTMLInputElement&&(i.disabled=o),y()},k=()=>{let o=B(t),n=o.map(m=>m.dataset.collectionId);if(!S.some((m,H)=>n[H]!==m))return;let u=new Map(o.map(m=>[m.dataset.collectionId,m]));S.forEach(m=>{let H=u.get(m);H&&t.append(H)}),F(t)},b=(o,n)=>{if(l)return;let s=B(t),u=s.indexOf(o)+1,m=s[n-1];m&&(n!==u&&t.insertBefore(o,n>u?m.nextElementSibling:m),F(t),d(`${o.dataset.collectionName} moved to position ${n} of ${s.length}.`))},I=o=>{let n=o.querySelector("[data-sort-collection-destination]");!(n instanceof HTMLInputElement)||!n.reportValidity()||b(o,n.valueAsNumber)};i?.addEventListener("input",()=>{y(),v instanceof HTMLElement&&(v.scrollTop=0)}),p?.addEventListener("click",()=>{i instanceof HTMLInputElement&&(i.value="",y(),v instanceof HTMLElement&&(v.scrollTop=0),i.focus())}),t.addEventListener("click",o=>{let s=(o.target instanceof Element?o.target.closest("[data-sort-collection-move]"):null)?.closest("[data-sort-collection]");s instanceof HTMLLIElement&&I(s)});let C=o=>{typeof o.csrf=="string"&&o.csrf!==""&&(g=o.csrf,e.dataset.csrfToken=o.csrf)},x=async o=>{let n={};try{n=await o.json()}catch{}return C(n),n};document.querySelectorAll("[data-sort-collections]").forEach(o=>{o.addEventListener("click",()=>{document.getElementById("admin-collections-popover")?.hidePopover?.(),v instanceof HTMLElement&&(v.scrollTop=0),e.open||e.showModal()})}),t.addEventListener("dragstart",o=>{let n=o.target instanceof Element?o.target.closest("[data-sort-collection]"):null;if(!(n instanceof HTMLLIElement)||l||c()||o.target instanceof Element&&o.target.closest("input, button")){o.preventDefault();return}f=n,n.setAttribute("aria-grabbed","true"),n.classList.add("opacity-40"),o.dataTransfer&&(o.dataTransfer.effectAllowed="move",o.dataTransfer.setData("text/plain",n.dataset.collectionId??""))}),t.addEventListener("dragover",o=>{if(!(f instanceof HTMLLIElement))return;o.preventDefault(),o.dataTransfer&&(o.dataTransfer.dropEffect="move");let n=o.target instanceof Element?o.target.closest("[data-sort-collection]"):null;if(!(n instanceof HTMLLIElement)||n===f)return;let s=n.getBoundingClientRect(),u=o.clientY>s.top+s.height/2;t.insertBefore(f,u?n.nextElementSibling:n),F(t)}),t.addEventListener("drop",o=>{o.preventDefault(),F(t)}),t.addEventListener("dragend",()=>{f instanceof HTMLLIElement&&(f.removeAttribute("aria-grabbed"),f.classList.remove("opacity-40")),f=null,F(t)}),t.addEventListener("keydown",o=>{let n=o.target instanceof Element?o.target.closest("[data-sort-collection]"):null;if(!(n instanceof HTMLLIElement)||l)return;if(o.target instanceof HTMLInputElement){o.key==="Enter"&&(o.preventDefault(),I(n));return}if(o.target!==n||c()||!["ArrowUp","ArrowDown","Home","End"].includes(o.key))return;o.preventDefault();let s=B(t),u=s.indexOf(n)+1,m={ArrowUp:Math.max(1,u-1),ArrowDown:Math.min(s.length,u+1),Home:1,End:s.length}[o.key];b(n,m),n.focus(),n.scrollIntoView({block:"nearest"})}),r.addEventListener("click",async()=>{if(l)return;let o=B(t).map(n=>n.dataset.collectionId);d("Saving collection order\u2026"),M(!0);try{let n=await fetch(w,{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json","X-Requested-With":"XMLHttpRequest",[T]:g},body:JSON.stringify({collection_ids:o})}),s=await x(n);if(!n.ok)throw new Error(s.error||"Unable to save the collection order.");e.hidden=!0,e.close(),window.location.reload()}catch(n){d(n.message||"Unable to save the collection order.",!0),M(!1)}}),e.addEventListener("close",()=>{k(),i instanceof HTMLInputElement&&(i.value=""),d(""),M(!1)}),F(t),y()}ie();ce();le();de();ue();fe();he();pe();ye();Ee();})();
+(() => {
+  // theme/js/lib/clipboard.js
+  var resetTimers = /* @__PURE__ */ new WeakMap();
+  async function copyInputValue(input) {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(input.value);
+        return;
+      } catch {
+      }
+    }
+    input.focus({ preventScroll: true });
+    input.select();
+    input.setSelectionRange(0, input.value.length);
+    if (!document.execCommand("copy")) {
+      throw new Error("Copy failed");
+    }
+    input.setSelectionRange(0, 0);
+  }
+  function showCopyFeedback(root, button, status, message) {
+    root.querySelectorAll('[data-copied="true"]').forEach((copiedButton) => {
+      copiedButton.removeAttribute("data-copied");
+    });
+    button.dataset.copied = "true";
+    if (status instanceof HTMLElement) {
+      status.textContent = message;
+    }
+    const activeTimer = resetTimers.get(button);
+    window.clearTimeout(activeTimer);
+    resetTimers.set(button, window.setTimeout(() => {
+      button.removeAttribute("data-copied");
+      resetTimers.delete(button);
+    }, 1600));
+  }
+
+  // theme/js/components/datetime.js
+  var SECOND = 1e3;
+  var MINUTE = 60 * SECOND;
+  var HOUR = 60 * MINUTE;
+  var DAY = 24 * HOUR;
+  var DEBT_BASELINES = {
+    "debt-us": {
+      date: /* @__PURE__ */ new Date("2025-10-23T00:00:00Z"),
+      amount: 38e12,
+      perSecond: 63e3,
+      currency: "USD"
+    },
+    "debt-de": {
+      date: /* @__PURE__ */ new Date("2025-03-31T00:00:00Z"),
+      amount: 252e10,
+      perSecond: 1800,
+      currency: "EUR"
+    },
+    "debt-gr": {
+      date: /* @__PURE__ */ new Date("2025-06-30T00:00:00Z"),
+      amount: 403e9,
+      perSecond: 160,
+      currency: "EUR"
+    }
+  };
+  var integerFormatter = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+  function isoWeek(date) {
+    const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const weekday = utcDate.getUTCDay() || 7;
+    utcDate.setUTCDate(utcDate.getUTCDate() + 4 - weekday);
+    const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+    return Math.ceil(((utcDate - yearStart) / DAY + 1) / 7);
+  }
+  function dayOfYear(date) {
+    const currentDay = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+    const yearStart = Date.UTC(date.getFullYear(), 0, 1);
+    return Math.floor((currentDay - yearStart) / DAY) + 1;
+  }
+  function elapsedParts(start, end) {
+    const difference = Math.max(0, end - start);
+    return {
+      years: Math.floor(difference / (365.25 * DAY)),
+      days: Math.floor(difference / DAY),
+      hours: Math.floor(difference / HOUR),
+      minutes: Math.floor(difference / MINUTE),
+      seconds: Math.floor(difference / SECOND)
+    };
+  }
+  function debtEstimate(baseline, now) {
+    const elapsedSeconds = (now - baseline.date) / SECOND;
+    const amount = baseline.amount + baseline.perSecond * elapsedSeconds;
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: baseline.currency,
+      maximumFractionDigits: 0
+    }).format(amount);
+  }
+  function metricValue(key, now) {
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const startOfNextYear = new Date(now.getFullYear() + 1, 0, 1);
+    const untilReset = elapsedParts(now, /* @__PURE__ */ new Date("2030-01-01T00:00:00Z"));
+    const sinceEvent = elapsedParts(/* @__PURE__ */ new Date("2018-06-11T10:30:00Z"), now);
+    const monthRemaining = elapsedParts(now, startOfNextMonth);
+    const yearRemaining = elapsedParts(now, startOfNextYear);
+    const yearElapsed = elapsedParts(startOfYear, now);
+    const values = {
+      "current-time": now.toLocaleTimeString("en-GB"),
+      "current-date": now.toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric"
+      }),
+      "current-week": `Week ${isoWeek(now)}`,
+      "current-timestamp": String(Math.floor(now.getTime() / SECOND)),
+      "day-of-year": integerFormatter.format(dayOfYear(now)),
+      "minute-of-year": integerFormatter.format(yearElapsed.minutes),
+      "second-of-year": integerFormatter.format(yearElapsed.seconds),
+      "reset-days": integerFormatter.format(untilReset.days),
+      "reset-hours": integerFormatter.format(untilReset.hours),
+      "reset-seconds": integerFormatter.format(untilReset.seconds),
+      "month-days": integerFormatter.format(monthRemaining.days),
+      "month-hours": integerFormatter.format(monthRemaining.hours),
+      "month-seconds": integerFormatter.format(monthRemaining.seconds),
+      "year-days": integerFormatter.format(yearRemaining.days),
+      "year-hours": integerFormatter.format(yearRemaining.hours),
+      "year-seconds": integerFormatter.format(yearRemaining.seconds),
+      "event-years": integerFormatter.format(sinceEvent.years),
+      "event-days": integerFormatter.format(sinceEvent.days),
+      "event-seconds": integerFormatter.format(sinceEvent.seconds),
+      "unix-seconds": String(Math.floor(now.getTime() / SECOND))
+    };
+    if (DEBT_BASELINES[key]) {
+      return debtEstimate(DEBT_BASELINES[key], now);
+    }
+    return values[key] ?? "\u2014";
+  }
+  function initDateTime() {
+    const root = document.querySelector("[data-datetime-utility]");
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+    const heroTime = root.querySelector("[data-datetime-hero-time]");
+    const timezone = root.querySelector("[data-datetime-timezone]");
+    const status = root.querySelector("[data-datetime-status]");
+    const fields = root.querySelectorAll("[data-datetime-value]");
+    if (timezone instanceof HTMLElement) {
+      timezone.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || "Local timezone";
+    }
+    const update = () => {
+      const now = /* @__PURE__ */ new Date();
+      if (heroTime instanceof HTMLTimeElement) {
+        heroTime.dateTime = now.toISOString();
+        heroTime.textContent = now.toLocaleTimeString("en-GB");
+      }
+      fields.forEach((field) => {
+        if (field instanceof HTMLInputElement) {
+          field.value = metricValue(field.dataset.datetimeValue, now);
+        }
+      });
+    };
+    root.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy-datetime]");
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+      const input = button.closest("[data-copy-entry]")?.querySelector("[data-datetime-value]");
+      if (!(input instanceof HTMLInputElement)) {
+        return;
+      }
+      try {
+        await copyInputValue(input);
+        showCopyFeedback(root, button, status, `${input.value} copied.`);
+      } catch {
+        if (status instanceof HTMLElement) {
+          status.textContent = "Unable to copy this value. Select it and copy manually.";
+        }
+      }
+    });
+    update();
+    window.setInterval(update, SECOND);
+  }
+
+  // theme/js/components/hashing.js
+  function initHashing() {
+    const root = document.querySelector("[data-hashing-utility]");
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+    const input = root.querySelector("[data-hash-input]");
+    const trim = root.querySelector("[data-hash-trim]");
+    const status = root.querySelector("[data-hash-status]");
+    const byteCount = root.querySelector("[data-hash-byte-count]");
+    const outputs = root.querySelectorAll("[data-hash-output]");
+    const endpoint = root.dataset.hashUrl;
+    const csrfHeader = root.dataset.csrfHeader;
+    let csrfToken = root.dataset.csrfToken;
+    let debounceTimer;
+    let activeRequest;
+    if (!(input instanceof HTMLTextAreaElement) || !endpoint || !csrfHeader || !csrfToken) {
+      return;
+    }
+    const clearOutputs = () => {
+      outputs.forEach((output) => {
+        if (output instanceof HTMLInputElement) {
+          output.value = "";
+          output.closest("[data-copy-entry]")?.querySelector("[data-copy-hash]")?.setAttribute("disabled", "");
+        }
+      });
+    };
+    const updateByteCount = () => {
+      if (byteCount instanceof HTMLElement) {
+        const bytes = new TextEncoder().encode(input.value).length;
+        byteCount.textContent = `${bytes.toLocaleString("en-US")} ${bytes === 1 ? "byte" : "bytes"}`;
+      }
+    };
+    const generate = async () => {
+      const value = trim instanceof HTMLInputElement && trim.checked ? input.value.trim() : input.value;
+      updateByteCount();
+      if (value === "") {
+        activeRequest?.abort();
+        clearOutputs();
+        if (status instanceof HTMLElement) {
+          status.textContent = "Waiting for input.";
+        }
+        return;
+      }
+      activeRequest?.abort();
+      activeRequest = new AbortController();
+      if (status instanceof HTMLElement) {
+        status.textContent = "Generating hashes\u2026";
+      }
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({ value }),
+          signal: activeRequest.signal
+        });
+        const result = await response.json();
+        if (!response.ok || !result.hashes) {
+          throw new Error(result.error || "Unable to generate hashes.");
+        }
+        if (typeof result.csrf === "string" && result.csrf !== "") {
+          csrfToken = result.csrf;
+          root.dataset.csrfToken = result.csrf;
+        }
+        outputs.forEach((output) => {
+          if (!(output instanceof HTMLInputElement)) {
+            return;
+          }
+          output.value = result.hashes[output.dataset.hashOutput] ?? "";
+          const button = output.closest("[data-copy-entry]")?.querySelector("[data-copy-hash]");
+          if (button instanceof HTMLButtonElement) {
+            button.disabled = output.value === "";
+          }
+        });
+        if (status instanceof HTMLElement) {
+          status.textContent = "All five hashes are ready.";
+        }
+      } catch (error) {
+        if (error.name === "AbortError") {
+          return;
+        }
+        clearOutputs();
+        if (status instanceof HTMLElement) {
+          status.textContent = error.message || "Unable to generate hashes.";
+        }
+      }
+    };
+    const scheduleGeneration = (delay = 220) => {
+      window.clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(generate, delay);
+    };
+    input.addEventListener("input", () => {
+      updateByteCount();
+      scheduleGeneration();
+    });
+    if (trim instanceof HTMLInputElement) {
+      trim.addEventListener("change", () => scheduleGeneration(0));
+    }
+    root.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy-hash]");
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+      const output = button.closest("[data-copy-entry]")?.querySelector("[data-hash-output]");
+      if (!(output instanceof HTMLInputElement) || output.value === "") {
+        return;
+      }
+      try {
+        await copyInputValue(output);
+        showCopyFeedback(root, button, status, `${button.dataset.copyHash.toUpperCase()} copied.`);
+      } catch {
+        if (status instanceof HTMLElement) {
+          status.textContent = "Unable to copy this hash. Select it and copy manually.";
+        }
+      }
+    });
+    updateByteCount();
+  }
+
+  // theme/js/components/link-search.js
+  function initLinkSearch() {
+    const search = document.querySelector("[data-link-search-form]");
+    if (!(search instanceof HTMLFormElement)) {
+      return;
+    }
+    const input = search.elements.namedItem("q");
+    const clearSearch = search.querySelector("[data-clear-search]");
+    if (!(input instanceof HTMLInputElement)) {
+      return;
+    }
+    if (clearSearch instanceof HTMLButtonElement) {
+      input.addEventListener("input", () => {
+        clearSearch.disabled = input.value === "";
+      });
+      clearSearch.addEventListener("click", () => {
+        input.value = "";
+        search.requestSubmit();
+      });
+    }
+    if (input.autofocus) {
+      requestAnimationFrame(() => {
+        input.focus({ preventScroll: true });
+        input.setSelectionRange(input.value.length, input.value.length);
+      });
+    }
+  }
+
+  // theme/js/components/password-generator.js
+  function initPasswordGenerator() {
+    const generator = document.querySelector("[data-password-generator]");
+    if (!(generator instanceof HTMLElement)) {
+      return;
+    }
+    const status = generator.querySelector("[data-copy-status]");
+    generator.querySelectorAll("[data-copy-password]").forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) {
+        return;
+      }
+      button.addEventListener("click", async () => {
+        const entry = button.closest("[data-password-entry]");
+        const input = entry?.querySelector("[data-password-value]");
+        if (!(input instanceof HTMLInputElement)) {
+          return;
+        }
+        try {
+          await copyInputValue(input);
+          showCopyFeedback(
+            generator,
+            button,
+            status,
+            `${input.value.length} character password copied.`
+          );
+        } catch {
+          if (status instanceof HTMLElement) {
+            status.textContent = "Unable to copy the password. Select it and copy manually.";
+          }
+        }
+      });
+    });
+  }
+
+  // theme/js/components/worktime.js
+  var STORAGE_KEY = "lincotic.workTimeStartAt";
+  var SECOND2 = 1e3;
+  var MINUTE2 = 60 * SECOND2;
+  var HOUR2 = 60 * MINUTE2;
+  var TARGET_NET_HOURS = 8;
+  var pad = (value) => String(value).padStart(2, "0");
+  function formatDuration(milliseconds) {
+    const totalSeconds = Math.floor(Math.max(0, milliseconds) / SECOND2);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor(totalSeconds % 3600 / 60);
+    const seconds = totalSeconds % 60;
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  }
+  function formatTime(date) {
+    return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+  function breakDuration(elapsed) {
+    let minutes = 0;
+    if (elapsed >= 6 * HOUR2) {
+      minutes += 30;
+    }
+    if (elapsed >= 9 * HOUR2) {
+      minutes += 15;
+    }
+    return minutes * MINUTE2;
+  }
+  function parseStartTime(value) {
+    if (!/^\d{2}:\d{2}$/.test(value)) {
+      return null;
+    }
+    const [hours, minutes] = value.split(":").map(Number);
+    if (hours > 23 || minutes > 59) {
+      return null;
+    }
+    const now = /* @__PURE__ */ new Date();
+    const start = new Date(now);
+    start.setHours(hours, minutes, 0, 0);
+    if (start - now > 12 * HOUR2) {
+      start.setDate(start.getDate() - 1);
+    } else if (start > now) {
+      return null;
+    }
+    return start;
+  }
+  function storedStartTime() {
+    try {
+      const value = localStorage.getItem(STORAGE_KEY);
+      const date = value ? new Date(value) : null;
+      return date && !Number.isNaN(date.getTime()) ? date : null;
+    } catch {
+      return null;
+    }
+  }
+  function initWorkTime() {
+    const root = document.querySelector("[data-worktime-utility]");
+    if (!(root instanceof HTMLElement)) {
+      return;
+    }
+    const input = root.querySelector("[data-worktime-start]");
+    const save = root.querySelector("[data-worktime-save]");
+    const reset = root.querySelector("[data-worktime-reset]");
+    const display = root.querySelector("[data-worktime-display]");
+    const progress = root.querySelector("[data-worktime-progress]");
+    const progressText = root.querySelector("[data-worktime-progress-text]");
+    const percent = root.querySelector("[data-worktime-percent]");
+    const end = root.querySelector("[data-worktime-end]");
+    const breakOutput = root.querySelector("[data-worktime-break]");
+    const state = root.querySelector("[data-worktime-state]");
+    let startTime = storedStartTime();
+    let persisted = startTime !== null;
+    let timer;
+    if (!(input instanceof HTMLInputElement) || !(save instanceof HTMLButtonElement)) {
+      return;
+    }
+    const setText = (element, value) => {
+      if (element instanceof HTMLElement) {
+        element.textContent = value;
+      }
+    };
+    const showIdle = () => {
+      setText(display, "00:00:00");
+      setText(progressText, "Set a start time to begin tracking.");
+      setText(percent, "0%");
+      setText(end, "--:--");
+      setText(breakOutput, "0 min");
+      setText(state, "No start time saved.");
+      if (progress instanceof HTMLProgressElement) {
+        progress.value = 0;
+      }
+    };
+    const update = () => {
+      if (!startTime) {
+        showIdle();
+        return;
+      }
+      const elapsed = Math.max(0, Date.now() - startTime.getTime());
+      const deductedBreak = breakDuration(elapsed);
+      const netWorked = Math.max(0, elapsed - deductedBreak);
+      const target = TARGET_NET_HOURS * HOUR2;
+      const progressValue = Math.min(100, netWorked / target * 100);
+      const roundedProgress = Math.round(progressValue);
+      const targetEnd = new Date(startTime.getTime() + 8 * HOUR2 + 30 * MINUTE2);
+      setText(display, formatDuration(netWorked));
+      setText(percent, `${roundedProgress}%`);
+      setText(end, formatTime(targetEnd));
+      setText(breakOutput, `${deductedBreak / MINUTE2} min`);
+      setText(
+        state,
+        persisted ? `Started at ${formatTime(startTime)} \xB7 saved in this browser.` : `Started at ${formatTime(startTime)} \xB7 active in this tab only.`
+      );
+      if (progress instanceof HTMLProgressElement) {
+        progress.value = progressValue;
+      }
+      if (roundedProgress >= 100) {
+        setText(progressText, "Workday complete. Eight net hours reached.");
+      } else if (roundedProgress >= 75) {
+        setText(progressText, `Almost there\u2014${roundedProgress}% of your workday is complete.`);
+      } else if (roundedProgress >= 50) {
+        setText(progressText, `Good progress\u2014${roundedProgress}% of your workday is complete.`);
+      } else {
+        setText(progressText, `${roundedProgress}% of your eight-hour workday is complete.`);
+      }
+    };
+    const run = () => {
+      window.clearInterval(timer);
+      update();
+      timer = window.setInterval(update, SECOND2);
+    };
+    save.addEventListener("click", () => {
+      const parsed = parseStartTime(input.value);
+      if (!parsed) {
+        setText(state, "Enter a valid start time.");
+        return;
+      }
+      startTime = parsed;
+      try {
+        localStorage.setItem(STORAGE_KEY, startTime.toISOString());
+        persisted = true;
+      } catch {
+        persisted = false;
+      }
+      run();
+    });
+    if (reset instanceof HTMLButtonElement) {
+      reset.addEventListener("click", () => {
+        startTime = null;
+        persisted = false;
+        window.clearInterval(timer);
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch {
+        }
+        showIdle();
+      });
+    }
+    if (startTime) {
+      input.value = formatTime(startTime);
+      run();
+    } else {
+      showIdle();
+    }
+  }
+
+  // theme/js/lib/confirmation.js
+  function confirmDialog({
+    title = "Are you sure?",
+    message = "Please confirm that you want to continue.",
+    confirmLabel = "Confirm"
+  } = {}) {
+    const dialog = document.querySelector("[data-confirmation-modal]");
+    const titleElement = dialog?.querySelector("[data-confirmation-title]");
+    const messageElement = dialog?.querySelector("[data-confirmation-message]");
+    const confirmButton = dialog?.querySelector("[data-confirmation-confirm]");
+    const cancelButtons = dialog?.querySelectorAll("[data-confirmation-cancel]");
+    if (!(dialog instanceof HTMLDialogElement) || !(titleElement instanceof HTMLElement) || !(messageElement instanceof HTMLElement) || !(confirmButton instanceof HTMLButtonElement) || !cancelButtons?.length) {
+      return Promise.resolve(false);
+    }
+    if (dialog.open) {
+      return Promise.resolve(false);
+    }
+    titleElement.textContent = title;
+    messageElement.textContent = message;
+    confirmButton.textContent = confirmLabel;
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (confirmed) => {
+        if (settled) return;
+        settled = true;
+        confirmButton.removeEventListener("click", confirm);
+        cancelButtons.forEach((button) => button.removeEventListener("click", cancel));
+        dialog.removeEventListener("close", cancel);
+        dialog.removeEventListener("cancel", cancel);
+        if (dialog.open) {
+          dialog.close();
+        }
+        resolve(confirmed);
+      };
+      const confirm = () => finish(true);
+      const cancel = (event) => {
+        event?.preventDefault();
+        finish(false);
+      };
+      confirmButton.addEventListener("click", confirm);
+      cancelButtons.forEach((button) => button.addEventListener("click", cancel));
+      dialog.addEventListener("close", cancel);
+      dialog.addEventListener("cancel", cancel);
+      dialog.showModal();
+    });
+  }
+
+  // theme/js/edit/edit-collection.js
+  var editableControlSelector = "[data-edit-collection-control]";
+  function formControl(form, name) {
+    return form.elements.namedItem(name);
+  }
+  function setControlValue(form, name, value) {
+    const control = formControl(form, name);
+    if (control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement) {
+      control.value = value;
+    }
+  }
+  function clearValidation(form) {
+    form.querySelectorAll("[name]").forEach((control) => {
+      control.setCustomValidity?.("");
+    });
+  }
+  function applyValidation(form, errors) {
+    Object.entries(errors).forEach(([name, message]) => {
+      formControl(form, name)?.setCustomValidity?.(message);
+    });
+  }
+  function initEditCollection() {
+    const dialog = document.querySelector("[data-edit-collection-modal]");
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+    const form = dialog.querySelector("[data-edit-collection-form]");
+    const modalTitle = dialog.querySelector("[data-edit-collection-title]");
+    const modalDescription = dialog.querySelector("[data-edit-collection-description]");
+    const status = dialog.querySelector("[data-edit-collection-status]");
+    const saveButton = dialog.querySelector("[data-edit-collection-save]");
+    const deleteButton = dialog.querySelector("[data-edit-collection-delete]");
+    const libraryUrl = dialog.dataset.libraryUrl;
+    const createEndpoint = dialog.dataset.createEndpoint;
+    const endpointTemplate = dialog.dataset.endpointTemplate;
+    const csrfHeader = dialog.dataset.csrfHeader;
+    let csrfToken = dialog.dataset.csrfToken;
+    let loadController = null;
+    let loadSequence = 0;
+    let mode = "edit";
+    if (!(form instanceof HTMLFormElement) || !(modalTitle instanceof HTMLElement) || !(modalDescription instanceof HTMLElement) || !(saveButton instanceof HTMLButtonElement) || !libraryUrl || !createEndpoint || !endpointTemplate || !csrfHeader || !csrfToken) {
+      return;
+    }
+    const endpointFor = (id) => endpointTemplate.replace(
+      "__COLLECTION_ID__",
+      encodeURIComponent(id)
+    );
+    const setStatus = (message, isError = false) => {
+      if (!(status instanceof HTMLElement)) return;
+      status.textContent = message;
+      status.classList.toggle("text-error", isError);
+      status.classList.toggle("text-base-content/60", !isError);
+    };
+    const defaultSaveLabel = () => mode === "create" ? "Add collection" : "Save changes";
+    const setBusy = (busy, label = defaultSaveLabel()) => {
+      form.setAttribute("aria-busy", String(busy));
+      form.querySelectorAll(editableControlSelector).forEach((control) => {
+        control.disabled = busy;
+      });
+      saveButton.disabled = busy;
+      saveButton.textContent = label;
+    };
+    const setMode = (nextMode) => {
+      mode = nextMode;
+      const creating = mode === "create";
+      modalTitle.textContent = creating ? "Add collection" : "Edit collection";
+      modalDescription.textContent = creating ? "Create a new collection for organizing links." : "Update how this collection is named and presented.";
+      if (deleteButton instanceof HTMLButtonElement) {
+        deleteButton.hidden = creating;
+      }
+      saveButton.textContent = defaultSaveLabel();
+    };
+    const updateCsrf = (result) => {
+      if (typeof result.csrf === "string" && result.csrf !== "") {
+        csrfToken = result.csrf;
+        dialog.dataset.csrfToken = result.csrf;
+      }
+    };
+    const readResponse = async (response) => {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+      }
+      updateCsrf(result);
+      return result;
+    };
+    const populateForm = (collection) => {
+      setControlValue(form, "id", String(collection.id));
+      setControlValue(form, "name", collection.name ?? "");
+      setControlValue(form, "description", collection.description ?? "");
+      setControlValue(form, "icon", collection.icon ?? "");
+      const featured = formControl(form, "is_featured");
+      const hidden = formControl(form, "is_hidden");
+      if (featured instanceof HTMLInputElement) {
+        featured.checked = Boolean(collection.is_featured);
+      }
+      if (hidden instanceof HTMLInputElement) {
+        hidden.checked = Boolean(collection.is_hidden);
+      }
+    };
+    const openEditor = async (trigger) => {
+      if (!(trigger instanceof HTMLButtonElement) || !/^[1-9]\d*$/.test(trigger.dataset.collectionId ?? "")) {
+        return;
+      }
+      loadController?.abort();
+      loadController = new AbortController();
+      const sequence = ++loadSequence;
+      const id = trigger.dataset.collectionId;
+      form.reset();
+      clearValidation(form);
+      setMode("edit");
+      setStatus("Loading collection\u2026");
+      setBusy(true, "Loading\u2026");
+      try {
+        const response = await fetch(endpointFor(id), {
+          headers: {
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          signal: loadController.signal
+        });
+        const result = await readResponse(response);
+        if (sequence !== loadSequence) return;
+        if (!response.ok || !result.collection) {
+          throw new Error(result.error || "Unable to load this collection.");
+        }
+        populateForm(result.collection);
+        setStatus("");
+        setBusy(false);
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+      } catch (error) {
+        if (error.name === "AbortError" || sequence !== loadSequence) return;
+        setStatus(error.message || "Unable to load this collection.", true);
+        setBusy(false);
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+      }
+    };
+    const openCreator = (trigger) => {
+      if (!(trigger instanceof HTMLButtonElement)) {
+        return;
+      }
+      loadSequence++;
+      loadController?.abort();
+      loadController = null;
+      form.reset();
+      clearValidation(form);
+      setMode("create");
+      setControlValue(form, "id", "");
+      setStatus("");
+      setBusy(false);
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    };
+    document.querySelectorAll("[data-edit-collection]").forEach((trigger) => {
+      trigger.addEventListener("click", () => void openEditor(trigger));
+    });
+    document.querySelectorAll("[data-add-collection]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        document.getElementById("admin-collections-popover")?.hidePopover?.();
+        openCreator(trigger);
+      });
+    });
+    form.addEventListener("input", () => clearValidation(form));
+    if (deleteButton instanceof HTMLButtonElement) {
+      deleteButton.addEventListener("click", async () => {
+        if (mode !== "edit") {
+          return;
+        }
+        const idControl = formControl(form, "id");
+        const nameControl = formControl(form, "name");
+        if (!(idControl instanceof HTMLInputElement) || idControl.value === "") {
+          setStatus("No collection is selected.", true);
+          return;
+        }
+        const name = nameControl instanceof HTMLInputElement ? nameControl.value.trim() : "";
+        const confirmed = await confirmDialog({
+          title: "Delete collection?",
+          message: name ? `The collection \u201C${name}\u201D will be removed. Do you want to continue?` : "This collection will be removed. Do you want to continue?",
+          confirmLabel: "Delete collection"
+        });
+        if (!confirmed) return;
+        setStatus("Deleting collection\u2026");
+        setBusy(true);
+        try {
+          const response = await fetch(endpointFor(idControl.value), {
+            method: "DELETE",
+            headers: {
+              Accept: "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+              [csrfHeader]: csrfToken
+            }
+          });
+          const result = await readResponse(response);
+          if (!response.ok) {
+            throw new Error(result.error || "Unable to delete this collection.");
+          }
+          dialog.hidden = true;
+          dialog.close();
+          window.location.reload();
+        } catch (error) {
+          setStatus(error.message || "Unable to delete this collection.", true);
+          setBusy(false);
+        }
+      });
+    }
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearValidation(form);
+      const data = new FormData(form);
+      const id = data.get("id");
+      const creating = mode === "create";
+      if (!creating && (typeof id !== "string" || id === "")) {
+        setStatus("No collection is selected.", true);
+        return;
+      }
+      const payload = {
+        name: data.get("name"),
+        description: data.get("description"),
+        icon: data.get("icon"),
+        is_featured: data.get("is_featured") === "1",
+        is_hidden: data.get("is_hidden") === "1"
+      };
+      setStatus(creating ? "Adding collection\u2026" : "Saving changes\u2026");
+      setBusy(true, creating ? "Adding\u2026" : "Saving\u2026");
+      try {
+        const response = await fetch(
+          creating ? createEndpoint : endpointFor(id),
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+              [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify(payload)
+          }
+        );
+        const result = await readResponse(response);
+        if (!response.ok) {
+          setBusy(false);
+          if (result.errors && typeof result.errors === "object") {
+            applyValidation(form, result.errors);
+            form.reportValidity();
+          }
+          throw new Error(result.error || (creating ? "Unable to add this collection." : "Unable to save this collection."));
+        }
+        if (creating) {
+          const collectionId = result.collection?.id;
+          if (!Number.isInteger(collectionId) || collectionId < 1) {
+            throw new Error("The collection was added, but it could not be opened automatically.");
+          }
+          const location = new URL(libraryUrl, window.location.href);
+          location.searchParams.set("collection", String(collectionId));
+          window.location.assign(location);
+          return;
+        }
+        dialog.hidden = true;
+        dialog.close();
+        window.location.reload();
+      } catch (error) {
+        setStatus(error.message || (creating ? "Unable to add this collection." : "Unable to save this collection."), true);
+        setBusy(false);
+      }
+    });
+    dialog.addEventListener("close", () => {
+      loadSequence++;
+      loadController?.abort();
+      loadController = null;
+      form.reset();
+      clearValidation(form);
+      setStatus("");
+      setMode("edit");
+      setBusy(false);
+    });
+  }
+
+  // theme/js/edit/edit-mode.js
+  var editableLinkSelector = ".link-card";
+  var editModeStorageKey = "lincotic.editMode";
+  var editLinkRequestEvent = "lincotic:edit-link";
+  function restoreEditMode() {
+    try {
+      return sessionStorage.getItem(editModeStorageKey) === "1";
+    } catch {
+      return false;
+    }
+  }
+  function persistEditMode(enabled) {
+    try {
+      if (enabled) {
+        sessionStorage.setItem(editModeStorageKey, "1");
+      } else {
+        sessionStorage.removeItem(editModeStorageKey);
+      }
+    } catch {
+    }
+  }
+  function isVisible(element) {
+    return !element.hidden && element.getClientRects().length > 0 && window.getComputedStyle(element).visibility !== "hidden";
+  }
+  function initEditMode() {
+    const toggle = document.querySelector("[data-edit-mode-toggle]");
+    let transitionResetFrame = 0;
+    if (!(toggle instanceof HTMLInputElement)) {
+      return;
+    }
+    const syncEditableLinks = () => {
+      const links = [...document.querySelectorAll(editableLinkSelector)];
+      const editableLinks = toggle.checked ? new Set(links.filter(isVisible)) : /* @__PURE__ */ new Set();
+      document.documentElement.classList.add("edit-mode-syncing");
+      links.forEach((link) => {
+        link.classList.toggle("edit-mode", editableLinks.has(link));
+      });
+      cancelAnimationFrame(transitionResetFrame);
+      transitionResetFrame = requestAnimationFrame(() => {
+        document.documentElement.classList.remove("edit-mode-syncing");
+      });
+    };
+    toggle.checked = restoreEditMode();
+    toggle.addEventListener("change", () => {
+      persistEditMode(toggle.checked);
+      syncEditableLinks();
+    });
+    document.addEventListener("click", (event) => {
+      if (!toggle.checked || !(event.target instanceof Element)) {
+        return;
+      }
+      const link = event.target.closest(editableLinkSelector);
+      if (!(link instanceof HTMLAnchorElement) || !link.classList.contains("edit-mode")) {
+        return;
+      }
+      event.preventDefault();
+      link.dispatchEvent(new CustomEvent(editLinkRequestEvent, {
+        bubbles: true,
+        detail: { link }
+      }));
+    });
+    syncEditableLinks();
+  }
+
+  // theme/js/edit/edit-link.js
+  var editableControlSelector2 = "[data-edit-link-control]";
+  function formControl2(form, name) {
+    return form.elements.namedItem(name);
+  }
+  function setControlValue2(form, name, value) {
+    const control = formControl2(form, name);
+    if (control instanceof RadioNodeList) {
+      control.value = value;
+    } else if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement) {
+      control.value = value;
+    }
+  }
+  function setCheckboxValue(form, name, checked) {
+    const control = formControl2(form, name);
+    if (control instanceof HTMLInputElement) {
+      control.checked = checked;
+    }
+  }
+  function clearValidation2(form) {
+    form.querySelectorAll("[name]").forEach((control) => {
+      if (typeof control.setCustomValidity === "function") {
+        control.setCustomValidity("");
+      }
+    });
+  }
+  function applyValidation2(form, errors) {
+    Object.entries(errors).forEach(([name, message]) => {
+      const control = formControl2(form, name);
+      if (control instanceof RadioNodeList) {
+        const firstControl = control[0];
+        firstControl?.setCustomValidity?.(message);
+      } else {
+        control?.setCustomValidity?.(message);
+      }
+    });
+  }
+  function initEditLink() {
+    const dialog = document.querySelector("[data-edit-link-modal]");
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+    const form = dialog.querySelector("[data-edit-link-form]");
+    const modalTitle = dialog.querySelector("[data-edit-link-title]");
+    const modalDescription = dialog.querySelector("[data-edit-link-description]");
+    const status = dialog.querySelector("[data-edit-link-status]");
+    const saveButton = dialog.querySelector("[data-edit-link-save]");
+    const deleteButton = dialog.querySelector("[data-edit-link-delete]");
+    const pasteUrlButton = dialog.querySelector("[data-edit-link-paste-url]");
+    const openUrlButton = dialog.querySelector("[data-edit-link-open-url]");
+    const createEndpoint = dialog.dataset.createEndpoint;
+    const endpointTemplate = dialog.dataset.endpointTemplate;
+    const csrfHeader = dialog.dataset.csrfHeader;
+    let csrfToken = dialog.dataset.csrfToken;
+    let loadController = null;
+    let loadSequence = 0;
+    let mode = "edit";
+    if (!(form instanceof HTMLFormElement) || !(modalTitle instanceof HTMLElement) || !(modalDescription instanceof HTMLElement) || !(saveButton instanceof HTMLButtonElement) || !createEndpoint || !endpointTemplate || !csrfHeader || !csrfToken) {
+      return;
+    }
+    const setStatus = (message, isError = false) => {
+      if (!(status instanceof HTMLElement)) {
+        return;
+      }
+      status.textContent = message;
+      status.classList.toggle("text-error", isError);
+      status.classList.toggle("text-base-content/60", !isError);
+    };
+    const defaultSaveLabel = () => mode === "create" ? "Add link" : "Save changes";
+    const setBusy = (busy, label = defaultSaveLabel()) => {
+      form.setAttribute("aria-busy", String(busy));
+      form.querySelectorAll(editableControlSelector2).forEach((control) => {
+        control.disabled = busy;
+      });
+      saveButton.disabled = busy;
+      saveButton.textContent = label;
+    };
+    const setMode = (nextMode) => {
+      mode = nextMode;
+      const creating = mode === "create";
+      modalTitle.textContent = creating ? "Add link" : "Edit link";
+      modalDescription.textContent = creating ? "Add a new destination." : "Update the destination, organization, and status of this link.";
+      const collectionControl = formControl2(form, "collection_id");
+      if (collectionControl instanceof HTMLSelectElement) {
+        const unassignedOption = collectionControl.querySelector(
+          "[data-edit-link-unassigned-option]"
+        );
+        if (creating) {
+          const option = unassignedOption ?? new Option("[Unassigned]", "", true, true);
+          option.dataset.editLinkUnassignedOption = "";
+          if (!unassignedOption) {
+            collectionControl.prepend(option);
+          }
+          option.selected = true;
+          collectionControl.required = false;
+        } else {
+          unassignedOption?.remove();
+          collectionControl.required = true;
+        }
+      }
+      if (deleteButton instanceof HTMLButtonElement) {
+        deleteButton.hidden = creating;
+      }
+      saveButton.textContent = defaultSaveLabel();
+    };
+    const updateCsrf = (result) => {
+      if (typeof result.csrf === "string" && result.csrf !== "") {
+        csrfToken = result.csrf;
+        dialog.dataset.csrfToken = result.csrf;
+      }
+    };
+    const endpointFor = (id) => endpointTemplate.replace("__LINK_ID__", encodeURIComponent(id));
+    const readResponse = async (response) => {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+      }
+      updateCsrf(result);
+      return result;
+    };
+    const populateForm = (link) => {
+      setControlValue2(form, "id", String(link.id));
+      setControlValue2(form, "title", link.title ?? "");
+      setControlValue2(form, "url", link.url ?? "");
+      setControlValue2(form, "collection_id", String(link.collection_id ?? ""));
+      setControlValue2(form, "importance", link.importance ?? "");
+      setControlValue2(form, "description", link.description ?? "");
+      setCheckboxValue(form, "is_favorite", Boolean(link.is_favorite));
+      setCheckboxValue(form, "is_pending_review", Boolean(link.is_pending_review));
+      setCheckboxValue(form, "is_hidden", Boolean(link.is_hidden));
+    };
+    const openEditor = async (link) => {
+      if (!(link instanceof HTMLAnchorElement) || !link.dataset.linkId) {
+        return;
+      }
+      loadController?.abort();
+      loadController = new AbortController();
+      const sequence = ++loadSequence;
+      const id = link.dataset.linkId;
+      form.reset();
+      clearValidation2(form);
+      setMode("edit");
+      setStatus("Loading link\u2026");
+      setBusy(true, "Loading\u2026");
+      try {
+        const response = await fetch(endpointFor(id), {
+          headers: {
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          signal: loadController.signal
+        });
+        const result = await readResponse(response);
+        if (sequence !== loadSequence) {
+          return;
+        }
+        if (!response.ok || !result.link) {
+          throw new Error(result.error || "Unable to load this link.");
+        }
+        populateForm(result.link);
+        setStatus("");
+        setBusy(false);
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+      } catch (error) {
+        if (error.name === "AbortError" || sequence !== loadSequence) {
+          return;
+        }
+        setStatus(error.message || "Unable to load this link.", true);
+        setBusy(false);
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+      }
+    };
+    const openCreator = (trigger) => {
+      if (!(trigger instanceof HTMLButtonElement)) {
+        return;
+      }
+      loadSequence++;
+      loadController?.abort();
+      loadController = null;
+      form.reset();
+      clearValidation2(form);
+      setMode("create");
+      setControlValue2(form, "id", "");
+      const collectionId = trigger.dataset.collectionId ?? "";
+      if (/^[1-9]\d*$/.test(collectionId)) {
+        setControlValue2(form, "collection_id", collectionId);
+      }
+      setStatus("");
+      setBusy(false);
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    };
+    document.addEventListener(editLinkRequestEvent, (event) => {
+      if (!(event instanceof CustomEvent)) {
+        return;
+      }
+      void openEditor(event.detail?.link);
+    });
+    document.querySelectorAll("[data-add-link]").forEach((trigger) => {
+      trigger.addEventListener("click", () => openCreator(trigger));
+    });
+    form.addEventListener("input", () => clearValidation2(form));
+    if (pasteUrlButton instanceof HTMLButtonElement) {
+      pasteUrlButton.addEventListener("click", async () => {
+        const urlControl = formControl2(form, "url");
+        if (!(urlControl instanceof HTMLInputElement)) {
+          return;
+        }
+        if (!navigator.clipboard?.readText) {
+          setStatus("Clipboard access is not available in this browser.", true);
+          return;
+        }
+        try {
+          const clipboardValue = (await navigator.clipboard.readText()).trim();
+          if (clipboardValue === "") {
+            setStatus("The clipboard is empty.", true);
+            return;
+          }
+          urlControl.value = clipboardValue;
+          urlControl.dispatchEvent(new Event("input", { bubbles: true }));
+          setStatus("");
+          urlControl.focus();
+        } catch {
+          setStatus("Clipboard access was denied.", true);
+          urlControl.focus();
+        }
+      });
+    }
+    if (openUrlButton instanceof HTMLButtonElement) {
+      openUrlButton.addEventListener("click", () => {
+        const urlControl = formControl2(form, "url");
+        if (!(urlControl instanceof HTMLInputElement)) {
+          return;
+        }
+        let url;
+        try {
+          url = new URL(urlControl.value.trim());
+          if (!["http:", "https:"].includes(url.protocol)) {
+            throw new TypeError("Unsupported URL protocol.");
+          }
+        } catch {
+          urlControl.setCustomValidity("Enter a valid HTTP or HTTPS URL.");
+          urlControl.reportValidity();
+          urlControl.focus();
+          return;
+        }
+        urlControl.setCustomValidity("");
+        window.open(url.href, "_blank", "noopener,noreferrer");
+      });
+    }
+    if (deleteButton instanceof HTMLButtonElement) {
+      deleteButton.addEventListener("click", async () => {
+        if (mode !== "edit") {
+          return;
+        }
+        const idControl = formControl2(form, "id");
+        const titleControl = formControl2(form, "title");
+        if (!(idControl instanceof HTMLInputElement) || idControl.value === "") {
+          setStatus("No link is selected.", true);
+          return;
+        }
+        const title = titleControl instanceof HTMLInputElement ? titleControl.value.trim() : "";
+        const confirmed = await confirmDialog({
+          title: "Delete link?",
+          message: title ? `The link \u201C${title}\u201D will be removed. Do you want to continue?` : "This link will be removed. Do you want to continue?",
+          confirmLabel: "Delete link"
+        });
+        if (!confirmed) {
+          return;
+        }
+        setStatus("Deleting link\u2026");
+        setBusy(true);
+        try {
+          const response = await fetch(endpointFor(idControl.value), {
+            method: "DELETE",
+            headers: {
+              Accept: "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+              [csrfHeader]: csrfToken
+            }
+          });
+          const result = await readResponse(response);
+          if (!response.ok) {
+            throw new Error(result.error || "Unable to delete this link.");
+          }
+          dialog.hidden = true;
+          dialog.close();
+          window.location.reload();
+        } catch (error) {
+          setStatus(error.message || "Unable to delete this link.", true);
+          setBusy(false);
+        }
+      });
+    }
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearValidation2(form);
+      const data = new FormData(form);
+      const id = data.get("id");
+      const creating = mode === "create";
+      if (!creating && (typeof id !== "string" || id === "")) {
+        setStatus("No link is selected.", true);
+        return;
+      }
+      const payload = {
+        title: data.get("title"),
+        url: data.get("url"),
+        collection_id: data.get("collection_id"),
+        importance: data.get("importance"),
+        description: data.get("description"),
+        is_favorite: data.get("is_favorite") === "1",
+        is_pending_review: data.get("is_pending_review") === "1",
+        is_hidden: data.get("is_hidden") === "1"
+      };
+      setStatus(creating ? "Adding link\u2026" : "Saving changes\u2026");
+      setBusy(true, creating ? "Adding\u2026" : "Saving\u2026");
+      try {
+        const response = await fetch(
+          creating ? createEndpoint : endpointFor(id),
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              "X-Requested-With": "XMLHttpRequest",
+              [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify(payload)
+          }
+        );
+        const result = await readResponse(response);
+        if (!response.ok) {
+          setBusy(false);
+          if (result.errors && typeof result.errors === "object") {
+            applyValidation2(form, result.errors);
+            form.reportValidity();
+          }
+          throw new Error(result.error || (creating ? "Unable to add this link." : "Unable to save this link."));
+        }
+        dialog.hidden = true;
+        dialog.close();
+        window.location.reload();
+      } catch (error) {
+        setStatus(error.message || (creating ? "Unable to add this link." : "Unable to save this link."), true);
+        setBusy(false);
+      }
+    });
+    dialog.addEventListener("close", () => {
+      loadSequence++;
+      loadController?.abort();
+      loadController = null;
+      form.reset();
+      clearValidation2(form);
+      setStatus("");
+      setMode("edit");
+      setBusy(false);
+    });
+  }
+
+  // theme/js/edit/edit-user.js
+  var editableControlSelector3 = "[data-edit-user-control]";
+  function formControl3(form, name) {
+    return form.elements.namedItem(name);
+  }
+  function clearValidation3(form) {
+    form.querySelectorAll("[name]").forEach((control) => {
+      control.setCustomValidity?.("");
+    });
+  }
+  function applyValidation3(form, errors) {
+    Object.entries(errors).forEach(([name, message]) => {
+      const control = formControl3(form, name);
+      if (control instanceof RadioNodeList) {
+        control[0]?.setCustomValidity?.(message);
+      } else {
+        control?.setCustomValidity?.(message);
+      }
+    });
+  }
+  function initEditUser() {
+    const dialog = document.querySelector("[data-edit-user-modal]");
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+    const form = dialog.querySelector("[data-edit-user-form]");
+    const status = dialog.querySelector("[data-edit-user-status]");
+    const saveButton = dialog.querySelector("[data-edit-user-save]");
+    const createEndpoint = dialog.dataset.createEndpoint;
+    const updateEndpointTemplate = dialog.dataset.updateEndpointTemplate;
+    const csrfHeader = dialog.dataset.csrfHeader;
+    let csrfToken = dialog.dataset.csrfToken;
+    let currentUserId = "";
+    if (!(form instanceof HTMLFormElement) || !(saveButton instanceof HTMLButtonElement) || !createEndpoint || !updateEndpointTemplate || !csrfHeader || !csrfToken) {
+      return;
+    }
+    const setStatus = (message, isError = false) => {
+      if (!(status instanceof HTMLElement)) {
+        return;
+      }
+      status.textContent = message;
+      status.classList.toggle("text-error", isError);
+      status.classList.toggle("text-base-content/60", !isError);
+    };
+    const setBusy = (busy, label = currentUserId === "" ? "Add user" : "Save changes") => {
+      form.setAttribute("aria-busy", String(busy));
+      form.querySelectorAll(editableControlSelector3).forEach((control) => {
+        control.disabled = busy;
+      });
+      saveButton.disabled = busy;
+      saveButton.textContent = label;
+    };
+    const prepareCreate = () => {
+      currentUserId = "";
+      form.reset();
+      clearValidation3(form);
+      setStatus("");
+      const id = formControl3(form, "id");
+      const password = formControl3(form, "password");
+      const title = dialog.querySelector("[data-edit-user-title]");
+      const description = dialog.querySelector("[data-edit-user-description]");
+      const passwordHint = dialog.querySelector("[data-edit-user-password-hint]");
+      if (id instanceof HTMLInputElement) id.value = "";
+      if (password instanceof HTMLInputElement) password.required = true;
+      if (title instanceof HTMLElement) title.textContent = "Add user";
+      if (description instanceof HTMLElement) description.textContent = "Create a new account and choose its access level.";
+      if (passwordHint instanceof HTMLElement) {
+        passwordHint.textContent = `Use at least ${password?.minLength || 8} characters.`;
+      }
+      setBusy(false);
+    };
+    const prepareEdit = (trigger) => {
+      currentUserId = trigger.dataset.userId || "";
+      form.reset();
+      clearValidation3(form);
+      setStatus("");
+      const id = formControl3(form, "id");
+      const username = formControl3(form, "username");
+      const email = formControl3(form, "email");
+      const password = formControl3(form, "password");
+      const role = formControl3(form, "role");
+      const active = formControl3(form, "active");
+      const title = dialog.querySelector("[data-edit-user-title]");
+      const description = dialog.querySelector("[data-edit-user-description]");
+      const passwordHint = dialog.querySelector("[data-edit-user-password-hint]");
+      if (id instanceof HTMLInputElement) id.value = currentUserId;
+      if (username instanceof HTMLInputElement) username.value = trigger.dataset.userUsername || "";
+      if (email instanceof HTMLInputElement) email.value = trigger.dataset.userEmail || "";
+      if (password instanceof HTMLInputElement) {
+        password.value = "";
+        password.required = false;
+      }
+      if (role instanceof RadioNodeList) role.value = trigger.dataset.userRole || "user";
+      if (active instanceof HTMLInputElement) active.checked = trigger.dataset.userActive === "1";
+      if (title instanceof HTMLElement) title.textContent = "Edit user";
+      if (description instanceof HTMLElement) description.textContent = "Update this account and its access level.";
+      if (passwordHint instanceof HTMLElement) passwordHint.textContent = "Leave blank to keep the current password.";
+      setBusy(false);
+    };
+    const updateCsrf = (result) => {
+      if (typeof result.csrf === "string" && result.csrf !== "") {
+        csrfToken = result.csrf;
+        dialog.dataset.csrfToken = result.csrf;
+      }
+    };
+    const readResponse = async (response) => {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+      }
+      updateCsrf(result);
+      return result;
+    };
+    document.querySelectorAll("[data-add-user]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        prepareCreate();
+        document.getElementById("users-popover")?.hidePopover?.();
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+      });
+    });
+    document.querySelectorAll("[data-edit-user]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        prepareEdit(trigger);
+        document.getElementById("users-popover")?.hidePopover?.();
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+      });
+    });
+    form.addEventListener("input", () => clearValidation3(form));
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearValidation3(form);
+      if (!form.reportValidity()) {
+        return;
+      }
+      const data = new FormData(form);
+      const payload = {
+        username: data.get("username"),
+        email: data.get("email"),
+        password: data.get("password"),
+        role: data.get("role"),
+        active: data.get("active") === "1"
+      };
+      const endpoint = currentUserId === "" ? createEndpoint : updateEndpointTemplate.replace("__USER_ID__", encodeURIComponent(currentUserId));
+      const action = currentUserId === "" ? "Adding" : "Saving";
+      setStatus(`${action} user\u2026`);
+      setBusy(true, `${action}\u2026`);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await readResponse(response);
+        if (!response.ok) {
+          setBusy(false);
+          if (result.errors && typeof result.errors === "object") {
+            applyValidation3(form, result.errors);
+            form.reportValidity();
+          }
+          throw new Error(result.error || "Unable to add this user.");
+        }
+        dialog.hidden = true;
+        dialog.close();
+        window.location.reload();
+      } catch (error) {
+        setStatus(error.message || "Unable to add this user.", true);
+        setBusy(false);
+      }
+    });
+    dialog.addEventListener("close", () => {
+      prepareCreate();
+    });
+    prepareCreate();
+  }
+
+  // theme/js/edit/sort-collections.js
+  function collectionItems(list) {
+    return [...list.querySelectorAll("[data-sort-collection]")];
+  }
+  function updatePositions(list) {
+    collectionItems(list).forEach((item, index) => {
+      const position = item.querySelector("[data-sort-collection-position]");
+      if (position instanceof HTMLElement) {
+        position.textContent = String(index + 1);
+      }
+      const destination = item.querySelector("[data-sort-collection-destination]");
+      if (destination instanceof HTMLInputElement) {
+        destination.value = String(index + 1);
+      }
+      item.setAttribute("aria-label", `${item.dataset.collectionName}, position ${index + 1}`);
+    });
+  }
+  function initSortCollections() {
+    const dialog = document.querySelector("[data-sort-collections-modal]");
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+    const list = dialog.querySelector("[data-sort-collections-list]");
+    const saveButton = dialog.querySelector("[data-sort-collections-save]");
+    const status = dialog.querySelector("[data-sort-collections-status]");
+    const search = dialog.querySelector("[data-sort-collections-search]");
+    const clearSearch = dialog.querySelector("[data-sort-collections-clear]");
+    const count = dialog.querySelector("[data-sort-collections-count]");
+    const empty = dialog.querySelector("[data-sort-collections-empty]");
+    const hint = dialog.querySelector("[data-sort-collections-hint]");
+    const scrollArea = dialog.querySelector("[data-sort-collections-scroll]");
+    const endpoint = dialog.dataset.endpoint;
+    const csrfHeader = dialog.dataset.csrfHeader;
+    let csrfToken = dialog.dataset.csrfToken;
+    if (!(list instanceof HTMLOListElement) || !(saveButton instanceof HTMLButtonElement) || !endpoint || !csrfHeader || !csrfToken) {
+      return;
+    }
+    const initialOrder = collectionItems(list).map((item) => item.dataset.collectionId);
+    let draggedItem = null;
+    let isSaving = false;
+    const searchQuery = () => search instanceof HTMLInputElement ? search.value.trim().toLocaleLowerCase() : "";
+    const filterItems = () => {
+      const query = searchQuery();
+      const items = collectionItems(list);
+      let visible = 0;
+      items.forEach((item) => {
+        item.hidden = !(item.dataset.collectionName ?? "").toLocaleLowerCase().includes(query);
+        item.draggable = !isSaving && !query;
+        item.classList.toggle("cursor-grab", !query);
+        if (!item.hidden) visible += 1;
+      });
+      if (count instanceof HTMLElement) {
+        count.textContent = query ? `${visible} of ${items.length} collections` : `${items.length} ${items.length === 1 ? "collection" : "collections"}`;
+      }
+      if (empty instanceof HTMLElement) empty.hidden = visible !== 0;
+      if (clearSearch instanceof HTMLButtonElement) {
+        clearSearch.disabled = isSaving || !(search instanceof HTMLInputElement) || !search.value;
+      }
+      if (hint instanceof HTMLElement) {
+        hint.textContent = query ? "Positions refer to the full list. Enter a position and press Move; clear search to drag." : "Enter a position and press Move. Drag or use \u2191 / \u2193 on a row; Home / End moves it first / last.";
+      }
+    };
+    const setStatus = (message, isError = false) => {
+      if (!(status instanceof HTMLElement)) {
+        return;
+      }
+      status.textContent = message;
+      status.classList.toggle("text-error", isError);
+      status.classList.toggle("text-base-content/60", !isError);
+    };
+    const setBusy = (busy) => {
+      const items = collectionItems(list);
+      isSaving = busy;
+      dialog.setAttribute("aria-busy", String(busy));
+      saveButton.disabled = busy || items.length < 2;
+      saveButton.textContent = busy ? "Saving\u2026" : "Save order";
+      items.forEach((item) => {
+        item.toggleAttribute("aria-disabled", busy);
+        item.querySelectorAll("input, button").forEach((control) => {
+          control.disabled = busy;
+        });
+      });
+      if (search instanceof HTMLInputElement) search.disabled = busy;
+      filterItems();
+    };
+    const restoreInitialOrder = () => {
+      const items = collectionItems(list);
+      const currentOrder = items.map((item) => item.dataset.collectionId);
+      const orderChanged = initialOrder.some((id, index) => currentOrder[index] !== id);
+      if (!orderChanged) {
+        return;
+      }
+      const itemsById = new Map(items.map((item) => [item.dataset.collectionId, item]));
+      initialOrder.forEach((id) => {
+        const item = itemsById.get(id);
+        if (item) {
+          list.append(item);
+        }
+      });
+      updatePositions(list);
+    };
+    const moveItem = (item, position) => {
+      if (isSaving) return;
+      const items = collectionItems(list);
+      const oldPosition = items.indexOf(item) + 1;
+      const target = items[position - 1];
+      if (!target) return;
+      if (position !== oldPosition) {
+        list.insertBefore(item, position > oldPosition ? target.nextElementSibling : target);
+      }
+      updatePositions(list);
+      setStatus(`${item.dataset.collectionName} moved to position ${position} of ${items.length}.`);
+    };
+    const moveToDestination = (item) => {
+      const destination = item.querySelector("[data-sort-collection-destination]");
+      if (!(destination instanceof HTMLInputElement) || !destination.reportValidity()) return;
+      moveItem(item, destination.valueAsNumber);
+    };
+    search?.addEventListener("input", () => {
+      filterItems();
+      if (scrollArea instanceof HTMLElement) scrollArea.scrollTop = 0;
+    });
+    clearSearch?.addEventListener("click", () => {
+      if (!(search instanceof HTMLInputElement)) return;
+      search.value = "";
+      filterItems();
+      if (scrollArea instanceof HTMLElement) scrollArea.scrollTop = 0;
+      search.focus();
+    });
+    list.addEventListener("click", (event) => {
+      const button = event.target instanceof Element ? event.target.closest("[data-sort-collection-move]") : null;
+      const item = button?.closest("[data-sort-collection]");
+      if (item instanceof HTMLLIElement) moveToDestination(item);
+    });
+    const updateCsrf = (result) => {
+      if (typeof result.csrf === "string" && result.csrf !== "") {
+        csrfToken = result.csrf;
+        dialog.dataset.csrfToken = result.csrf;
+      }
+    };
+    const readResponse = async (response) => {
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+      }
+      updateCsrf(result);
+      return result;
+    };
+    document.querySelectorAll("[data-sort-collections]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        document.getElementById("admin-collections-popover")?.hidePopover?.();
+        if (scrollArea instanceof HTMLElement) scrollArea.scrollTop = 0;
+        if (!dialog.open) {
+          dialog.showModal();
+        }
+      });
+    });
+    list.addEventListener("dragstart", (event) => {
+      const item = event.target instanceof Element ? event.target.closest("[data-sort-collection]") : null;
+      if (!(item instanceof HTMLLIElement) || isSaving || searchQuery() || event.target instanceof Element && event.target.closest("input, button")) {
+        event.preventDefault();
+        return;
+      }
+      draggedItem = item;
+      item.setAttribute("aria-grabbed", "true");
+      item.classList.add("opacity-40");
+      if (event.dataTransfer) {
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", item.dataset.collectionId ?? "");
+      }
+    });
+    list.addEventListener("dragover", (event) => {
+      if (!(draggedItem instanceof HTMLLIElement)) {
+        return;
+      }
+      event.preventDefault();
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = "move";
+      }
+      const target = event.target instanceof Element ? event.target.closest("[data-sort-collection]") : null;
+      if (!(target instanceof HTMLLIElement) || target === draggedItem) {
+        return;
+      }
+      const bounds = target.getBoundingClientRect();
+      const insertAfter = event.clientY > bounds.top + bounds.height / 2;
+      list.insertBefore(draggedItem, insertAfter ? target.nextElementSibling : target);
+      updatePositions(list);
+    });
+    list.addEventListener("drop", (event) => {
+      event.preventDefault();
+      updatePositions(list);
+    });
+    list.addEventListener("dragend", () => {
+      if (draggedItem instanceof HTMLLIElement) {
+        draggedItem.removeAttribute("aria-grabbed");
+        draggedItem.classList.remove("opacity-40");
+      }
+      draggedItem = null;
+      updatePositions(list);
+    });
+    list.addEventListener("keydown", (event) => {
+      const item = event.target instanceof Element ? event.target.closest("[data-sort-collection]") : null;
+      if (!(item instanceof HTMLLIElement) || isSaving) {
+        return;
+      }
+      if (event.target instanceof HTMLInputElement) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          moveToDestination(item);
+        }
+        return;
+      }
+      if (event.target !== item || searchQuery() || !["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const items = collectionItems(list);
+      const position = items.indexOf(item) + 1;
+      const nextPosition = {
+        ArrowUp: Math.max(1, position - 1),
+        ArrowDown: Math.min(items.length, position + 1),
+        Home: 1,
+        End: items.length
+      }[event.key];
+      moveItem(item, nextPosition);
+      item.focus();
+      item.scrollIntoView({ block: "nearest" });
+    });
+    saveButton.addEventListener("click", async () => {
+      if (isSaving) return;
+      const collectionIds = collectionItems(list).map((item) => item.dataset.collectionId);
+      setStatus("Saving collection order\u2026");
+      setBusy(true);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+            [csrfHeader]: csrfToken
+          },
+          body: JSON.stringify({ collection_ids: collectionIds })
+        });
+        const result = await readResponse(response);
+        if (!response.ok) {
+          throw new Error(result.error || "Unable to save the collection order.");
+        }
+        dialog.hidden = true;
+        dialog.close();
+        window.location.reload();
+      } catch (error) {
+        setStatus(error.message || "Unable to save the collection order.", true);
+        setBusy(false);
+      }
+    });
+    dialog.addEventListener("close", () => {
+      restoreInitialOrder();
+      if (search instanceof HTMLInputElement) search.value = "";
+      setStatus("");
+      setBusy(false);
+    });
+    updatePositions(list);
+    filterItems();
+  }
+
+  // theme/js/app.js
+  initDateTime();
+  initHashing();
+  initLinkSearch();
+  initPasswordGenerator();
+  initWorkTime();
+  initEditCollection();
+  initEditLink();
+  initEditMode();
+  initEditUser();
+  initSortCollections();
+})();
