@@ -44,6 +44,7 @@ final class MultiUserHubTest extends CIUnitTestCase
         $root->assertStatus(200);
         $root->assertSee('Civic Public');
         $root->assertDontSee('Tom Public');
+        $this->assertStringNotContainsString('js/tiptap-dist.js', (string) $root->getBody());
         $this->assertStringContainsString(
             'data-learn-mode-toggle',
             (string) $root->getBody(),
@@ -84,6 +85,7 @@ final class MultiUserHubTest extends CIUnitTestCase
         $this->assertStringContainsString('data-edit-mode-toggle', $body);
         $this->assertStringContainsString('data-edit-link-documentation', $body);
         $this->assertStringContainsString('data-editor-toolbar', $body);
+        $this->assertStringContainsString('js/tiptap-dist.js', $body);
         $this->assertStringNotContainsString('popovertarget="users-popover"', $body);
         $this->assertSame(site_url('@tom'), config('Auth')->loginRedirect());
     }

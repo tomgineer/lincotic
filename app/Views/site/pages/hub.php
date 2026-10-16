@@ -4,6 +4,12 @@
     <?= $this->include('site/partials/navbar/navbar') ?>
 <?= $this->endSection() ?>
 
+<?php if ($canEditContent): ?>
+    <?= $this->section('vendorScripts') ?>
+        <script src="<?= base_url('js/tiptap-dist.js') ?>?v=<?= APP_VERSION ?>" defer></script>
+    <?= $this->endSection() ?>
+<?php endif ?>
+
 <?= $this->section('content') ?>
 <main class="mx-auto max-w-7xl px-6 pt-4 lg:pt-8 pb-16">
     <?= $this->include('site/partials/stats') ?>

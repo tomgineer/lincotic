@@ -19,6 +19,7 @@
         <?= $this->renderSection('content') ?>
     </div>
 
+    <?= $this->renderSection('vendorScripts') ?>
     <script src="<?= base_url('js/app-dist.js') ?>?v=<?= APP_VERSION ?>" defer></script>
     <?= $this->renderSection('scripts') ?>
 </body>

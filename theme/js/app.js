@@ -9,6 +9,7 @@ import { initEditLink } from './edit/edit-link.js';
 import { initEditMode } from './edit/edit-mode.js';
 import { initEditUser } from './edit/edit-user.js';
 import { initSortCollections } from './edit/sort-collections.js';
+import { initDocumentationEditors } from './tiptap/documentation-editor.js';
 
 initDateTime();
 initHashing();
@@ -21,3 +22,4 @@ initEditMode();
 initLearnMode();
 initEditUser();
 initSortCollections();
+initDocumentationEditors();

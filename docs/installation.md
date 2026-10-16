@@ -159,7 +159,7 @@ If `/` returns a not-found page after installation, verify that:
 
 ## 6. Frontend assets
 
-Compiled CSS and JavaScript are committed in `public/css/app-dist.css` and `public/js/app-dist.js`. A normal installation therefore does not require Node.js.
+Compiled CSS and JavaScript are committed in `public/css/app-dist.css`, `public/js/app-dist.js`, and `public/js/tiptap-dist.js`. A normal installation therefore does not require Node.js.
 
 If you modify files under `theme/`, install the exact frontend dependencies and rebuild the assets:
 
@@ -339,7 +339,7 @@ If TLS is terminated by a proxy or load balancer, configure the proxy as trusted
 
 ### Styles or scripts do not load
 
-- Confirm that `public/css/app-dist.css` and `public/js/app-dist.js` exist.
+- Confirm that `public/css/app-dist.css`, `public/js/app-dist.js`, and `public/js/tiptap-dist.js` exist.
 - Confirm that the web server points to `public/` and that `app.baseURL` is correct.
 - If you changed frontend source files, run `npm ci` followed by `npm run build`.
 
