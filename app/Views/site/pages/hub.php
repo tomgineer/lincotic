@@ -40,6 +40,8 @@
 
 </main>
 
+<?= $this->include('site/partials/learn') ?>
+
 <?php if ($canEditContent): ?>
     <?= view('site/modals/edit_link', ['collectionOptions' => $collectionOptions]) ?>
     <?= view('site/modals/edit_collection') ?>
