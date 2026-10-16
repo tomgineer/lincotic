@@ -1,4 +1,5 @@
 const editorSelector = '[data-documentation-editor]';
+const replaceEditorContentEvent = 'lincotic:editor:set-content';
 
 const toggleCommands = {
     bold: (editor) => editor.chain().focus().toggleBold().run(),
@@ -112,6 +113,14 @@ function initEditor(root, tiptap) {
     });
 
     let editor = createEditor();
+
+    valueControl.addEventListener(replaceEditorContentEvent, () => {
+        editor?.commands.setContent(valueControl.value, { emitUpdate: false });
+
+        if (editor) {
+            syncControls(root, editor);
+        }
+    });
 
     surface.hidden = false;
     valueControl.hidden = true;

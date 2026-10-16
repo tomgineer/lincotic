@@ -1,5 +1,7 @@
 <?php
 
+use App\Services\Editing\EditStatus;
+use App\Services\Editing\LinkEditor;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\FeatureTestTrait;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -111,6 +113,30 @@ final class MultiUserHubTest extends CIUnitTestCase
         $response->assertStatus(200);
         $payload = json_decode((string) $response->getJSON(), true, flags: JSON_THROW_ON_ERROR);
         $this->assertSame('Tom Public', $payload['link']['title']);
+        $this->assertSame('<h2>Tom documentation</h2><p>Useful notes.</p>', $payload['link']['documentation']);
+    }
+
+    public function testLinkEditorSanitizesAndPersistsDocumentationWithTimestamps(): void
+    {
+        $result = (new LinkEditor())->update(2, [
+            'title'             => 'Tom Public',
+            'url'               => 'https://tom.example',
+            'collection_id'     => '2',
+            'description'       => '',
+            'importance'        => '',
+            'is_favorite'       => false,
+            'is_pending_review' => false,
+            'is_hidden'         => false,
+            'documentation'     => '<h2 onclick="alert(1)">Updated</h2><script>alert(1)</script><p><strong>Safe</strong></p>',
+        ], 2);
+
+        $this->assertSame(EditStatus::UPDATED, $result['status']);
+
+        $content = $this->db->table('link_content')->where('link_id', 2)->get()->getRowArray();
+
+        $this->assertIsArray($content);
+        $this->assertSame('<h2>Updated</h2><p><strong>Safe</strong></p>', $content['content']);
+        $this->assertNotEmpty($content['updated_at']);
     }
 
     public function testInactiveUserWithAnExistingSessionCannotEdit(): void
@@ -176,7 +202,7 @@ final class MultiUserHubTest extends CIUnitTestCase
     {
         $forge = Database::forge($this->db);
 
-        foreach (['links', 'collections', 'auth_groups_users', 'auth_remember_tokens', 'users', 'settings'] as $table) {
+        foreach (['link_content', 'links', 'collections', 'auth_groups_users', 'auth_remember_tokens', 'users', 'settings'] as $table) {
             $forge->dropTable($table, true);
         }
 
@@ -261,6 +287,16 @@ final class MultiUserHubTest extends CIUnitTestCase
         ]);
         $forge->addKey('id', true);
         $forge->createTable('links');
+
+        $forge->addField([
+            'link_id'    => ['type' => 'INTEGER'],
+            'content'    => ['type' => 'TEXT'],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $forge->addKey('link_id', true);
+        $forge->addForeignKey('link_id', 'links', 'id', 'CASCADE', 'CASCADE');
+        $forge->createTable('link_content');
     }
 
     private function seedData(): void
@@ -287,6 +323,10 @@ final class MultiUserHubTest extends CIUnitTestCase
             ['id' => 4, 'user_id' => 2, 'collection_id' => 3, 'title' => 'Tom Hidden Collection Link', 'url' => 'https://hidden.example', 'is_hidden' => 0],
             ['id' => 5, 'user_id' => 2, 'collection_id' => null, 'title' => 'Tom Inbox Match', 'url' => 'https://inbox.example', 'is_hidden' => 0],
             ['id' => 6, 'user_id' => 3, 'collection_id' => 4, 'title' => 'Blocked Public', 'url' => 'https://blocked.example', 'is_hidden' => 0],
+        ]);
+        $this->db->table('link_content')->insert([
+            'link_id' => 2,
+            'content' => '<h2>Tom documentation</h2><p>Useful notes.</p>',
         ]);
     }
 }

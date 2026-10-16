@@ -2,8 +2,12 @@
 
 namespace App\Services\Editing;
 
+use App\Libraries\LinkContentSanitizer;
 use App\Models\CollectionModel;
+use App\Models\LinkContentModel;
 use App\Models\LinkModel;
+use InvalidArgumentException;
+use Throwable;
 
 final class LinkEditor
 {
@@ -45,6 +49,8 @@ final class LinkEditor
     public function __construct(
         private readonly LinkModel $links = new LinkModel(),
         private readonly CollectionModel $collections = new CollectionModel(),
+        private readonly LinkContentModel $linkContents = new LinkContentModel(),
+        private readonly LinkContentSanitizer $contentSanitizer = new LinkContentSanitizer(),
     ) {
     }
 
@@ -55,7 +61,16 @@ final class LinkEditor
     {
         $link = $this->findOwnedLink($id, $userId);
 
-        return is_array($link) ? $this->present($link) : null;
+        if (! is_array($link)) {
+            return null;
+        }
+
+        $content = $this->linkContents->find($id);
+
+        return $this->present(
+            $link,
+            is_array($content) ? (string) ($content['content'] ?? '') : '',
+        );
     }
 
     /**
@@ -74,6 +89,14 @@ final class LinkEditor
         $collection = $prepared['collection'];
         $data       = $prepared['data'];
 
+        $documentation = $this->prepareDocumentation($input);
+
+        if ($documentation['error'] !== null) {
+            return $this->result(EditStatus::INVALID, errors: [
+                'documentation' => $documentation['error'],
+            ]);
+        }
+
         if ($userId < 1) {
             return $this->result(EditStatus::INVALID);
         }
@@ -87,8 +110,38 @@ final class LinkEditor
 
         $data['user_id'] = $userId;
 
-        if ($this->links->insert($data) === false) {
-            return $this->result(EditStatus::INVALID, errors: $this->links->errors());
+        $database = db_connect();
+        $database->transBegin();
+
+        try {
+            $linkId = $this->links->insert($data);
+
+            if ($linkId === false) {
+                $database->transRollback();
+
+                return $this->result(EditStatus::INVALID, errors: $this->links->errors());
+            }
+
+            if ($documentation['content'] !== null
+                && $this->linkContents->insert([
+                    'link_id' => (int) $linkId,
+                    'content' => $documentation['content'],
+                ]) === false) {
+                $database->transRollback();
+
+                return $this->result(EditStatus::INVALID, errors: $this->linkContents->errors());
+            }
+
+            if (! $database->transStatus()) {
+                $database->transRollback();
+
+                return $this->result(EditStatus::INVALID);
+            }
+
+            $database->transCommit();
+        } catch (Throwable $exception) {
+            $database->transRollback();
+            throw $exception;
         }
 
         return $this->result(EditStatus::CREATED);
@@ -118,8 +171,41 @@ final class LinkEditor
             ]);
         }
 
-        if (! $this->links->update($id, $prepared['data'])) {
-            return $this->result(EditStatus::INVALID, errors: $this->links->errors());
+        $documentation = $this->prepareDocumentation($input);
+
+        if ($documentation['error'] !== null) {
+            return $this->result(EditStatus::INVALID, errors: [
+                'documentation' => $documentation['error'],
+            ]);
+        }
+
+        $database = db_connect();
+        $database->transBegin();
+
+        try {
+            if (! $this->links->update($id, $prepared['data'])) {
+                $database->transRollback();
+
+                return $this->result(EditStatus::INVALID, errors: $this->links->errors());
+            }
+
+            if ($documentation['provided']
+                && ! $this->syncDocumentation($id, $documentation['content'])) {
+                $database->transRollback();
+
+                return $this->result(EditStatus::INVALID, errors: $this->linkContents->errors());
+            }
+
+            if (! $database->transStatus()) {
+                $database->transRollback();
+
+                return $this->result(EditStatus::INVALID);
+            }
+
+            $database->transCommit();
+        } catch (Throwable $exception) {
+            $database->transRollback();
+            throw $exception;
         }
 
         return $this->result(EditStatus::UPDATED);
@@ -233,7 +319,7 @@ final class LinkEditor
         ];
     }
 
-    private function present(array $link): array
+    private function present(array $link, string $documentation): array
     {
         return [
             'id'                => (int) $link['id'],
@@ -241,6 +327,7 @@ final class LinkEditor
             'title'             => (string) $link['title'],
             'url'               => (string) $link['url'],
             'description'       => (string) ($link['description'] ?? ''),
+            'documentation'     => $documentation,
             'importance'        => (string) ($link['importance'] ?? ''),
             'is_favorite'       => (bool) $link['is_favorite'],
             'is_pending_review' => (bool) $link['is_pending_review'],
@@ -265,6 +352,62 @@ final class LinkEditor
     private function booleanValue(mixed $value): int
     {
         return in_array($value, [true, 1, '1', 'true', 'on'], true) ? 1 : 0;
+    }
+
+    /**
+     * @return array{provided: bool, content: string|null, error: string|null}
+     */
+    private function prepareDocumentation(array $input): array
+    {
+        if (! array_key_exists('documentation', $input)) {
+            return [
+                'provided' => false,
+                'content'  => null,
+                'error'    => null,
+            ];
+        }
+
+        if (! is_string($input['documentation']) && $input['documentation'] !== null) {
+            return [
+                'provided' => true,
+                'content'  => null,
+                'error'    => 'Enter valid documentation content.',
+            ];
+        }
+
+        try {
+            $content = $this->contentSanitizer->sanitize($input['documentation']);
+        } catch (InvalidArgumentException $exception) {
+            return [
+                'provided' => true,
+                'content'  => null,
+                'error'    => $exception->getMessage(),
+            ];
+        }
+
+        return [
+            'provided' => true,
+            'content'  => $content,
+            'error'    => null,
+        ];
+    }
+
+    private function syncDocumentation(int $linkId, ?string $content): bool
+    {
+        $stored = $this->linkContents->find($linkId);
+
+        if ($content === null) {
+            return ! is_array($stored) || $this->linkContents->delete($linkId);
+        }
+
+        if (is_array($stored)) {
+            return $this->linkContents->update($linkId, ['content' => $content]);
+        }
+
+        return $this->linkContents->insert([
+            'link_id' => $linkId,
+            'content' => $content,
+        ]) !== false;
     }
 
     /**

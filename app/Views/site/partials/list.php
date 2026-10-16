@@ -87,9 +87,11 @@
 
                 <div class="flex flex-col gap-1 items-center justify-between p-1">
 
-                    <span class="badge badge-sm font-mono text-base-content/65">
-                        <?= esc((string) ($link['click_count'] ?? 0)) ?>
-                    </span>
+                    <?php if ((int) ($link['click_count'] ?? 0) > 0): ?>
+                        <span class="badge badge-sm font-mono text-base-content/65">
+                            <?= esc((string) $link['click_count']) ?>
+                        </span>
+                    <?php endif ?>
 
                     <?php if ((int) ($link['is_favorite'] ?? 0) === 1): ?>
                         <span class="text-red-400" title="Favorite">

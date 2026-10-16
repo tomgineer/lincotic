@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\CollectionModel;
+use App\Models\LinkContentModel;
 use App\Models\LinkModel;
 use App\Services\Editing\CollectionEditor;
 use App\Services\Editing\EditStatus;
@@ -69,8 +70,17 @@ final class EditingServicesTest extends CIUnitTestCase
             'is_hidden'         => '1',
             'click_count'       => '99',
         ]);
+        $linkContents = $this->createMock(LinkContentModel::class);
+        $linkContents->method('find')->with(12)->willReturn([
+            'link_id' => '12',
+            'content' => '<h2>Reference</h2><p>Useful notes.</p>',
+        ]);
 
-        $service = new LinkEditor($links, $this->createMock(CollectionModel::class));
+        $service = new LinkEditor(
+            $links,
+            $this->createMock(CollectionModel::class),
+            $linkContents,
+        );
 
         $this->assertSame([
             'id'                => 12,
@@ -78,6 +88,7 @@ final class EditingServicesTest extends CIUnitTestCase
             'title'             => 'Example',
             'url'               => 'https://example.com',
             'description'       => '',
+            'documentation'     => '<h2>Reference</h2><p>Useful notes.</p>',
             'importance'        => '',
             'is_favorite'       => true,
             'is_pending_review' => false,
@@ -420,6 +431,38 @@ final class EditingServicesTest extends CIUnitTestCase
         $this->assertSame([], $result['errors']);
     }
 
+    public function testCreateSanitizesAndPersistsDocumentation(): void
+    {
+        $links = $this->createMock(LinkModel::class);
+        $links->expects($this->once())->method('insert')->willReturn(27);
+
+        $collections = $this->createMock(CollectionModel::class);
+        $collections->method('find')->with(8)->willReturn([
+            'id'      => 8,
+            'user_id' => 4,
+        ]);
+
+        $linkContents = $this->createMock(LinkContentModel::class);
+        $linkContents
+            ->expects($this->once())
+            ->method('insert')
+            ->with([
+                'link_id' => 27,
+                'content' => '<h2>Guide</h2><p><strong>Safe</strong></p>',
+            ])
+            ->willReturn(true);
+
+        $result = (new LinkEditor($links, $collections, $linkContents))->create([
+            'title'         => 'Documented link',
+            'url'           => 'https://example.com/docs',
+            'collection_id' => '8',
+            'documentation' => '<h2 onclick="alert(1)">Guide</h2><script>alert(1)</script><p><strong>Safe</strong></p>',
+        ], 4);
+
+        $this->assertSame(EditStatus::CREATED, $result['status']);
+        $this->assertSame([], $result['errors']);
+    }
+
     public function testCreateRejectsACollectionOwnedByAnotherUser(): void
     {
         $links = $this->createMock(LinkModel::class);
@@ -557,6 +600,36 @@ final class EditingServicesTest extends CIUnitTestCase
 
         $this->assertSame(EditStatus::UPDATED, $result['status']);
         $this->assertNull($result['link']);
+        $this->assertSame([], $result['errors']);
+    }
+
+    public function testUpdateDeletesDocumentationWhenTheEditorIsEmpty(): void
+    {
+        $links = $this->createMock(LinkModel::class);
+        $links->method('find')->with(3)->willReturn($this->storedLink());
+        $links->expects($this->once())->method('update')->willReturn(true);
+
+        $collections = $this->createMock(CollectionModel::class);
+        $collections->method('find')->with(8)->willReturn([
+            'id'      => 8,
+            'user_id' => 4,
+        ]);
+
+        $linkContents = $this->createMock(LinkContentModel::class);
+        $linkContents->expects($this->once())->method('find')->with(3)->willReturn([
+            'link_id' => 3,
+            'content' => '<p>Old documentation</p>',
+        ]);
+        $linkContents->expects($this->once())->method('delete')->with(3)->willReturn(true);
+
+        $result = (new LinkEditor($links, $collections, $linkContents))->update(3, [
+            'title'         => 'Existing title',
+            'url'           => 'https://example.com',
+            'collection_id' => '8',
+            'documentation' => '<p><br></p>',
+        ], 4);
+
+        $this->assertSame(EditStatus::UPDATED, $result['status']);
         $this->assertSame([], $result['errors']);
     }
 

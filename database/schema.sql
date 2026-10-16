@@ -163,6 +163,19 @@ CREATE TABLE `links` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `link_content`
+--
+
+CREATE TABLE `link_content` (
+  `link_id` int(10) UNSIGNED NOT NULL,
+  `content` mediumtext NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `migrations`
 --
 
@@ -279,6 +292,12 @@ ALTER TABLE `links`
   ADD KEY `idx_user_favorite` (`user_id`,`is_favorite`),
   ADD KEY `idx_user_clicks` (`user_id`,`click_count`),
   ADD KEY `idx_user_last_clicked` (`user_id`,`last_clicked_at`);
+
+--
+-- Indexes for table `link_content`
+--
+ALTER TABLE `link_content`
+  ADD PRIMARY KEY (`link_id`);
 
 --
 -- Indexes for table `migrations`
@@ -409,6 +428,12 @@ ALTER TABLE `collections`
 ALTER TABLE `links`
   ADD CONSTRAINT `fk_links_collection` FOREIGN KEY (`collection_id`) REFERENCES `collections` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_links_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `link_content`
+--
+ALTER TABLE `link_content`
+  ADD CONSTRAINT `fk_link_content_link` FOREIGN KEY (`link_id`) REFERENCES `links` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

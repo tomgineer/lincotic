@@ -2,6 +2,7 @@ import { editLinkRequestEvent } from './edit-mode.js';
 import { confirmDialog } from '../lib/confirmation.js';
 
 const editableControlSelector = '[data-edit-link-control], [data-editor-control]';
+const replaceEditorContentEvent = 'lincotic:editor:set-content';
 
 function formControl(form, name) {
     return form.elements.namedItem(name);
@@ -172,9 +173,16 @@ export function initEditLink() {
         setControlValue(form, 'collection_id', String(link.collection_id ?? ''));
         setControlValue(form, 'importance', link.importance ?? '');
         setControlValue(form, 'description', link.description ?? '');
+        setControlValue(form, 'documentation', link.documentation ?? '');
         setCheckboxValue(form, 'is_favorite', Boolean(link.is_favorite));
         setCheckboxValue(form, 'is_pending_review', Boolean(link.is_pending_review));
         setCheckboxValue(form, 'is_hidden', Boolean(link.is_hidden));
+
+        const documentationControl = formControl(form, 'documentation');
+
+        if (documentationControl instanceof HTMLTextAreaElement) {
+            documentationControl.dispatchEvent(new Event(replaceEditorContentEvent));
+        }
     };
 
     const openEditor = async (link) => {
@@ -416,6 +424,7 @@ export function initEditLink() {
             collection_id: data.get('collection_id'),
             importance: data.get('importance'),
             description: data.get('description'),
+            documentation: data.get('documentation'),
             is_favorite: data.get('is_favorite') === '1',
             is_pending_review: data.get('is_pending_review') === '1',
             is_hidden: data.get('is_hidden') === '1',
