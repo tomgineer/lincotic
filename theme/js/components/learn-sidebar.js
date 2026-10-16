@@ -121,6 +121,15 @@ export function initLearnSidebar() {
         }
     });
 
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || event.defaultPrevented || !isOpen()) {
+            return;
+        }
+
+        event.preventDefault();
+        sidebar.hidePopover();
+    });
+
     document.addEventListener(openLearnSidebarEvent, async (event) => {
         const linkId = event.detail?.linkId;
         const trigger = event.detail?.trigger;
