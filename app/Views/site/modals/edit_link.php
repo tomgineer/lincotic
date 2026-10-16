@@ -184,31 +184,11 @@
             <div role="tabpanel" class="tab-content h-[calc(100%-3rem)]">
                 <div class="h-full overflow-hidden px-6 py-6 sm:px-8">
                     <section class="flex h-full min-h-0 flex-col" aria-labelledby="edit-link-documentation-title">
-                        <div class="mb-3 flex shrink-0 items-start justify-between gap-6">
-                            <div>
-                                <h3 id="edit-link-documentation-title" class="font-heading text-base font-semibold">Documentation</h3>
-                                <p class="text-sm text-base-content/55">
-                                    Add long-form notes, instructions, or reference material for this link.
-                                </p>
-                            </div>
-
-                            <div class="flex shrink-0 items-center gap-2">
-                                <button
-                                    type="button"
-                                    class="btn btn-sm btn-ghost"
-                                    title="Fetch Description">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" /><path d="M7 11l5 5l5 -5" /><path d="M12 4l0 12" /></svg>
-                                    Fetch Description
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="btn btn-sm btn-ghost text-acid"
-                                    title="Generate with AI">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5"> <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" /> </svg>
-                                    Generate with AI
-                                </button>
-                            </div>
+                        <div class="mb-3 shrink-0">
+                            <h3 id="edit-link-documentation-title" class="font-heading text-base font-semibold">Documentation</h3>
+                            <p class="text-sm text-base-content/55">
+                                Add long-form notes, instructions, or reference material for this link.
+                            </p>
                         </div>
 
                         <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-box border border-base-content/15 bg-base-100" data-documentation-editor>
