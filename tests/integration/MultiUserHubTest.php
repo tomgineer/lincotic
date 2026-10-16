@@ -116,6 +116,40 @@ final class MultiUserHubTest extends CIUnitTestCase
         $this->assertSame('<h2>Tom documentation</h2><p>Useful notes.</p>', $payload['link']['documentation']);
     }
 
+    public function testLearnModeLoadsPublicLinkWithDocumentation(): void
+    {
+        $response = $this
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get('/learn/links/2');
+
+        $response->assertStatus(200);
+        $payload = json_decode((string) $response->getJSON(), true, flags: JSON_THROW_ON_ERROR);
+
+        $this->assertSame('Tom Public', $payload['link']['title']);
+        $this->assertSame('Tom', $payload['link']['collection_name']);
+        $this->assertSame(site_url('go/2'), $payload['link']['follow_url']);
+        $this->assertSame('<h2>Tom documentation</h2><p>Useful notes.</p>', $payload['link']['documentation']);
+    }
+
+    public function testLearnModeUsesTheSameHiddenLinkVisibilityAsRedirects(): void
+    {
+        $guest = $this
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get('/learn/links/3');
+
+        $guest->assertStatus(404);
+
+        Services::resetSingle('auth');
+        $owner = $this
+            ->withSession(['user' => ['id' => 2]])
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get('/learn/links/3');
+
+        $owner->assertStatus(200);
+        $payload = json_decode((string) $owner->getJSON(), true, flags: JSON_THROW_ON_ERROR);
+        $this->assertSame('Tom Secret', $payload['link']['title']);
+    }
+
     public function testLinkEditorSanitizesAndPersistsDocumentationWithTimestamps(): void
     {
         $result = (new LinkEditor())->update(2, [

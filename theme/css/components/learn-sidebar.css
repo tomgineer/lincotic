@@ -1,0 +1,31 @@
+/* ===========================================================================
+   Learn sidebar
+   ========================================================================== */
+
+.learn-sidebar {
+    opacity: 0;
+    transform: translateX(2rem);
+    transition:
+        opacity 180ms ease-out,
+        transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+        display 220ms allow-discrete,
+        overlay 220ms allow-discrete;
+
+    &:popover-open {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@starting-style {
+    .learn-sidebar:popover-open {
+        opacity: 0;
+        transform: translateX(2rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .learn-sidebar {
+        transition: none;
+    }
+}

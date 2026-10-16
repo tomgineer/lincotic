@@ -1,5 +1,7 @@
 const learnableLinkSelector = '.link-card';
 const learnModeStorageKey = 'lincotic.learnMode';
+const openLearnSidebarEvent = 'lincotic:learn:open';
+const closeLearnSidebarEvent = 'lincotic:learn:close';
 
 function restoreLearnMode() {
     try {
@@ -61,6 +63,10 @@ export function initLearnMode() {
 
         persistLearnMode(toggle.checked);
         syncLearnableLinks();
+
+        if (!toggle.checked) {
+            document.dispatchEvent(new Event(closeLearnSidebarEvent));
+        }
     });
 
     document.addEventListener('click', (event) => {
@@ -75,6 +81,19 @@ export function initLearnMode() {
         }
 
         event.preventDefault();
+
+        const linkId = link.dataset.linkId;
+
+        if (!/^[1-9]\d*$/.test(linkId ?? '')) {
+            return;
+        }
+
+        document.dispatchEvent(new CustomEvent(openLearnSidebarEvent, {
+            detail: {
+                linkId,
+                trigger: link,
+            },
+        }));
     });
 
     if (toggle.checked) {

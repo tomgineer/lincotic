@@ -71,9 +71,7 @@
             <a
                 class="link-card <?= esc($importanceClass, 'attr') ?>"
                 href="<?= site_url('go/' . $link['id']) ?>"
-                <?php if ($canEditLinks): ?>
-                    data-link-id="<?= esc((string) $link['id'], 'attr') ?>"
-                <?php endif ?>>
+                data-link-id="<?= esc((string) $link['id'], 'attr') ?>">
 
                 <div class="flex flex-col items-center justify-center p-4 text-center">
                     <span class="font-semibold leading-snug">
