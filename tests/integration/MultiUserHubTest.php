@@ -82,6 +82,8 @@ final class MultiUserHubTest extends CIUnitTestCase
         $response->assertSee('Tom Hidden Collection Link');
         $body = (string) $response->getBody();
         $this->assertStringContainsString('data-edit-mode-toggle', $body);
+        $this->assertStringContainsString('data-edit-link-documentation', $body);
+        $this->assertStringContainsString('data-editor-toolbar', $body);
         $this->assertStringNotContainsString('popovertarget="users-popover"', $body);
         $this->assertSame(site_url('@tom'), config('Auth')->loginRedirect());
     }

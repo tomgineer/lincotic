@@ -8,7 +8,7 @@
     data-endpoint-template="<?= esc(site_url('edit/links/__LINK_ID__'), 'attr') ?>"
     data-csrf-header="<?= esc(config('Security')->headerName, 'attr') ?>"
     data-csrf-token="<?= esc(csrf_hash(), 'attr') ?>">
-    <form class="modal-box relative sm:-top-[5vh] w-[calc(100%-2rem)] max-w-3xl overflow-hidden p-0" data-edit-link-form>
+    <form class="modal-box relative sm:-top-[5vh] w-[calc(100%-2rem)] max-w-4xl overflow-hidden p-0" data-edit-link-form>
         <input type="hidden" name="id">
 
         <header class="flex items-start justify-between gap-6 border-b border-base-content/10 px-6 py-5 sm:px-8">
@@ -35,8 +35,20 @@
             </button>
         </header>
 
-        <div class="max-h-[70vh] space-y-5 overflow-y-auto px-6 py-6 sm:px-8">
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div role="tablist" class="tabs tabs-border">
+            <input
+                type="radio"
+                name="edit_link_tab"
+                class="tab ml-6 font-heading sm:ml-8"
+                aria-label="Details"
+                checked
+                data-edit-link-control
+                data-edit-link-tab
+                data-edit-link-details-tab>
+
+            <div role="tabpanel" class="tab-content">
+                <div class="max-h-[70vh] space-y-5 overflow-y-auto px-6 py-6 sm:px-8">
+                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <fieldset class="fieldset sm:col-span-2">
                     <legend class="fieldset-legend font-heading">Title</legend>
                     <input
@@ -117,32 +129,82 @@
                         maxlength="65535"
                         data-edit-link-control></textarea>
                 </fieldset>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
+                            <span class="flex min-w-0 items-start gap-3">
+                                <span class="mt-0.5 text-red-400" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" /></svg>
+                                </span>
+                                <span>
+                                    <span class="block font-heading text-sm font-semibold">Favorite</span>
+                                    <span class="mt-0.5 block text-xs text-base-content/55">Keep this link easy to find.</span>
+                                </span>
+                            </span>
+                            <input type="checkbox" name="is_favorite" value="1" class="toggle toggle-primary shrink-0" data-edit-link-control>
+                        </label>
+
+                        <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
+                            <span class="flex min-w-0 items-start gap-3">
+                                <span class="mt-0.5 text-orange-400" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-5"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 9v4" /><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0" /><path d="M12 16h.01" /></svg>
+                                </span>
+                                <span>
+                                    <span class="block font-heading text-sm font-semibold">Pending review</span>
+                                    <span class="mt-0.5 block text-xs text-base-content/55">Mark it for a later check.</span>
+                                </span>
+                            </span>
+                            <input type="checkbox" name="is_pending_review" value="1" class="toggle toggle-primary shrink-0" data-edit-link-control>
+                        </label>
+
+                        <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-4">
+                            <span class="flex min-w-0 items-start gap-3">
+                                <span class="mt-0.5 text-blue-400" aria-hidden="true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                </span>
+                                <span>
+                                    <span class="block font-heading text-sm font-semibold">Hidden</span>
+                                    <span class="mt-0.5 block text-xs text-base-content/55">Show only to logged-in users.</span>
+                                </span>
+                            </span>
+                            <input type="checkbox" name="is_hidden" value="1" class="toggle toggle-primary shrink-0" data-edit-link-control>
+                        </label>
+                    </div>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-3">
-                    <span>
-                        <span class="block font-heading text-sm font-semibold">Favorite</span>
-                        <span class="mt-0.5 block text-xs text-base-content/55">Keep this link easy to find.</span>
-                    </span>
-                    <input type="checkbox" name="is_favorite" value="1" class="toggle toggle-primary" data-edit-link-control>
-                </label>
+            <input
+                type="radio"
+                name="edit_link_tab"
+                class="tab font-heading"
+                aria-label="Documentation"
+                data-edit-link-control
+                data-edit-link-tab>
 
-                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-3">
-                    <span>
-                        <span class="block font-heading text-sm font-semibold">Pending review</span>
-                        <span class="mt-0.5 block text-xs text-base-content/55">Mark it for a later check.</span>
-                    </span>
-                    <input type="checkbox" name="is_pending_review" value="1" class="toggle toggle-primary" data-edit-link-control>
-                </label>
+            <div role="tabpanel" class="tab-content">
+                <div class="max-h-[70vh] overflow-y-auto px-6 py-6 sm:px-8">
+                    <section aria-labelledby="edit-link-documentation-title">
+                        <div class="mb-3">
+                            <h3 id="edit-link-documentation-title" class="font-heading text-base font-semibold">Documentation</h3>
+                            <p class="text-sm text-base-content/55">
+                                Add long-form notes, instructions, or reference material for this link.
+                            </p>
+                        </div>
 
-                <label class="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-base-content/10 bg-base-100 px-4 py-3">
-                    <span>
-                        <span class="block font-heading text-sm font-semibold">Hidden</span>
-                        <span class="mt-0.5 block text-xs text-base-content/55">Show only to logged-in users.</span>
-                    </span>
-                    <input type="checkbox" name="is_hidden" value="1" class="toggle toggle-primary" data-edit-link-control>
-                </label>
+                        <div class="overflow-hidden rounded-box border border-base-content/15 bg-base-100">
+                            <?= $this->include('site/partials/editor') ?>
+
+                            <textarea
+                                name="documentation"
+                                class="textarea min-h-[48vh] w-full resize-none rounded-none border-0 bg-base-100 p-5 leading-7 focus:outline-none"
+                                placeholder="Start writing the documentation for this link…"
+                                spellcheck="true"
+                                data-edit-link-control
+                                data-edit-link-documentation></textarea>
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
 

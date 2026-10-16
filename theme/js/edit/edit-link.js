@@ -1,7 +1,7 @@
 import { editLinkRequestEvent } from './edit-mode.js';
 import { confirmDialog } from '../lib/confirmation.js';
 
-const editableControlSelector = '[data-edit-link-control]';
+const editableControlSelector = '[data-edit-link-control], [data-editor-control]';
 
 function formControl(form, name) {
     return form.elements.namedItem(name);
@@ -63,6 +63,8 @@ export function initEditLink() {
     const deleteButton = dialog.querySelector('[data-edit-link-delete]');
     const pasteUrlButton = dialog.querySelector('[data-edit-link-paste-url]');
     const openUrlButton = dialog.querySelector('[data-edit-link-open-url]');
+    const detailsTab = dialog.querySelector('[data-edit-link-details-tab]');
+    const tabList = dialog.querySelector('[role="tablist"]');
     const createEndpoint = dialog.dataset.createEndpoint;
     const endpointTemplate = dialog.dataset.endpointTemplate;
     const csrfHeader = dialog.dataset.csrfHeader;
@@ -70,6 +72,8 @@ export function initEditLink() {
     let loadController = null;
     let loadSequence = 0;
     let mode = 'edit';
+    let tabStartHeight = null;
+    let tabTransition = null;
 
     if (!(form instanceof HTMLFormElement)
         || !(modalTitle instanceof HTMLElement)
@@ -273,6 +277,66 @@ export function initEditLink() {
     });
 
     form.addEventListener('input', () => clearValidation(form));
+    form.addEventListener('invalid', () => {
+        if (detailsTab instanceof HTMLInputElement) {
+            detailsTab.checked = true;
+        }
+    }, true);
+
+    if (tabList instanceof HTMLElement) {
+        const rememberTabStartHeight = (event) => {
+            if (event.target instanceof Element
+                && event.target.closest('[data-edit-link-tab]')) {
+                tabStartHeight = form.getBoundingClientRect().height;
+            }
+        };
+
+        tabList.addEventListener('pointerdown', rememberTabStartHeight);
+        tabList.addEventListener('keydown', (event) => {
+            if (['ArrowLeft', 'ArrowRight', 'Home', 'End', ' '].includes(event.key)) {
+                rememberTabStartHeight(event);
+            }
+        });
+        tabList.addEventListener('change', (event) => {
+            if (!(event.target instanceof HTMLInputElement)
+                || !event.target.matches('[data-edit-link-tab]')) {
+                return;
+            }
+
+            const startHeight = tabStartHeight;
+            tabStartHeight = null;
+            tabTransition?.cancel();
+            tabTransition = null;
+
+            if (startHeight === null
+                || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+
+            const endHeight = form.getBoundingClientRect().height;
+
+            if (Math.abs(endHeight - startHeight) < 1) {
+                return;
+            }
+
+            const animation = form.animate(
+                [
+                    { height: `${startHeight}px` },
+                    { height: `${endHeight}px` },
+                ],
+                {
+                    duration: 160,
+                    easing: 'cubic-bezier(0.2, 0, 0, 1)',
+                },
+            );
+            tabTransition = animation;
+            animation.addEventListener('finish', () => {
+                if (tabTransition === animation) {
+                    tabTransition = null;
+                }
+            }, { once: true });
+        });
+    }
 
     if (pasteUrlButton instanceof HTMLButtonElement) {
         pasteUrlButton.addEventListener('click', async () => {
