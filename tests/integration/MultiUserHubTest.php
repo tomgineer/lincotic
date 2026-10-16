@@ -124,6 +124,20 @@ final class MultiUserHubTest extends CIUnitTestCase
         $response->assertSee('Tom Inbox Match');
     }
 
+    public function testCollectionStatRespectsViewerVisibility(): void
+    {
+        $guest = $this->get('/@tom');
+        $guest->assertStatus(200);
+        $this->assertStringContainsString('>1</span> collections', (string) $guest->getBody());
+
+        Services::resetSingle('auth');
+        $owner = $this
+            ->withSession(['user' => ['id' => 2]])
+            ->get('/@tom');
+        $owner->assertStatus(200);
+        $this->assertStringContainsString('>2</span> collections', (string) $owner->getBody());
+    }
+
     public function testSelectedCollectionMetadataIsRenderedInTheLayout(): void
     {
         $response = $this->get('/@tom?collection=2&sort=title');

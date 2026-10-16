@@ -6,7 +6,7 @@
 
 <?= $this->section('content') ?>
 <main class="mx-auto max-w-7xl px-6 pt-4 lg:pt-8 pb-16">
-    <?= $this->include('site/partials/slogan') ?>
+    <?= $this->include('site/partials/stats') ?>
 
     <?php if ($collections === []): ?>
         <div class="rounded-box border border-base-content/10 bg-base-200 px-6 py-12 text-center">

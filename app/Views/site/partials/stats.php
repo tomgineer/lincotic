@@ -16,10 +16,13 @@
 
     <ul class="flex flex-wrap gap-x-4 gap-y-1 tracking-[0.08em]">
         <li>
-            <span class="font-mono font-semibold text-acid"><?= number_format((int) ($totalLinkCount ?? 0)) ?></span> links collected
+            <span class="font-mono font-semibold text-acid"><?= number_format((int) ($totalLinkCount ?? 0)) ?></span> links
         </li>
         <li>
-            <span class="font-mono font-semibold text-acid"><?= number_format((int) ($totalClickCount ?? 0)) ?></span> times hammered
+            <span class="font-mono font-semibold text-acid"><?= number_format((int) ($totalCollectionCount ?? 0)) ?></span> collections
+        </li>
+        <li>
+            <span class="font-mono font-semibold text-acid"><?= number_format((int) ($totalClickCount ?? 0)) ?></span> clicks
         </li>
     </ul>
 </div>

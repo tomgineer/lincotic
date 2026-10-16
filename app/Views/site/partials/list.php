@@ -1,6 +1,7 @@
 <?php
     $canEditLinks = $canEditContent ?? false;
     $canManageCollection = $canEditLinks && ! ($collection['is_virtual'] ?? false);
+    $collectionDescription = trim((string) ($collection['description'] ?? ''));
 ?>
 
 <section class="mt-8">
@@ -45,8 +46,12 @@
                 </button>
             </div>
         <?php endif ?>
-
     </h2>
+    <?php if ($collectionDescription !== ''): ?>
+        <p class="-mt-2 pb-2 text-sm leading-6 text-base-content/55 text-pretty">
+            <?= esc($collectionDescription) ?>
+        </p>
+    <?php endif ?>
 
     <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
         <?php if ($collection['links'] === []): ?>

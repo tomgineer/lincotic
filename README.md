@@ -139,28 +139,11 @@ Lincotic combines [CodeIgniter 4](https://codeigniter.com/) and CodeIgniter Shie
 
 The application uses server-rendered pages, focused JavaScript enhancements, explicit validation, user-scoped data access, visibility-aware redirects, isolated public caches, and automated tests around core behavior.
 
-## Database Setup
+## Installation
 
-Lincotic uses MariaDB or MySQL.
+The [complete installation guide](docs/installation.md) covers requirements, database creation, environment configuration, the first administrator account, local development, Apache and Nginx deployment, permissions, verification, updates, and troubleshooting.
 
-1. Create an empty database.
-2. Import [`database/schema.sql`](database/schema.sql) into it.
-3. Copy `env` to `.env`.
-4. Configure `app.baseURL` and your database credentials in `.env`.
-5. Set `lincotic.rootUsername` to the username whose hub should appear at `/`.
-6. Create that user and assign the administrator role:
-
-   ```shell
-   php spark shield:user create -n civic -e you@example.com -g admin
-   ```
-
-   Replace `civic` with the value of `lincotic.rootUsername` and use your own email address. The command will prompt you for a password.
-
-7. Start the application:
-
-   ```shell
-   php spark serve
-   ```
+Lincotic uses MySQL or MariaDB. A fresh installation imports [`database/schema.sql`](database/schema.sql), configures a private `.env` file, and serves the application through the `public/` directory.
 
 ## Open source
 

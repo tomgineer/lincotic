@@ -81,13 +81,15 @@ class Hub extends BaseController {
         $canEditContent = $policy->canEditLibrary($viewer, $owner['id']);
         $canManageUsers = $policy->canManageUsers($viewer);
         $collections = $service->filter($filters, $includeHidden);
+        $collectionOptions = $service->getFilterOptions($includeHidden);
         $selectedCollection = $filters['collectionId'] !== null
             ? ($collections[0] ?? null)
             : null;
 
         return view('site/pages/hub', [
             'collections'       => $collections,
-            'collectionOptions' => $service->getFilterOptions($includeHidden),
+            'collectionOptions' => $collectionOptions,
+            'totalCollectionCount' => count($collectionOptions),
             'totalLinkCount'    => $service->countAllLinks($includeHidden),
             'totalClickCount'   => $service->countAllClicks($includeHidden),
             'filters'           => $filters,
@@ -126,10 +128,12 @@ class Hub extends BaseController {
         $includeHidden = $policy->canViewHidden($viewer, $owner['id']);
         $canEditContent = $policy->canEditLibrary($viewer, $owner['id']);
         $canManageUsers = $policy->canManageUsers($viewer);
+        $collectionOptions = $service->getFilterOptions($includeHidden);
 
         return view('site/pages/hub', [
             'collections'       => $service->search($search, $includeHidden),
-            'collectionOptions' => $service->getFilterOptions($includeHidden),
+            'collectionOptions' => $collectionOptions,
+            'totalCollectionCount' => count($collectionOptions),
             'totalLinkCount'    => $service->countAllLinks($includeHidden),
             'totalClickCount'   => $service->countAllClicks($includeHidden),
             'filters'           => $this->defaultFilters(),
