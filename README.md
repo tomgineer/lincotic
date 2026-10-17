@@ -8,11 +8,15 @@ Save with context. Find things quickly. Share only what should be public.
 
 ![Lincotic dashboard showing searchable collections, filters, link insights, and admin tools](docs/images/hero.webp)
 
-## One installation, multiple personal hubs
+## One organizational home, multiple personal hubs
 
-Lincotic keeps every user's library separate while making public resources easy to browse.
+Lincotic gives an organization a central home for shared resources while keeping every user's library separate.
 
-- The configured root user's hub is available at `/`.
+The configured root account appears at `/` and can act as a **virtual user representing the organization itself** rather than an individual employee. Its hub becomes the company's front door to the browser-based systems, internal services, reference material, and frequently used links that employees need. Collections can organize those resources by department—such as HR, Finance, Sales, Support, Engineering, or Operations—or by workflow, location, project, or business function.
+
+The organizational hub is backed by a normal Lincotic account, so it retains the same ownership and visibility rules as every other hub. Alongside that shared starting point, each employee can have an independent personal space at `/@username` for the resources relevant to their own role.
+
+- The organization's configured root hub is available at `/`.
 - Every active user has a public route at `/@username`.
 - Search, filters, collections, link totals, and visit totals are scoped to the selected user.
 - Signing in takes users directly to their own hub.

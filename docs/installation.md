@@ -121,7 +121,7 @@ Important configuration details:
 
 - `app.baseURL` must be the complete public URL and must end with `/`.
 - Use `CI_ENVIRONMENT = development`, an HTTP URL, `app.forceGlobalSecureRequests = false`, and `cookie.secure = false` only for local development.
-- Set `lincotic.rootUsername` to the account whose hub should appear at `/`.
+- Set `lincotic.rootUsername` to the account whose hub should appear at `/`. For an organizational installation, this account can serve as a virtual company identity and provide the central, collection-based directory of tools and resources used by employees.
 - Usernames consist of lowercase letters and numbers. The configured root username must match the account exactly.
 - Keep `.env` secret. It is ignored by Git and must never be placed inside the public web directory.
 - On a production site served directly over HTTPS, enable both secure requests and secure cookies as shown above.

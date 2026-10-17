@@ -29,6 +29,8 @@ Teams, departments, and entire organizations can use a link's documentation to c
 - Links between a tool and the policies or procedures surrounding it.
 - The date or circumstances under which the instructions should be reviewed.
 
+In an organizational installation, the central page at `/` can represent the company itself through the configured root account. This virtual organizational user collects the tools and destinations employees use into a single, well-structured hub. Collections can map naturally to departments such as HR, Finance, Sales, Support, Engineering, and Operations, or to cross-functional processes that span several teams. Learn Mode then adds the instructions and institutional knowledge behind every item in that shared catalogue.
+
 This is useful during onboarding, but it is not limited to new employees. Operational details are easy to forget when a task is performed infrequently. A short note beside the destination can prevent the wrong environment from being used, an access request from going to the wrong team, or a fragile manual procedure from being rediscovered from scratch.
 
 Learn Mode also lowers the cost of sharing knowledge. A colleague can share a Lincotic hub instead of sending a bare list of URLs and then explaining every item separately.
