@@ -10,6 +10,9 @@ namespace App\Libraries;
  */
 final class UrlFormatter {
 
+    /**
+     * Removes display-only URL noise and applies the requested length limit.
+     */
     public function forDisplay(string $url, int $maxLength = 40): string {
         // Remove whitespace pasted before or after the URL.
         $displayUrl = trim($url);

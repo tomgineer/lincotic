@@ -15,6 +15,9 @@ final class CheckRobotsTxt {
         $this->robotsPath = $publicPath . DIRECTORY_SEPARATOR . 'robots.txt';
     }
 
+    /**
+     * Replaces a missing or incomplete robots.txt with the required rules.
+     */
     public function run(): void {
         if (is_file($this->robotsPath)) {
             $contents = file_get_contents($this->robotsPath);
@@ -29,6 +32,9 @@ final class CheckRobotsTxt {
         }
     }
 
+    /**
+     * Checks that the wildcard agent group contains every required route rule.
+     */
     private function isValid(string $contents): bool {
         $inWildcardGroup = false;
         $rules           = [];

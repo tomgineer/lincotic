@@ -5,11 +5,13 @@ namespace App\Services;
 /**
  * Builds page metadata from data that has already been loaded by a controller.
  */
-final class PageMetaService
-{
+final class PageMetaService {
+
     private const string SITE_NAME = 'Lincotic';
 
     /**
+     * Builds indexable metadata for a hub, collection, or unassigned-links page.
+     *
      * @param array{name?: mixed, description?: mixed, id?: mixed}|null $collection
      *
      * @return array{title: string, description: string, canonical: string, robots: string}
@@ -65,10 +67,11 @@ final class PageMetaService
     }
 
     /**
+     * Builds non-indexable metadata for a hub search-results page.
+     *
      * @return array{title: string, description: string, canonical: string, robots: string}
      */
-    public function forSearch(string $username, string $searchUrl, string $search): array
-    {
+    public function forSearch(string $username, string $searchUrl, string $search): array {
         $owner = $this->displayUsername($username);
         $term = trim($search);
 
@@ -80,18 +83,18 @@ final class PageMetaService
         ];
     }
 
-    private function displayUsername(string $username): string
-    {
+    private function displayUsername(string $username): string {
         $username = trim($username);
 
         return $username === '' ? self::SITE_NAME : ucfirst($username);
     }
 
     /**
+     * Appends an RFC 3986-encoded query string to a canonical URL.
+     *
      * @param array<string, string> $query
      */
-    private function withQuery(string $url, array $query): string
-    {
+    private function withQuery(string $url, array $query): string {
         return $url . (str_contains($url, '?') ? '&' : '?') . http_build_query(
             $query,
             '',

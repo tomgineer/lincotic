@@ -12,12 +12,18 @@ use CodeIgniter\Shield\Entities\User;
 
 class Hub extends BaseController {
 
+    /**
+     * Displays the configured root user's hub.
+     */
     public function index(): string|RedirectResponse {
         $owner = $this->rootOwner();
 
         return $this->renderHub($owner, site_url('/'), site_url('search'));
     }
 
+    /**
+     * Displays the active user's public hub resolved from the route username.
+     */
     public function show(string $username): string|RedirectResponse {
         $owner   = $this->owner($username);
         $hubPath = '@' . rawurlencode($owner['username']);
@@ -29,12 +35,18 @@ class Hub extends BaseController {
         );
     }
 
+    /**
+     * Searches links within the configured root user's hub.
+     */
     public function search(): string|RedirectResponse {
         $owner = $this->rootOwner();
 
         return $this->renderSearch($owner, site_url('/'), site_url('search'));
     }
 
+    /**
+     * Searches links within the active user's hub resolved from the route username.
+     */
     public function searchUser(string $username): string|RedirectResponse {
         $owner   = $this->owner($username);
         $hubPath = '@' . rawurlencode($owner['username']);
@@ -153,6 +165,8 @@ class Hub extends BaseController {
     }
 
     /**
+     * Resolves an active route owner or raises a not-found response.
+     *
      * @return array{id: int, username: string}
      */
     private function owner(string $username): array {
@@ -166,6 +180,8 @@ class Hub extends BaseController {
     }
 
     /**
+     * Resolves the configured root owner or raises a not-found response.
+     *
      * @return array{id: int, username: string}
      */
     private function rootOwner(): array {
@@ -224,6 +240,9 @@ class Hub extends BaseController {
         ];
     }
 
+    /**
+     * Returns the neutral filter state used by search-result pages.
+     */
     private function defaultFilters(): array {
         return [
             'collection'        => 'featured',
@@ -236,6 +255,9 @@ class Hub extends BaseController {
         ];
     }
 
+    /**
+     * Returns user-management data only when the viewer has administrator access.
+     */
     private function adminUsers(?User $viewer): array {
         if (! $this->accessPolicy()->canManageUsers($viewer)) {
             return [];

@@ -10,14 +10,12 @@ use InvalidArgumentException;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
-final class SvgIconSanitizer
-{
+final class SvgIconSanitizer {
     private const int MAX_LENGTH = 65_535;
 
     private HtmlSanitizer $sanitizer;
 
-    public function __construct()
-    {
+    public function __construct() {
         $presentationAttributes = [
             'fill',
             'fill-rule',
@@ -55,8 +53,7 @@ final class SvgIconSanitizer
     /**
      * Returns a canonical, safe inline SVG or null for an empty value.
      */
-    public function sanitize(?string $input): ?string
-    {
+    public function sanitize(?string $input): ?string {
         $input = trim((string) $input);
 
         if ($input === '') {
@@ -69,9 +66,11 @@ final class SvgIconSanitizer
 
         $source = $this->parseXml($input);
 
-        if ($source->doctype !== null
+        if (
+            $source->doctype !== null
             || ! $source->documentElement instanceof DOMElement
-            || strtolower($source->documentElement->localName) !== 'svg') {
+            || strtolower($source->documentElement->localName) !== 'svg'
+        ) {
             throw new InvalidArgumentException('Enter a valid SVG icon.');
         }
 
@@ -103,8 +102,10 @@ final class SvgIconSanitizer
         return $output;
     }
 
-    private function parseXml(string $input): DOMDocument
-    {
+    /**
+     * Parses SVG XML without network access and converts parser failures to validation errors.
+     */
+    private function parseXml(string $input): DOMDocument {
         $document = new DOMDocument('1.0', 'UTF-8');
         $previous = libxml_use_internal_errors(true);
 
@@ -125,8 +126,10 @@ final class SvgIconSanitizer
         return $document;
     }
 
-    private function removeTextAndComments(DOMDocument $document): void
-    {
+    /**
+     * Removes text and comments that are not part of the supported icon format.
+     */
+    private function removeTextAndComments(DOMDocument $document): void {
         $xpath = new DOMXPath($document);
         $nodes = $xpath->query('//text() | //comment()');
 
@@ -145,10 +148,13 @@ final class SvgIconSanitizer
         }
     }
 
-    private function containsDrawingElement(DOMElement $root): bool
-    {
+    /**
+     * Confirms that the sanitized SVG retains at least one supported shape.
+     */
+    private function containsDrawingElement(DOMElement $root): bool {
         foreach ($root->getElementsByTagName('*') as $element) {
-            if ($element instanceof DOMNode
+            if (
+                $element instanceof DOMNode
                 && in_array(strtolower($element->localName), [
                     'path',
                     'circle',
@@ -157,7 +163,8 @@ final class SvgIconSanitizer
                     'line',
                     'polyline',
                     'polygon',
-                ], true)) {
+                ], true)
+            ) {
                 return true;
             }
         }

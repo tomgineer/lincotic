@@ -8,12 +8,11 @@ use CodeIgniter\Shield\Exceptions\ValidationException;
 use CodeIgniter\Shield\Models\UserModel;
 use Throwable;
 
-final class UserEditor
-{
+final class UserEditor {
+
     private ?UserModel $users;
 
-    public function __construct(?UserModel $users = null)
-    {
+    public function __construct(?UserModel $users = null) {
         $this->users = $users;
     }
 
@@ -22,8 +21,7 @@ final class UserEditor
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    public function create(array $input): array
-    {
+    public function create(array $input): array {
         $data       = $this->normalizeInput($input);
         $validation = service('validation');
         $validation->reset();
@@ -96,8 +94,7 @@ final class UserEditor
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    public function update(int $id, array $input, int $actorId): array
-    {
+    public function update(int $id, array $input, int $actorId): array {
         $users = $this->userModel();
         $user  = $users
             ->withIdentities()
@@ -190,8 +187,7 @@ final class UserEditor
         return $this->result(EditStatus::UPDATED);
     }
 
-    private function normalizeInput(array $input): array
-    {
+    private function normalizeInput(array $input): array {
         return [
             'username' => $this->stringValue($input, 'username'),
             'email'    => strtolower($this->stringValue($input, 'email')),
@@ -201,8 +197,10 @@ final class UserEditor
         ];
     }
 
-    private function creationRules(): array
-    {
+    /**
+     * Extends Shield's user rules with creation-time uniqueness constraints.
+     */
+    private function creationRules(): array {
         $config        = config('Auth');
         $usernameRules = $config->usernameValidationRules;
         $emailRules    = $config->emailValidationRules;
@@ -231,8 +229,10 @@ final class UserEditor
         ];
     }
 
-    private function updateRules(int $id): array
-    {
+    /**
+     * Extends Shield's user rules while excluding the edited user from uniqueness checks.
+     */
+    private function updateRules(int $id): array {
         $config        = config('Auth');
         $usernameRules = $config->usernameValidationRules;
         $emailRules    = $config->emailValidationRules;
@@ -261,8 +261,10 @@ final class UserEditor
         ];
     }
 
-    private function userModel(): UserModel
-    {
+    /**
+     * Lazily resolves the configured Shield user provider.
+     */
+    private function userModel(): UserModel {
         if ($this->users === null) {
             $provider = model(setting('Auth.userProvider'));
             assert($provider instanceof UserModel);
@@ -272,23 +274,22 @@ final class UserEditor
         return $this->users;
     }
 
-    private function stringValue(array $input, string $key): string
-    {
+    private function stringValue(array $input, string $key): string {
         return is_string($input[$key] ?? null) ? trim($input[$key]) : '';
     }
 
-    private function booleanValue(mixed $value): int
-    {
+    private function booleanValue(mixed $value): int {
         return in_array($value, [true, 1, '1', 'true', 'on'], true) ? 1 : 0;
     }
 
     /**
+     * Builds the shared response envelope returned by user mutations.
+     *
      * @param array<string, string> $errors
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    private function result(string $status, array $errors = []): array
-    {
+    private function result(string $status, array $errors = []): array {
         return [
             'status' => $status,
             'errors' => $errors,

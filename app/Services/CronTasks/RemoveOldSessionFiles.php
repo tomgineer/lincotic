@@ -10,6 +10,9 @@ use RuntimeException;
  * Removes expired files from the configured session directory.
  */
 final class RemoveOldSessionFiles {
+    /**
+     * Runs session garbage collection only when file-based sessions are configured.
+     */
     public function run(): void {
         $config = config(Session::class);
 

@@ -15,6 +15,8 @@ final class HashGenerator {
     ];
 
     /**
+     * Returns the supported hash identifiers and their display labels.
+     *
      * @return array<string, string>
      */
     public function algorithms(): array {
@@ -22,6 +24,8 @@ final class HashGenerator {
     }
 
     /**
+     * Generates every supported digest for the supplied value.
+     *
      * @return array<string, string>
      */
     public function generate(string $value): array {

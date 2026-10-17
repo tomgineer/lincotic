@@ -5,12 +5,11 @@ namespace App\Services;
 use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\Shield\Models\UserModel;
 
-final class UserQueryService
-{
+final class UserQueryService {
+
     private ?UserModel $users;
 
-    public function __construct(?UserModel $users = null)
-    {
+    public function __construct(?UserModel $users = null) {
         $this->users = $users;
     }
 
@@ -19,15 +18,14 @@ final class UserQueryService
      *
      * @return list<array{id: int, username: string, email: string, role: string, active: bool}>
      */
-    public function all(): array
-    {
+    public function all(): array {
         $users = $this->userModel()
             ->withIdentities()
             ->withGroups()
             ->orderBy('username', 'ASC')
             ->findAll();
 
-        return array_map(fn (User $user): array => $this->present($user), $users);
+        return array_map(fn(User $user): array => $this->present($user), $users);
     }
 
     /**
@@ -35,8 +33,7 @@ final class UserQueryService
      *
      * @return array{id: int, username: string}|null
      */
-    public function findActiveByUsername(string $username): ?array
-    {
+    public function findActiveByUsername(string $username): ?array {
         $user = $this->userModel()
             ->where('username', $username)
             ->first();
@@ -56,8 +53,7 @@ final class UserQueryService
      *
      * @return array{id: int, username: string}|null
      */
-    public function findById(int $id): ?array
-    {
+    public function findById(int $id): ?array {
         $user = $this->userModel()->find($id);
 
         if (! $user instanceof User) {
@@ -70,8 +66,10 @@ final class UserQueryService
         ];
     }
 
-    private function userModel(): UserModel
-    {
+    /**
+     * Lazily resolves the configured Shield user provider.
+     */
+    private function userModel(): UserModel {
         if ($this->users === null) {
             $provider = model(setting('Auth.userProvider'));
             assert($provider instanceof UserModel);
@@ -82,10 +80,11 @@ final class UserQueryService
     }
 
     /**
+     * Maps a Shield user to the shape consumed by the admin interface.
+     *
      * @return array{id: int, username: string, email: string, role: string, active: bool}
      */
-    private function present(User $user): array
-    {
+    private function present(User $user): array {
         $groups = $user->getGroups() ?? [];
 
         return [

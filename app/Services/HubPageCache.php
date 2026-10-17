@@ -10,8 +10,8 @@ use InvalidArgumentException;
 /**
  * Owns the public hub cache namespace, keys and targeted invalidation.
  */
-final class HubPageCache
-{
+final class HubPageCache {
+
     private const string KEY_PREFIX = 'hub_user_';
 
     private readonly CacheInterface $cache;
@@ -26,8 +26,10 @@ final class HubPageCache
         $this->assertValidUsername($this->rootUsername);
     }
 
-    public function usernameFor(RequestInterface $request): ?string
-    {
+    /**
+     * Extracts the cacheable hub username from a root or @username GET request.
+     */
+    public function usernameFor(RequestInterface $request): ?string {
         if (! $request instanceof IncomingRequest || $request->getMethod() !== 'GET') {
             return null;
         }
@@ -44,10 +46,11 @@ final class HubPageCache
     }
 
     /**
+     * Returns a valid cached response payload for the requested hub page.
+     *
      * @return array{headers: array<string, mixed>, output: string, status?: int, reason?: string}|null
      */
-    public function get(IncomingRequest $request, string $username): ?array
-    {
+    public function get(IncomingRequest $request, string $username): ?array {
         $cached = $this->cache->get($this->keyFor($request, $username));
 
         if (! is_string($cached) || $cached === '') {
@@ -60,11 +63,13 @@ final class HubPageCache
             && isset($payload['headers'], $payload['output'])
             && is_array($payload['headers'])
             && is_string($payload['output'])
-                ? $payload
-                : null;
+            ? $payload
+            : null;
     }
 
     /**
+     * Serializes and caches a complete hub response for the requested lifetime.
+     *
      * @param array{headers: array<string, mixed>, output: string, status: int, reason: string} $payload
      */
     public function save(
@@ -80,15 +85,19 @@ final class HubPageCache
         );
     }
 
-    public function invalidate(string $username): int
-    {
+    /**
+     * Deletes every cached page in the specified user's hub namespace.
+     */
+    public function invalidate(string $username): int {
         $this->assertValidUsername($username);
 
         return $this->cache->deleteMatching($this->keyPrefix($username) . '*');
     }
 
-    public function keyFor(IncomingRequest $request, string $username): string
-    {
+    /**
+     * Builds a user-scoped cache key from the request URI and allowed query parameters.
+     */
+    public function keyFor(IncomingRequest $request, string $username): string {
         $this->assertValidUsername($username);
 
         $uri = clone $request->getUri();
@@ -103,13 +112,11 @@ final class HubPageCache
         return $this->keyPrefix($username) . md5($fingerprint);
     }
 
-    private function keyPrefix(string $username): string
-    {
+    private function keyPrefix(string $username): string {
         return self::KEY_PREFIX . $username . '_';
     }
 
-    private function assertValidUsername(string $username): void
-    {
+    private function assertValidUsername(string $username): void {
         if (preg_match('/\A[a-z0-9]+\z/', $username) !== 1) {
             throw new InvalidArgumentException('Invalid hub cache username.');
         }

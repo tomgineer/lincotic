@@ -24,7 +24,8 @@ final class LibraryQueryService {
     public function __construct(
         private readonly UrlFormatter $urlFormatter,
         private readonly int $userId,
-    ) {}
+    ) {
+    }
 
     /**
      * Returns the size of the user's library visible to the current viewer.
@@ -62,11 +63,11 @@ final class LibraryQueryService {
             ->join('collections', 'collections.id = links.collection_id', 'left')
             ->where('links.is_hidden', 0)
             ->groupStart()
-                ->where('links.collection_id', null)
-                ->orGroupStart()
-                    ->where('collections.user_id', $this->userId)
-                    ->where('collections.is_hidden', 0)
-                ->groupEnd()
+            ->where('links.collection_id', null)
+            ->orGroupStart()
+            ->where('collections.user_id', $this->userId)
+            ->where('collections.is_hidden', 0)
+            ->groupEnd()
             ->groupEnd();
     }
 
@@ -244,6 +245,9 @@ final class LibraryQueryService {
         return $linkModel->findAll();
     }
 
+    /**
+     * Starts a link query restricted to the supplied collections and current user.
+     */
     private function linksIn(array $collections): LinkModel {
         return (new LinkModel())
             ->where('user_id', $this->userId)
@@ -259,6 +263,9 @@ final class LibraryQueryService {
         }
     }
 
+    /**
+     * Searches link titles, URLs, and descriptions and orders matches by title.
+     */
     private function applySearchTerm(LinkModel $linkModel, string $term): void {
         $linkModel
             ->groupStart()

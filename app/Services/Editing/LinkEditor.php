@@ -9,8 +9,8 @@ use App\Models\LinkModel;
 use InvalidArgumentException;
 use Throwable;
 
-final class LinkEditor
-{
+final class LinkEditor {
+
     private const array RULES = [
         'title' => [
             'label' => 'Title',
@@ -57,8 +57,7 @@ final class LinkEditor
     /**
      * Returns the fields exposed by the link editor.
      */
-    public function get(int $id, int $userId): ?array
-    {
+    public function get(int $id, int $userId): ?array {
         $link = $this->findOwnedLink($id, $userId);
 
         if (! is_array($link)) {
@@ -78,8 +77,7 @@ final class LinkEditor
      *
      * @return array{status: string, link: array|null, errors: array<string, string>}
      */
-    public function create(array $input, int $userId): array
-    {
+    public function create(array $input, int $userId): array {
         $prepared = $this->prepareData($input, true);
 
         if ($prepared['data'] === null) {
@@ -101,8 +99,10 @@ final class LinkEditor
             return $this->result(EditStatus::INVALID);
         }
 
-        if ($data['collection_id'] !== null
-            && (! is_array($collection) || (int) ($collection['user_id'] ?? 0) !== $userId)) {
+        if (
+            $data['collection_id'] !== null
+            && (! is_array($collection) || (int) ($collection['user_id'] ?? 0) !== $userId)
+        ) {
             return $this->result(EditStatus::INVALID, errors: [
                 'collection_id' => 'The selected collection is not available.',
             ]);
@@ -122,11 +122,13 @@ final class LinkEditor
                 return $this->result(EditStatus::INVALID, errors: $this->links->errors());
             }
 
-            if ($documentation['content'] !== null
+            if (
+                $documentation['content'] !== null
                 && $this->linkContents->insert([
                     'link_id' => (int) $linkId,
                     'content' => $documentation['content'],
-                ]) === false) {
+                ]) === false
+            ) {
                 $database->transRollback();
 
                 return $this->result(EditStatus::INVALID, errors: $this->linkContents->errors());
@@ -152,8 +154,7 @@ final class LinkEditor
      *
      * @return array{status: string, link: array|null, errors: array<string, string>}
      */
-    public function update(int $id, array $input, int $userId): array
-    {
+    public function update(int $id, array $input, int $userId): array {
         if ($this->findOwnedLink($id, $userId) === null) {
             return $this->result(EditStatus::NOT_FOUND);
         }
@@ -164,8 +165,10 @@ final class LinkEditor
             return $this->result(EditStatus::INVALID, errors: $prepared['errors']);
         }
 
-        if (! is_array($prepared['collection'])
-            || (int) ($prepared['collection']['user_id'] ?? 0) !== $userId) {
+        if (
+            ! is_array($prepared['collection'])
+            || (int) ($prepared['collection']['user_id'] ?? 0) !== $userId
+        ) {
             return $this->result(EditStatus::INVALID, errors: [
                 'collection_id' => 'The selected collection is not available.',
             ]);
@@ -189,8 +192,10 @@ final class LinkEditor
                 return $this->result(EditStatus::INVALID, errors: $this->links->errors());
             }
 
-            if ($documentation['provided']
-                && ! $this->syncDocumentation($id, $documentation['content'])) {
+            if (
+                $documentation['provided']
+                && ! $this->syncDocumentation($id, $documentation['content'])
+            ) {
                 $database->transRollback();
 
                 return $this->result(EditStatus::INVALID, errors: $this->linkContents->errors());
@@ -216,8 +221,7 @@ final class LinkEditor
      *
      * @return array{status: string, link: array|null, errors: array<string, string>}
      */
-    public function delete(int $id, int $userId): array
-    {
+    public function delete(int $id, int $userId): array {
         if ($this->findOwnedLink($id, $userId) === null) {
             return $this->result(EditStatus::NOT_FOUND);
         }
@@ -229,8 +233,10 @@ final class LinkEditor
         return $this->result(EditStatus::DELETED);
     }
 
-    private function findOwnedLink(int $id, int $userId): ?array
-    {
+    /**
+     * Returns the link only when it belongs to the current user.
+     */
+    private function findOwnedLink(int $id, int $userId): ?array {
         $link = $this->links->find($id);
 
         return is_array($link) && (int) ($link['user_id'] ?? 0) === $userId
@@ -239,14 +245,15 @@ final class LinkEditor
     }
 
     /**
+     * Normalizes and validates link input and resolves its selected collection.
+     *
      * @return array{
      *     data: array<string, int|string|null>|null,
      *     collection: array|null,
      *     errors: array<string, string>
      * }
      */
-    private function prepareData(array $input, bool $allowUnassigned = false): array
-    {
+    private function prepareData(array $input, bool $allowUnassigned = false): array {
         $data       = $this->normalizeInput($input);
         $validation = service('validation');
         $validation->reset();
@@ -302,8 +309,7 @@ final class LinkEditor
         ];
     }
 
-    private function normalizeInput(array $input): array
-    {
+    private function normalizeInput(array $input): array {
         $importance  = $this->stringValue($input, 'importance');
         $description = $this->stringValue($input, 'description');
 
@@ -319,8 +325,7 @@ final class LinkEditor
         ];
     }
 
-    private function present(array $link, string $documentation): array
-    {
+    private function present(array $link, string $documentation): array {
         return [
             'id'                => (int) $link['id'],
             'collection_id'     => $link['collection_id'] === null ? null : (int) $link['collection_id'],
@@ -335,13 +340,11 @@ final class LinkEditor
         ];
     }
 
-    private function stringValue(array $input, string $key): string
-    {
+    private function stringValue(array $input, string $key): string {
         return is_string($input[$key] ?? null) ? trim($input[$key]) : '';
     }
 
-    private function integerValue(mixed $value): int|string
-    {
+    private function integerValue(mixed $value): int|string {
         if (is_int($value) && $value > 0) {
             return $value;
         }
@@ -349,16 +352,16 @@ final class LinkEditor
         return is_string($value) && ctype_digit($value) ? $value : '';
     }
 
-    private function booleanValue(mixed $value): int
-    {
+    private function booleanValue(mixed $value): int {
         return in_array($value, [true, 1, '1', 'true', 'on'], true) ? 1 : 0;
     }
 
     /**
+     * Sanitizes optional documentation while preserving whether the field was submitted.
+     *
      * @return array{provided: bool, content: string|null, error: string|null}
      */
-    private function prepareDocumentation(array $input): array
-    {
+    private function prepareDocumentation(array $input): array {
         if (! array_key_exists('documentation', $input)) {
             return [
                 'provided' => false,
@@ -392,8 +395,10 @@ final class LinkEditor
         ];
     }
 
-    private function syncDocumentation(int $linkId, ?string $content): bool
-    {
+    /**
+     * Creates, updates, or removes the separate documentation record for a link.
+     */
+    private function syncDocumentation(int $linkId, ?string $content): bool {
         $stored = $this->linkContents->find($linkId);
 
         if ($content === null) {
@@ -411,12 +416,13 @@ final class LinkEditor
     }
 
     /**
+     * Builds the shared response envelope returned by link mutations.
+     *
      * @param array<string, string> $errors
      *
      * @return array{status: string, link: array|null, errors: array<string, string>}
      */
-    private function result(string $status, ?array $link = null, array $errors = []): array
-    {
+    private function result(string $status, ?array $link = null, array $errors = []): array {
         return [
             'status' => $status,
             'link'   => $link,

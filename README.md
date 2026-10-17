@@ -6,7 +6,7 @@ Lincotic is a focused, self-hosted link library for individuals and small teams 
 
 Save with context. Find things quickly. Share only what should be public.
 
-![Lincotic dashboard showing searchable collections, filters, link insights, and admin tools](lincotic.webp)
+![Lincotic dashboard showing searchable collections, filters, link insights, and admin tools](docs/images/hero.webp)
 
 ## One installation, multiple personal hubs
 
@@ -71,6 +71,20 @@ Lincotic adds useful signals to every saved destination.
 - **Hidden status** keeps selected content available only to its owner.
 
 Hub totals respect the same visibility rules as the link list, so private content does not leak through public counters.
+
+## Learn before you open
+
+A bookmark tells you where something is. **Learn Mode** explains what it is, why it matters, and how to use it before you leave Lincotic.
+
+![Learn Mode showing documentation and activity for a saved link](docs/images/learn_mode.webp)
+
+For teams, this turns a browser-based tools hub into a lightweight onboarding and operational knowledge layer. A link can explain what a system does, who owns it, where access is requested, which prerequisites are required, how common workflows are completed, when to escalate, and even preserve reusable code or boilerplate. New employees gain context without guessing, while experienced colleagues have one place to record the details that are otherwise passed around informally.
+
+For personal libraries, the same space answers the questions ordinary bookmarks forget: Why did I save this? What did I learn? Which part was useful? How do I use it again? Each link can hold long-form, formatted documentation—up to 16 MB of sanitized HTML, theoretically around 1.5 million words depending on language and formatting.
+
+Enable Learn Mode from the navigation bar and select a link to read its documentation, description, collection, destination, and activity without opening the external site. Owners write and update the content through the link editor. Documentation follows the visibility of its link: notes on public links are public, while hidden content remains available only to its owner.
+
+[Read the complete Learn Mode guide](docs/learn-mode.md).
 
 ## Edit without leaving the hub
 

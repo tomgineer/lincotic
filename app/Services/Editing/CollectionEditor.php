@@ -6,8 +6,8 @@ use App\Libraries\SvgIconSanitizer;
 use App\Models\CollectionModel;
 use InvalidArgumentException;
 
-final class CollectionEditor
-{
+final class CollectionEditor {
+
     private const array RULES = [
         'name' => [
             'label' => 'Name',
@@ -40,8 +40,7 @@ final class CollectionEditor
     /**
      * Returns the fields exposed by the collection editor.
      */
-    public function get(int $id, int $userId): ?array
-    {
+    public function get(int $id, int $userId): ?array {
         $collection = $this->findOwnedCollection($id, $userId);
 
         return is_array($collection) ? $this->present($collection) : null;
@@ -52,8 +51,7 @@ final class CollectionEditor
      *
      * @return array{status: string, errors: array<string, string>, collection_id?: int}
      */
-    public function create(array $input, int $userId): array
-    {
+    public function create(array $input, int $userId): array {
         $data       = $this->normalizeInput($input);
         $validation = service('validation');
         $validation->reset();
@@ -96,13 +94,13 @@ final class CollectionEditor
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    public function reorder(array $collectionIds, int $userId): array
-    {
+    public function reorder(array $collectionIds, int $userId): array {
         $normalizedIds = [];
 
         foreach ($collectionIds as $collectionId) {
             if ((is_int($collectionId) && $collectionId > 0)
-                || (is_string($collectionId) && ctype_digit($collectionId) && (int) $collectionId > 0)) {
+                || (is_string($collectionId) && ctype_digit($collectionId) && (int) $collectionId > 0)
+            ) {
                 $normalizedIds[] = (int) $collectionId;
                 continue;
             }
@@ -139,7 +137,7 @@ final class CollectionEditor
         }
 
         $rows = array_map(
-            static fn (int $id, int $index): array => [
+            static fn(int $id, int $index): array => [
                 'id'         => $id,
                 'sort_order' => ($index + 1) * 10,
             ],
@@ -159,8 +157,7 @@ final class CollectionEditor
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    public function update(int $id, array $input, int $userId): array
-    {
+    public function update(int $id, array $input, int $userId): array {
         if ($this->findOwnedCollection($id, $userId) === null) {
             return $this->result(EditStatus::NOT_FOUND);
         }
@@ -194,8 +191,7 @@ final class CollectionEditor
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    public function delete(int $id, int $userId): array
-    {
+    public function delete(int $id, int $userId): array {
         if ($this->findOwnedCollection($id, $userId) === null) {
             return $this->result(EditStatus::NOT_FOUND);
         }
@@ -207,8 +203,10 @@ final class CollectionEditor
         return $this->result(EditStatus::DELETED);
     }
 
-    private function findOwnedCollection(int $id, int $userId): ?array
-    {
+    /**
+     * Returns the collection only when it belongs to the current user.
+     */
+    private function findOwnedCollection(int $id, int $userId): ?array {
         $collection = $this->collections->find($id);
 
         return is_array($collection) && (int) ($collection['user_id'] ?? 0) === $userId
@@ -216,8 +214,7 @@ final class CollectionEditor
             : null;
     }
 
-    private function normalizeInput(array $input): array
-    {
+    private function normalizeInput(array $input): array {
         $description = $this->stringValue($input, 'description');
         $icon        = $this->stringValue($input, 'icon');
 
@@ -230,8 +227,7 @@ final class CollectionEditor
         ];
     }
 
-    private function present(array $collection): array
-    {
+    private function present(array $collection): array {
         return [
             'id'          => (int) $collection['id'],
             'name'        => (string) $collection['name'],
@@ -242,23 +238,22 @@ final class CollectionEditor
         ];
     }
 
-    private function stringValue(array $input, string $key): string
-    {
+    private function stringValue(array $input, string $key): string {
         return is_string($input[$key] ?? null) ? trim($input[$key]) : '';
     }
 
-    private function booleanValue(mixed $value): int
-    {
+    private function booleanValue(mixed $value): int {
         return in_array($value, [true, 1, '1', 'true', 'on'], true) ? 1 : 0;
     }
 
     /**
+     * Builds the shared response envelope returned by collection mutations.
+     *
      * @param array<string, string> $errors
      *
      * @return array{status: string, errors: array<string, string>}
      */
-    private function result(string $status, array $errors = []): array
-    {
+    private function result(string $status, array $errors = []): array {
         return [
             'status' => $status,
             'errors' => $errors,

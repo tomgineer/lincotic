@@ -4,8 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class LinkModel extends Model
-{
+class LinkModel extends Model {
     protected $table          = 'links';
     protected $primaryKey     = 'id';
     protected $returnType     = 'array';
@@ -31,8 +30,7 @@ class LinkModel extends Model
     /**
      * Records a visit without treating it as an edit to the link itself.
      */
-    public function recordClick(int $id): bool
-    {
+    public function recordClick(int $id): bool {
         return $this->builder()
             ->where($this->primaryKey, $id)
             ->set('click_count', 'click_count + 1', false)

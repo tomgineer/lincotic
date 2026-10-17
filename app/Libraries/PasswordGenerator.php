@@ -50,6 +50,8 @@ final class PasswordGenerator {
     }
 
     /**
+     * Shuffles generated characters with a cryptographically secure random source.
+     *
      * @param list<string> $characters
      *
      * @return list<string>

@@ -26,6 +26,9 @@ abstract class EditingController extends BaseController {
             : $this->jsonError('Authenticated user not found.', 401);
     }
 
+    /**
+     * Returns the active authenticated user's identifier or zero when unavailable.
+     */
     protected function authenticatedUserId(): int {
         $user = auth()->user();
 

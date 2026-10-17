@@ -6,14 +6,12 @@ use InvalidArgumentException;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
-final class LinkContentSanitizer
-{
+final class LinkContentSanitizer {
     private const int MAX_LENGTH = 16_000_000;
 
     private HtmlSanitizer $sanitizer;
 
-    public function __construct()
-    {
+    public function __construct() {
         $config = (new HtmlSanitizerConfig())
             ->withMaxInputLength(self::MAX_LENGTH)
             ->allowElement('p')
@@ -42,8 +40,7 @@ final class LinkContentSanitizer
     /**
      * Returns safe Tiptap HTML or null when the document has no content.
      */
-    public function sanitize(?string $input): ?string
-    {
+    public function sanitize(?string $input): ?string {
         $input = trim((string) $input);
 
         if ($input === '') {
