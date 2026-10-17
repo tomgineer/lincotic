@@ -14,9 +14,9 @@ A new employee may not know which system to use, what it controls, whether VPN o
 
 Learn Mode places that missing explanation beside the link itself. The hub becomes both the place where work starts and the place where people learn how that work is done.
 
-## A knowledge layer for teams
+## A knowledge layer for organizations
 
-Teams can use a link's documentation to capture information such as:
+Teams, departments, and entire organizations can use a link's documentation to capture information such as:
 
 - What the system does and which business process depends on it.
 - Who owns or supports it and when an issue should be escalated.
@@ -61,7 +61,7 @@ Documentation belongs to an individual link and is managed by that link's owner.
 
 The editor supports headings, emphasis, lists, blockquotes, horizontal rules, and code blocks. That is enough for anything from a two-line reminder to a detailed runbook. Empty documentation is stored as no document, so links do not carry unnecessary records.
 
-### A practical team template
+### A practical organizational template
 
 The following structure is a useful starting point for an internal system:
 

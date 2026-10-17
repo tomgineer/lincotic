@@ -2,7 +2,7 @@
 
 ### Your links, organized into personal hubs.
 
-Lincotic is a focused, self-hosted link library for individuals and small teams that have outgrown browser bookmark folders. Every user gets an independent hub for organizing, searching, sharing, and maintaining useful links.
+Lincotic is a focused, self-hosted knowledge and link platform for individuals, teams, and organizations that have outgrown browser bookmark folders and bare lists of URLs. Every user gets an independent hub for organizing, documenting, searching, sharing, and maintaining useful resources.
 
 Save with context. Find things quickly. Share only what should be public.
 
@@ -78,7 +78,7 @@ A bookmark tells you where something is. **Learn Mode** explains what it is, why
 
 ![Learn Mode showing documentation and activity for a saved link](docs/images/learn_mode.webp)
 
-For teams, this turns a browser-based tools hub into a lightweight onboarding and operational knowledge layer. A link can explain what a system does, who owns it, where access is requested, which prerequisites are required, how common workflows are completed, when to escalate, and even preserve reusable code or boilerplate. New employees gain context without guessing, while experienced colleagues have one place to record the details that are otherwise passed around informally.
+For organizations, this turns a browser-based tools hub into an onboarding and operational knowledge layer. A link can explain what a system does, who owns it, where access is requested, which prerequisites are required, how common workflows are completed, when to escalate, and even preserve reusable code or boilerplate. New employees gain context without guessing, while experienced colleagues have one place to record the details that are otherwise passed around informally.
 
 For personal libraries, the same space answers the questions ordinary bookmarks forget: Why did I save this? What did I learn? Which part was useful? How do I use it again? Each link can hold long-form, formatted documentation—up to 16 MB of sanitized HTML, theoretically around 1.5 million words depending on language and formatting.
 
@@ -136,7 +136,7 @@ It is a natural fit for:
 - Shared start pages with individual user spaces
 - Homelabs and infrastructure dashboards
 - Project, research, and client resource collections
-- Small teams that need public sharing and private ownership
+- Teams and organizations that need shared operational knowledge with user-owned spaces
 
 ## Why self-host Lincotic?
 
