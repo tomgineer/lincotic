@@ -86,7 +86,7 @@ $groups = [
             <p class="font-mono text-sm font-bold uppercase tracking-[0.16em] text-acid">DateTime lab</p>
             <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">See the clock from every angle.</h1>
             <p class="mt-4 max-w-xl text-lg text-base-content/65">
-                Local time, calendar progress, long-range milestones, and the Unix epoch—updated every second.
+                Local time, calendar progress, long-range milestones, and the Unix epoch, updated every second.
             </p>
         </div>
 
@@ -114,7 +114,7 @@ $groups = [
                                         <input
                                             id="datetime-<?= esc($item['key'], 'attr') ?>"
                                             type="text"
-                                            value="—"
+                                            value="N/A"
                                             readonly
                                             spellcheck="false"
                                             data-datetime-value="<?= esc($item['key'], 'attr') ?>">

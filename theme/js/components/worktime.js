@@ -144,9 +144,9 @@ export function initWorkTime() {
         if (roundedProgress >= 100) {
             setText(progressText, 'Workday complete. Eight net hours reached.');
         } else if (roundedProgress >= 75) {
-            setText(progressText, `Almost there—${roundedProgress}% of your workday is complete.`);
+            setText(progressText, `Almost there. ${roundedProgress}% of your workday is complete.`);
         } else if (roundedProgress >= 50) {
-            setText(progressText, `Good progress—${roundedProgress}% of your workday is complete.`);
+            setText(progressText, `Good progress. ${roundedProgress}% of your workday is complete.`);
         } else {
             setText(progressText, `${roundedProgress}% of your eight-hour workday is complete.`);
         }

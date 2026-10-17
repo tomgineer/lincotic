@@ -111,7 +111,7 @@ function metricValue(key, now) {
         return debtEstimate(DEBT_BASELINES[key], now);
     }
 
-    return values[key] ?? '—';
+    return values[key] ?? 'N/A';
 }
 
 export function initDateTime() {

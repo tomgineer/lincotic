@@ -107,7 +107,7 @@ export function initLearnSidebar() {
         clickCount.textContent = Number(link.click_count ?? 0).toLocaleString('en-GB');
         setTime(lastOpened, link.last_clicked_at, 'Never');
         setTime(created, link.created_at, 'Unknown');
-        setTime(documentationUpdated, link.documentation_updated_at, '—');
+        setTime(documentationUpdated, link.documentation_updated_at, 'N/A');
         content.scrollTop = 0;
     };
 

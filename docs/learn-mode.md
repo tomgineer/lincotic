@@ -130,9 +130,9 @@ There is no separate team-only visibility tier. Treat documentation on a visible
 
 Saved content is sanitized against a strict formatting allowlist before storage. Scriptable or embedded content is not retained. This makes formatted notes and code examples safe to render, but it does not turn documentation into a secrets manager.
 
-Do not store passwords, API tokens, private keys, recovery codes, or other credentials in Learn Mode. For access instructions, document where a person should request access and which role they need—not the credential itself. Confidential operational information should be attached only to links whose visibility is appropriate for that information.
+Do not store passwords, API tokens, private keys, recovery codes, or other credentials in Learn Mode. For access instructions, document where a person should request access and which role they need, not the credential itself. Confidential operational information should be attached only to links whose visibility is appropriate for that information.
 
-## What Learn Mode is—and is not
+## What Learn Mode is and is not
 
 Learn Mode is designed to keep practical context close to the place where it is needed. It works especially well for onboarding notes, lightweight runbooks, personal research, recurring procedures, and reusable examples.
 

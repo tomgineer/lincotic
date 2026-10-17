@@ -12,7 +12,7 @@ Save with context. Find things quickly. Share only what should be public.
 
 Lincotic gives an organization a central home for shared resources while keeping every user's library separate.
 
-The configured root account appears at `/` and can act as a **virtual user representing the organization itself** rather than an individual employee. Its hub becomes the company's front door to the browser-based systems, internal services, reference material, and frequently used links that employees need. Collections can organize those resources by department—such as HR, Finance, Sales, Support, Engineering, or Operations—or by workflow, location, project, or business function.
+The configured root account appears at `/` and can act as a **virtual user representing the organization itself** rather than an individual employee. Its hub becomes the company's front door to the browser-based systems, internal services, reference material, and frequently used links that employees need. Collections can organize those resources by department, such as HR, Finance, Sales, Support, Engineering, or Operations, or by workflow, location, project, or business function.
 
 The organizational hub is backed by a normal Lincotic account, so it retains the same ownership and visibility rules as every other hub. Alongside that shared starting point, each employee can have an independent personal space at `/@username` for the resources relevant to their own role.
 
@@ -84,7 +84,7 @@ A bookmark tells you where something is. **Learn Mode** explains what it is, why
 
 For organizations, this turns a browser-based tools hub into an onboarding and operational knowledge layer. A link can explain what a system does, who owns it, where access is requested, which prerequisites are required, how common workflows are completed, when to escalate, and even preserve reusable code or boilerplate. New employees gain context without guessing, while experienced colleagues have one place to record the details that are otherwise passed around informally.
 
-For personal libraries, the same space answers the questions ordinary bookmarks forget: Why did I save this? What did I learn? Which part was useful? How do I use it again? Each link can hold long-form, formatted documentation—up to 16 MB of sanitized HTML, theoretically around 1.5 million words depending on language and formatting.
+For personal libraries, the same space answers the questions ordinary bookmarks forget: Why did I save this? What did I learn? Which part was useful? How do I use it again? Each link can hold long-form, formatted documentation: up to 16 MB of sanitized HTML, theoretically around 1.5 million words depending on language and formatting.
 
 Enable Learn Mode from the navigation bar and select a link to read its documentation, description, collection, destination, and activity without opening the external site. Owners write and update the content through the link editor. Documentation follows the visibility of its link: notes on public links are public, while hidden content remains available only to its owner.
 
@@ -154,6 +154,8 @@ It is a natural fit for:
 ## Built on a maintainable foundation
 
 Lincotic combines [CodeIgniter 4](https://codeigniter.com/) and CodeIgniter Shield on the backend with [Tailwind CSS](https://tailwindcss.com/), [daisyUI](https://daisyui.com/), and [esbuild](https://esbuild.github.io/) on the frontend. MySQL or MariaDB provides persistent storage.
+
+![Lincotic application architecture and its main components](docs/images/architecture.webp)
 
 The application uses server-rendered pages, focused JavaScript enhancements, explicit validation, user-scoped data access, visibility-aware redirects, isolated public caches, and automated tests around core behavior.
 

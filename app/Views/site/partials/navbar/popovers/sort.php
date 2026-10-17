@@ -1,8 +1,8 @@
 <?php
 $sortOptions = [
     'importance' => 'Importance',
-    'title'      => 'Title (A–Z)',
-    'title_desc' => 'Title (Z–A)',
+    'title'      => 'Title (A-Z)',
+    'title_desc' => 'Title (Z-A)',
     'recent'     => 'Most recent',
     'updated'    => 'Recently updated',
     'popular'    => 'Most popular',
