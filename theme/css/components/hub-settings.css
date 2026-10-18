@@ -1,0 +1,45 @@
+/* ===========================================================================
+   Hub display settings
+   Persistent density and width preferences applied before the first paint.
+   ========================================================================== */
+
+.hub-content {
+    margin-inline: auto;
+    max-width: 80rem;
+}
+
+.collection-link-grid {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 40rem) {
+    .collection-link-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 64rem) {
+    .collection-link-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 96rem) {
+    .collection-link-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+[data-hub-full-width] .hub-content {
+    width: auto;
+    margin-inline: 5vw;
+    max-width: none;
+}
+
+[data-hub-full-width] .collection-link-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
+}
+
+[data-hide-collection-descriptions] [data-collection-description] {
+    display: none;
+}

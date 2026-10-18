@@ -1,5 +1,9 @@
 <?= $this->extend('site/layouts/default') ?>
 
+<?= $this->section('headScripts') ?>
+    <script src="<?= base_url('js/settings-bootstrap.js') ?>?v=<?= APP_VERSION ?>"></script>
+<?= $this->endSection() ?>
+
 <?= $this->section('header') ?>
     <?= $this->include('site/partials/navbar/navbar') ?>
 <?= $this->endSection() ?>
@@ -11,7 +15,7 @@
 <?php endif ?>
 
 <?= $this->section('content') ?>
-<main class="mx-auto max-w-7xl px-6 pt-4 lg:pt-8 pb-16">
+<main class="hub-content px-6 pt-4 lg:pt-8 pb-16" data-hub-content>
     <?= $this->include('site/partials/stats') ?>
 
     <?php if ($collections === []): ?>

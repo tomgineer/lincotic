@@ -8,6 +8,7 @@
     <link rel="shortcut icon" href="<?= base_url('assets/favicon/favicon.ico') ?>?v=<?= APP_VERSION ?>">
     <link rel="apple-touch-icon" sizes="180x180" href="<?= base_url('assets/favicon/apple-touch-icon.png') ?>?v=<?= APP_VERSION ?>">
 
+    <?= $this->renderSection('headScripts') ?>
     <link rel="stylesheet" href="<?= base_url('css/app-dist.css') ?>?v=<?= APP_VERSION ?>">
     <?= $this->renderSection('styles') ?>
 </head>

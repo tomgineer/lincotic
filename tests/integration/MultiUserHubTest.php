@@ -51,6 +51,19 @@ final class MultiUserHubTest extends CIUnitTestCase
             'data-learn-mode-toggle',
             (string) $root->getBody(),
         );
+        $this->assertStringContainsString('js/settings-bootstrap.js', (string) $root->getBody());
+        $this->assertStringContainsString('data-hub-settings', (string) $root->getBody());
+        $this->assertStringContainsString('data-setting-full-width', (string) $root->getBody());
+        $this->assertStringContainsString('data-setting-hide-descriptions', (string) $root->getBody());
+        $this->assertStringContainsString('data-hub-content', (string) $root->getBody());
+        $this->assertStringContainsString('data-collection-links', (string) $root->getBody());
+
+        $rootBody = (string) $root->getBody();
+        $settingsBootstrapPosition = strpos($rootBody, 'js/settings-bootstrap.js');
+        $stylesheetPosition = strpos($rootBody, 'css/app-dist.css');
+        $this->assertIsInt($settingsBootstrapPosition);
+        $this->assertIsInt($stylesheetPosition);
+        $this->assertLessThan($stylesheetPosition, $settingsBootstrapPosition);
 
         Services::resetSingle('auth');
         $tom = $this->get('/@tom');

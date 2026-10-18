@@ -21,7 +21,7 @@
                 </svg>
             </button>
             <button
-                class="navbar-popover-trigger hidden lg:flex h-full cursor-pointer items-center gap-2 px-4 transition-colors hover:bg-base-200"
+                class="navbar-popover-trigger hidden xl:flex h-full cursor-pointer items-center gap-2 px-4 transition-colors hover:bg-base-200"
                 type="button"
                 aria-controls="navbar-filters-popover"
                 popovertarget="navbar-filters-popover">
@@ -76,6 +76,7 @@
         </div>
 
         <div class="hidden md:flex md:items-center pr-2">
+            <?= $this->include('site/partials/navbar/components/settings') ?>
             <?= $this->include('site/partials/navbar/components/login_logout') ?>
         </div>
     </div>

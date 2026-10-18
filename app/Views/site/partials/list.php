@@ -48,12 +48,12 @@
         <?php endif ?>
     </h2>
     <?php if ($collectionDescription !== ''): ?>
-        <p class="-mt-2 pb-2 text-sm leading-6 text-base-content/55 text-pretty">
+        <p class="-mt-2 pb-2 text-sm leading-6 text-base-content/55 text-pretty" data-collection-description>
             <?= esc($collectionDescription) ?>
         </p>
     <?php endif ?>
 
-    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+    <div class="collection-link-grid mt-4 grid gap-4" data-collection-links>
         <?php if ($collection['links'] === []): ?>
             <p class="col-span-full rounded-xl border border-dashed border-base-content/15 px-5 py-8 text-center text-sm text-base-content/55">
                 This collection does not have any links yet.

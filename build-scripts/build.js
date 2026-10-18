@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process';
 const commands = [
     'tailwindcss -i theme/css/input.css -o public/css/app-dist.css --minify',
     'esbuild theme/js/app.js --bundle --minify --outfile=public/js/app-dist.js',
+    'esbuild theme/js/settings/bootstrap.js --bundle --minify --outfile=public/js/settings-bootstrap.js',
     'esbuild theme/js/tiptap/vendor.js --bundle --minify --format=iife --global-name=LincoticTiptap --outfile=public/js/tiptap-dist.js',
 ];
 

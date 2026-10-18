@@ -63,6 +63,10 @@
     anchor-name: --navbar-sort-popover-trigger;
 }
 
+.navbar-settings-popover-trigger {
+    anchor-name: --navbar-settings-popover-trigger;
+}
+
 .site-navbar {
     anchor-name: --site-navbar;
 
@@ -82,6 +86,10 @@
             @apply rotate-180;
         }
     }
+
+    &:has(#navbar-settings-popover:popover-open) .navbar-settings-popover-trigger {
+        @apply btn-primary;
+    }
 }
 
 .admin-collections-popover {
@@ -99,6 +107,15 @@
     position-anchor: --navbar-sort-popover-trigger;
     top: anchor(bottom);
     left: anchor(left);
+    max-height: calc(100dvh - 4.5rem);
+}
+
+.navbar-settings-popover {
+    @apply fixed inset-auto m-0 mt-2 -translate-x-full overflow-hidden text-inherit;
+
+    position-anchor: --navbar-settings-popover-trigger;
+    top: anchor(--site-navbar bottom);
+    left: anchor(right);
     max-height: calc(100dvh - 4.5rem);
 }
 
