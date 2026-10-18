@@ -32,8 +32,14 @@
 
 [data-hub-full-width] .hub-content {
     width: auto;
-    margin-inline: 5vw;
+    margin-inline: 1rem;
     max-width: none;
+}
+
+@media (min-width: 96rem) {
+    [data-hub-full-width] .hub-content {
+        margin-inline: 5vw;
+    }
 }
 
 [data-hub-full-width] .collection-link-grid {
